@@ -1,0 +1,36 @@
+Compiling instructions for Dingux
+OpenTitus 0.8.0
+
+OpenTitus is released under the Gnu GPL version 3 or (at your option) any later version of the license, and it is released "as is"; without any warranty.
+
+
+Install the toolchain, found at http://code.google.com/p/dingoo-linux/downloads/list
+
+Compile time dependencies:
+LibSDL development headers
+LibSDLMixer library
+Chocolate-Doom (1.6.0)'s OPL library (opl/libopl_dingux.a), check out opl/opl_readme.txt for further details
+
+To compile, use the following commands:
+
+All:
+make -f Makefile_dingux
+
+
+Clean:
+make -f Makefile_dingux clean
+
+
+The Makefile will define the compile-time constant "_DINGUX". It is used in /opentitus.c (videomode), and in /include/globals.h (keys).
+
+Copy the executable, titus.conf and titus/moktar folder to the same folder on the card (such as /local/), and launch it via applications/Explorer.
+
+Keys:
+B: Pick up/throw (space)
+X: Jump, helpful for kneestand+jump (up)
+A: Health display (E), additional press displays the status page (F4)
+Start: Pause (P)
+Select: Exit (Esc)
+Development keys:
+Left shoulder button: Toggles godmode and noclip
+Right shoulder button + left shoulder button: Skip to next level

@@ -1,0 +1,18 @@
+List of bugs in the original game + improvements to the original game engine
+Can be fixed in new levels, but default is not fixed in the original levels
+
+
+Bugs:
+
+When bouncing on a skateboard on top of other objects, the player will drop through
+
+When 2 balls are on top of each other, it's possible to jump through the ceiling
+if there's 3 tiles between the floor and the ceiling (the secret chamber on level 2)
+
+It's not possible to drop through the garbage bin (level 2)
+
+
+Improvements:
+
+When close to deadly spikes with an elevator above, below the player,
+scroll so that both elevators and spikes are visible (level 9)

@@ -1,0 +1,40 @@
+Bug log
+
+
+OpenTitus fails to start at random on Dingux
+Status: Not fixed
+
+When riding skateboard into a wall, player doesn't move as the skateboard
+(at the codelamp on level 6)
+Status: Fixed 11.01.12 (player.c) (the slide animation bugfix magically squeezed this bug as well)
+
+Missing the player-sliding animation. It should appear when riding the skateboard and on some other occasions such as slippery surfaces.
+Status: Fixed 11.01.12 (player.c)
+
+When falling down, especially a large distance, the scrolling is not very smooth. It is different in original.
+Status: Fixed 11.01.12 (scroll.c)
+
+When throwing the carpet, the carpet doesn't always open. (Not a bug - also happens in original)
+Status: Not a bug
+
+When bouncing on skateboard on other objects, player gets headache
+(at the codelamp on level 6)
+Status: Fixed 14.11.11 (objects.c)
+
+Skeletons resets to spawn when spawn is on screen (level 5)
+Status: Fixed 6.11.11 (enemies.c)
+
+Guy walking throwing rocks gets stuck (3rd place on level 4)
+Status: Fixed 6.11.11 (enemies.c)
+
+Baby shooting right only is drawn wrong way (level 6)
+Status: Fixed 1.11.11 (enemies.c)
+
+Radio turns into a carpet
+Status: Fixed 1.11.11 (objects.c)
+
+Immortal objects (spike wagons) are not immortal
+Status: Fixed 27.10.11 (enemies.c) 
+
+
+0.7.0 release 23.10.11

@@ -1,0 +1,20 @@
+Make an independent "OpenTitus"-mode
+The PC and Amiga games are different: Amiga looks better and easier than the PC version.
+Thus: the OpenTitus version (toggleable with the PC version) should include stuff from the amiga version:
+ - Should be included: Better scrolling
+ - Should be included: Player becomes immortal a short time after getting hurt
+ - Should be included: Fade in and out on level codes
+ - Maybe: Include the level intro with lives that gets removed
+ - Maybe: Modified levels: some enemies moves slower, and other things (the boss on 5th level)
+ - Maybe: The gradient background instead of the sky with stars
+ - Maybe: Keep amount of lives visible
+ - Maybe: Sound effect on bounce
+ - Maybe: Support for amiga sound effects
+ - Doubtly: Make the ball become flat
+Non-amiga improvements:
+ - Health bar and amount of lives visible at all times (Blues Brothers / Super Mario)
+
+Squeeze bugs also visible in the original game (original_bugs.txt)
+
+Improve engine (original_bugs.txt) (all modifications must be toggleable!)
+

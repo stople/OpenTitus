@@ -1,0 +1,37 @@
+Roadmap prior 1.0.0:
+
+Improve character-printing delay
+Status: Fixed 16.11.11 (fonts.c)
+
+Buffer all sprites in memory, including flipped sprites (but not "flash")
+Status: Fixed 12.12.11 (draw.c ++)
+
+Implement adlib audio
+Status: Fixed 01.02.12
+
+Squeeze all bugs (bugfix.txt)
+Status: In progress
+
+Scan the folder and generate titus.conf automaticly
+
+Alert if titus or moktar files not found, instead of "just quit"
+
+Switch between fullscreen and window mode in-game
+
+Switch between titus and moktar in-game
+
+In-game double output size (320x200->640x400)
+
+Fullscreen: center output on black screen, in-game cycle screen resolution
+
+Improve delay functions, calculate correct values
+
+Reimplement amiga mod audio
+
+Make it possible to load custom levels made with MTF
+
+Add in-game credits
+
+Keep sprites in hw memory, to accelerate blitting
+
+Perhaps store sprites with the screen's pallette, if possible (remember flash)

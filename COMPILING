@@ -1,0 +1,17 @@
+Compile instructions for OpenTitus
+
+OpenTitus doesn't use autobuild packages (yet), instead there are preconfigured makefiles for every system.
+
+Compile time dependencies:
+LibSDL development headers
+LibSDLMixer library
+Chocolate-Doom (1.6.0)'s OPL library (opl/libopl_*.a), check out opl/opl_readme.txt for further details
+
+
+System specific instructions is provided in
+COMPILING_dingux
+COMPILING_linux
+COMPILING_win32
+
+
+To test out your build, copy it into the game folder and follow the instructions inside game/README
