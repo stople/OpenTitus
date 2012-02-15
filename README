@@ -27,7 +27,7 @@ Various tutorials/information sources on the net!
 
 Git instructions:
 Compile according to COMPILING.
-To test out your build, copy it into the game folder and follow the instructions inside game/README.
+To test out your build, copy it into the game folder and follow the instructions inside bin/README.
 Precompiled binaries are available in builds/
 
 
