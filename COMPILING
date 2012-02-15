@@ -14,4 +14,4 @@ COMPILING_linux
 COMPILING_win32
 
 
-To test out your build, copy it into the game folder and follow the instructions inside bin/README
+To test out your build, copy it into the game folder and follow the instructions inside game/README.
