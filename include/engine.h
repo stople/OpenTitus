@@ -31,6 +31,9 @@
 
 #include "SDL/SDL.h"
 
+extern bool GAMEOVER_FLAG; //triggers a game over
+extern uint16 IMAGE_COUNTER; //Increased every loop in game loop (0 to 0x0FFF)
+
 int playtitus(int firstlevel);
 
 #endif

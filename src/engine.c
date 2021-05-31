@@ -50,6 +50,8 @@
 #include "elevators.h"
 #include "objects.h"
 #include "enemies.h"
+#include "tile_animation.h"
+#include "viewimage.h"
 
 //Probably not the best way, but it works...
 #define HAVE_CONFIG_H 1
@@ -62,6 +64,10 @@
 #include "audio.h"
 #endif
 
+SDL_Surface *tilescreen; //Tile screen
+bool GAMEOVER_FLAG; //triggers a game over
+uint16 IMAGE_COUNTER; //Increased every loop in game loop (0 to 0x0FFF)
+
 static int playlevel(TITUS_level *level);
 static int displaylevel(TITUS_level *level);
 static int movescreen(TITUS_level *level);
@@ -70,6 +76,95 @@ static int movetitus(TITUS_level *level);
 static int collision_detection_player(TITUS_level *level);
 static int getpolarity(int number);
 int gettick(int *tick, uint8 index);
+
+int SCREEN_5C() {
+    uint16 key;
+    int retval;
+    if (keystate[SDLK_LCTRL] && //LCtrl
+      keystate[SDLK_LALT] && //LAlt
+      keystate[SDLK_e]) { //E
+        for (key = SDLK_FIRST; key <= SDLK_LAST; key++) {
+            if (key == SDLK_LCTRL) continue;
+            if (key == SDLK_LALT) continue;
+            if (key == SDLK_e) continue;
+            if (keystate[key]) return 0;
+        }
+        if (game == 0) { //Titus
+            retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
+            if (retval < 0)
+                return retval;
+        }
+#ifdef AUDIO_ENABLED
+        SELECT_MUSIC(9);
+#endif
+    }
+
+    return 0;
+}
+
+int gameover(TITUS_level *level) {
+    TITUS_player *player = &(level->player);
+    int i, retval;
+#ifdef AUDIO_ENABLED
+    SELECT_MUSIC(2);
+#endif
+    updatesprite(level, &(player->sprite), 13, true); //Death
+    updatesprite(level, &(player->sprite2), 333, true); //Game
+    player->sprite2.x = (BITMAP_X << 4) - (120-2);
+    player->sprite2.y = (BITMAP_Y << 4) + 100;
+    //over
+    updatesprite(level, &(player->sprite3), 334, true); //Over
+    player->sprite3.x = (BITMAP_X << 4) + (320+120-2);
+    player->sprite3.y = (BITMAP_Y << 4) + 100;
+    for (i = 0; i < 31; i++) {
+        TFR_SCREENM();
+        DISPLAY_SPRITES(level);
+        flip_screen(true);
+        player->sprite2.x += 8;
+        player->sprite3.x -= 8;
+    }
+    SCREEN_5C(); //Secret: display picture if LCtrl+LAlt+E is pressed
+    retval = waitforbutton();
+    if (retval < 0)
+        return retval;
+
+    fadeout();
+}
+
+int death(TITUS_level *level) {
+    TITUS_player *player = &(level->player);
+    int i;
+#ifdef AUDIO_ENABLED
+    SELECT_MUSIC(1);
+#endif
+    FORCE_POSE(level);
+    updatesprite(level, &(player->sprite), 13, true); //Death
+    player->sprite.speedY = 15;
+    for (i = 0; i < 60; i++) {
+        TFR_SCREENM();
+        //TODO! GRAVITY();
+        DISPLAY_SPRITES(level);
+        flip_screen(true);
+        player->sprite.speedY--;
+        if (player->sprite.speedY < -16) {
+            player->sprite.speedY = -16;
+        }
+        player->sprite.y -= player->sprite.speedY;
+    }
+
+#ifdef AUDIO_ENABLED
+    WAIT_SONG();
+    SELECT_MUSIC(0);
+#endif
+        
+    /* TODO: remove because REPLACED
+    SCREEN_1();
+    //TODO: SELECT_MUSIC(LEVEL_MUSIC[FNAMEB]);
+    INIT_SCREENM(level);
+    return 3; //Do not break main loop
+    */
+    CLOSE_SCREEN();
+}
 
 int playtitus(int firstlevel){
     int startx, starty;
@@ -373,91 +468,4 @@ static int getpolarity(int number){
     if (number > 0)
         return (1);
     return (0);
-}
-
-int death(TITUS_level *level) {
-    TITUS_player *player = &(level->player);
-    int i;
-#ifdef AUDIO_ENABLED
-    SELECT_MUSIC(1);
-#endif
-    FORCE_POSE(level);
-    updatesprite(level, &(player->sprite), 13, true); //Death
-    player->sprite.speedY = 15;
-    for (i = 0; i < 60; i++) {
-        TFR_SCREENM();
-        //TODO! GRAVITY();
-        DISPLAY_SPRITES(level);
-        flip_screen(true);
-        player->sprite.speedY--;
-        if (player->sprite.speedY < -16) {
-            player->sprite.speedY = -16;
-        }
-        player->sprite.y -= player->sprite.speedY;
-    }
-
-#ifdef AUDIO_ENABLED
-    WAIT_SONG();
-    SELECT_MUSIC(0);
-#endif
-        
-    /* TODO: remove because REPLACED
-    SCREEN_1();
-    //TODO: SELECT_MUSIC(LEVEL_MUSIC[FNAMEB]);
-    INIT_SCREENM(level);
-    return 3; //Do not break main loop
-    */
-    CLOSE_SCREEN();
-}
-
-int gameover(TITUS_level *level) {
-    TITUS_player *player = &(level->player);
-    int i, retval;
-#ifdef AUDIO_ENABLED
-    SELECT_MUSIC(2);
-#endif
-    updatesprite(level, &(player->sprite), 13, true); //Death
-    updatesprite(level, &(player->sprite2), 333, true); //Game
-    player->sprite2.x = (BITMAP_X << 4) - (120-2);
-    player->sprite2.y = (BITMAP_Y << 4) + 100;
-    //over
-    updatesprite(level, &(player->sprite3), 334, true); //Over
-    player->sprite3.x = (BITMAP_X << 4) + (320+120-2);
-    player->sprite3.y = (BITMAP_Y << 4) + 100;
-    for (i = 0; i < 31; i++) {
-        TFR_SCREENM();
-        DISPLAY_SPRITES(level);
-        flip_screen(true);
-        player->sprite2.x += 8;
-        player->sprite3.x -= 8;
-    }
-    SCREEN_5C(); //Secret: display picture if LCtrl+LAlt+E is pressed
-    retval = waitforbutton();
-    if (retval < 0)
-        return retval;
-
-    fadeout();
-}
-
-int SCREEN_5C() {
-    uint16 key;
-    int retval;
-    if (keystate[SDLK_LCTRL] && //LCtrl
-      keystate[SDLK_LALT] && //LAlt
-      keystate[SDLK_e]) { //E
-        for (key = SDLK_FIRST; key <= SDLK_LAST; key++) {
-            if (key == SDLK_LCTRL) continue;
-            if (key == SDLK_LALT) continue;
-            if (key == SDLK_e) continue;
-            if (keystate[key]) return;
-        }
-        if (game == 0) { //Titus
-            retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
-            if (retval < 0)
-                return retval;
-        }
-#ifdef AUDIO_ENABLED
-        SELECT_MUSIC(9);
-#endif
-    }
 }

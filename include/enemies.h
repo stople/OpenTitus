@@ -37,9 +37,11 @@
 #include "SDL/SDL.h"
 #include "level.h"
 
+extern uint8 INVULNERABLE_FLAG; //When non-zero, boss is invulnerable
 
 int MOVE_NMI(TITUS_level *level);
 int SET_NMI(TITUS_level *level);
 int MOVE_TRASH(TITUS_level *level);
+int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool clearflags);
 
 #endif

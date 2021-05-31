@@ -41,11 +41,103 @@
 #include "common.h"
 #include "player.h"
 #include "settings.h"
+#include "engine.h"
+#include "scroll.h"
+#include "objects.h"
+#include "audio.h"
+#include "sprites.h"
 
-int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool clearflags);
+uint8 INVULNERABLE_FLAG; //When non-zero, boss is invulnerable
+uint8 TAUPE_FLAG; //Used for enemies walking and popping up
+uint8 BIGNMI_POWER; //Lives of the boss
+bool boss_alive; //True if the boss is alive
 bool NMI_VS_DROP(TITUS_sprite *enemysprite, TITUS_sprite *sprite);
 int KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power);
 bool FIND_TRASH(TITUS_level *level, TITUS_sprite **trash);
+
+void PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet) {
+    bullet->x = enemy->sprite.x;
+    bullet->y = enemy->sprite.y - (int8)(*(enemy->sprite.animation - 1) & 0x00FF);
+    updatesprite(level, bullet, (*(enemy->sprite.animation - 2) & 0x1FFF) + FIRST_OBJET, true);
+    if (enemy->sprite.x < level->player.sprite.x) {
+        bullet->speedX = 16*11;
+        bullet->flipped = true;
+    } else {
+        bullet->speedX = -16*11;
+        bullet->flipped = false;
+    }
+    bullet->speedY = 0;
+    bullet->x += bullet->speedX >> 4;
+}
+
+void UP_ANIMATION(TITUS_sprite *sprite) {
+    do {
+        sprite->animation++;
+    } while (*sprite->animation >= 0);
+    sprite->animation++;
+}
+
+void DOWN_ANIMATION(TITUS_sprite *sprite) {
+    do {
+        sprite->animation--;
+    } while (*sprite->animation >= 0);
+    sprite->animation--;
+}
+
+void GAL_FORM(TITUS_level *level, TITUS_enemy *enemy) { //Enemy animation
+    int16 *image;
+    enemy->sprite.invisible = false;
+    if ((enemy->dying & 0x03) != 0) {
+        enemy->sprite.visible = false;
+        enemy->visible = true;
+        return;
+    }
+    enemy->trigger = false;
+    image = enemy->sprite.animation; //Animation pointer
+    while (*image < 0) {
+        image += (*image >> 1); //jump back to start of animation
+    }
+    if (*image == 0x55AA) {
+        enemy->sprite.invisible = true;
+        return;
+    }
+    enemy->trigger = *image & 0x2000;
+    updateenemysprite(level, enemy, (*image & 0x00FF) + FIRST_NMI, true);
+    enemy->sprite.flipped = (enemy->sprite.speedX < 0) ? true : false;
+    image++;
+    if (*image < 0) {
+        image += (*image >> 1); //jump back to start of animation
+    }
+    enemy->sprite.animation = image;
+    enemy->visible = true;
+}
+
+void DEAD1(TITUS_level *level, TITUS_enemy *enemy) {
+    if (((enemy->dying & 0x01) != 0) || //00000001 or 00000011
+      (enemy->dead_sprite == -1)) {
+        if ((enemy->dying & 0x01) == 0) {
+            enemy->dying = enemy->dying | 0x01;
+            enemy->sprite.speedY = -10;
+            enemy->phase = 0;
+        }
+        if (enemy->phase != 0xFF) {
+            enemy->sprite.y += enemy->sprite.speedY;
+            if (SEECHOC_FLAG != 0) {
+                level->player.sprite2.y += enemy->sprite.speedY;
+            }
+            if (enemy->sprite.speedY < MAX_SPEED_DEAD) {
+                enemy->sprite.speedY++;
+            }
+        }
+    } else {
+        enemy->dying = enemy->dying | 0x01;
+        updateenemysprite(level, enemy, enemy->dead_sprite, false);
+        enemy->sprite.flash = false;
+        enemy->sprite.visible = false;
+        enemy->sprite.speedY = 0;
+        enemy->phase = -1;
+    }
+}
 
 int MOVE_NMI(TITUS_level *level) {
     TITUS_sprite *bullet;
@@ -1006,33 +1098,6 @@ int MOVE_NMI(TITUS_level *level) {
     } //for (i = 0; i < NMI_BY_LEVEL; i++)
 }
 
-DEAD1(TITUS_level *level, TITUS_enemy *enemy) {
-    if (((enemy->dying & 0x01) != 0) || //00000001 or 00000011
-      (enemy->dead_sprite == -1)) {
-        if ((enemy->dying & 0x01) == 0) {
-            enemy->dying = enemy->dying | 0x01;
-            enemy->sprite.speedY = -10;
-            enemy->phase = 0;
-        }
-        if (enemy->phase != 0xFF) {
-            enemy->sprite.y += enemy->sprite.speedY;
-            if (SEECHOC_FLAG != 0) {
-                level->player.sprite2.y += enemy->sprite.speedY;
-            }
-            if (enemy->sprite.speedY < MAX_SPEED_DEAD) {
-                enemy->sprite.speedY++;
-            }
-        }
-    } else {
-        enemy->dying = enemy->dying | 0x01;
-        updateenemysprite(level, enemy, enemy->dead_sprite, false);
-        enemy->sprite.flash = false;
-        enemy->sprite.visible = false;
-        enemy->sprite.speedY = 0;
-        enemy->phase = -1;
-    }
-}
-
 int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool clearflags){
     updatesprite(level, &(enemy->sprite), number, clearflags);
 
@@ -1084,6 +1149,48 @@ int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool
     return (0);
 }
 
+void SEE_CHOC(TITUS_level *level) {
+    updatesprite(level, &(level->player.sprite2), FIRST_OBJET + 15, true); //Hit (a throw hits an enemy)
+    level->player.sprite2.speedX = 0;
+    level->player.sprite2.speedY = 0;
+    SEECHOC_FLAG = 5;
+}
+
+void ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy) {
+    switch (enemy->type) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 18:
+        if (NMI_VS_DROP(&(enemy->sprite), &(level->player.sprite))) {
+            if (enemy->type != 11) { //Walk and shoot
+                if (enemy->sprite.number != 178) { //Periscope
+                    enemy->sprite.speedX = 0 - enemy->sprite.speedX;
+                }
+            }
+            if ((enemy->sprite.number >= FIRST_NMI + 53) &&
+              (enemy->sprite.number <= FIRST_NMI + 55)) { //Fireball
+                GRANDBRULE_FLAG = 1;
+            }
+            if (enemy->power != 0) {
+                KICK_ASH(level, &(enemy->sprite), enemy->power);
+            }
+        }
+        break;
+    }
+}
 
 int SET_NMI(TITUS_level *level) {
     //Clear enemy sprites
@@ -1182,72 +1289,6 @@ int SET_NMI(TITUS_level *level) {
 }
 
 
-GAL_FORM(TITUS_level *level, TITUS_enemy *enemy) { //Enemy animation
-    int16 *image;
-    enemy->sprite.invisible = false;
-    if ((enemy->dying & 0x03) != 0) {
-        enemy->sprite.visible = false;
-        enemy->visible = true;
-        return;
-    }
-    enemy->trigger = false;
-    image = enemy->sprite.animation; //Animation pointer
-    while (*image < 0) {
-        image += (*image >> 1); //jump back to start of animation
-    }
-    if (*image == 0x55AA) {
-        enemy->sprite.invisible = true;
-        return;
-    }
-    enemy->trigger = *image & 0x2000;
-    updateenemysprite(level, enemy, (*image & 0x00FF) + FIRST_NMI, true);
-    enemy->sprite.flipped = (enemy->sprite.speedX < 0) ? true : false;
-    image++;
-    if (*image < 0) {
-        image += (*image >> 1); //jump back to start of animation
-    }
-    enemy->sprite.animation = image;
-    enemy->visible = true;
-}
-
-
-ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy) {
-    switch (enemy->type) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-    case 18:
-        if (NMI_VS_DROP(&(enemy->sprite), &(level->player.sprite))) {
-            if (enemy->type != 11) { //Walk and shoot
-                if (enemy->sprite.number != 178) { //Periscope
-                    enemy->sprite.speedX = 0 - enemy->sprite.speedX;
-                }
-            }
-            if ((enemy->sprite.number >= FIRST_NMI + 53) &&
-              (enemy->sprite.number <= FIRST_NMI + 55)) { //Fireball
-                GRANDBRULE_FLAG = 1;
-            }
-            if (enemy->power != 0) {
-                KICK_ASH(level, &(enemy->sprite), enemy->power);
-            }
-        }
-        break;
-    }
-}
-
-
 int KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power) {
 #ifdef AUDIO_ENABLED
     FX_START(4);
@@ -1299,13 +1340,6 @@ bool NMI_VS_DROP(TITUS_sprite *enemysprite, TITUS_sprite *sprite) {
 }
 
 
-SEE_CHOC(TITUS_level *level) {
-    updatesprite(level, &(level->player.sprite2), FIRST_OBJET + 15, true); //Hit (a throw hits an enemy)
-    level->player.sprite2.speedX = 0;
-    level->player.sprite2.speedY = 0;
-    SEECHOC_FLAG = 5;
-}
-
 int MOVE_TRASH(TITUS_level *level) {
     int16 i, tmp;
     for (i = 0; i < level->trashcount; i++) {
@@ -1344,33 +1378,4 @@ bool FIND_TRASH(TITUS_level *level, TITUS_sprite **trash) {
         }
     }
     return false;
-}
-
-PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet) {
-    bullet->x = enemy->sprite.x;
-    bullet->y = enemy->sprite.y - (int8)(*(enemy->sprite.animation - 1) & 0x00FF);
-    updatesprite(level, bullet, (*(enemy->sprite.animation - 2) & 0x1FFF) + FIRST_OBJET, true);
-    if (enemy->sprite.x < level->player.sprite.x) {
-        bullet->speedX = 16*11;
-        bullet->flipped = true;
-    } else {
-        bullet->speedX = -16*11;
-        bullet->flipped = false;
-    }
-    bullet->speedY = 0;
-    bullet->x += bullet->speedX >> 4;
-}
-
-UP_ANIMATION(TITUS_sprite *sprite) {
-    do {
-        sprite->animation++;
-    } while (*sprite->animation >= 0);
-    sprite->animation++;
-}
-
-DOWN_ANIMATION(TITUS_sprite *sprite) {
-    do {
-        sprite->animation--;
-    } while (*sprite->animation >= 0);
-    sprite->animation--;
 }

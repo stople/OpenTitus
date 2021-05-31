@@ -33,43 +33,19 @@
 #include "backbuffer.h"
 #include "sprites.h"
 #include "settings.h"
+#include "draw.h"
+#include "gates.h"
+#include "scroll.h"
+#include "audio.h"
+#include "reset.h"
+#include "level.h"
+#include "player.h"
+
+int16 XLIMIT; //The engine will not scroll past this tile before the player have crossed the line (X)
 
 int copytiles(int16 destX, int16 destY, int16 width, int16 height);
 
-int CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, and if the player does a kneestand on a secret entrance
-    check_finish(level);
-    check_gates(level);
-}
-
-
-check_finish(TITUS_level *level) {
-    TITUS_player *player = &(level->player);
-    if (boss_alive) { //There is still a boss that needs to be killed!
-        return;
-    }
-    if (level->levelid == 9) { //The level with a cage
-        if ((level->player.sprite2.number != FIRST_OBJET + 26) &&
-          (level->player.sprite2.number != FIRST_OBJET + 27)) {
-            return;
-        }
-    }
-    if (((player->sprite.x & 0xFFF0) != level->finishX) &&
-      ((player->sprite.x & 0xFFF0) - 16 != level->finishX)) {
-        return;
-    }
-    if (((player->sprite.y & 0xFFF0) != level->finishY) &&
-      ((player->sprite.y & 0xFFF0) - 16 != level->finishY)) {
-        return;
-    }
-#ifdef AUDIO_ENABLED
-    SELECT_MUSIC(4);
-    WAIT_SONG();
-#endif
-    CLOSE_SCREEN();
-    NEWLEVEL_FLAG = true;
-}
-
-check_gates(TITUS_level *level) {
+void check_gates(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     uint8 i;
     if ((CROSS_FLAG == 0) || //not kneestanding
@@ -109,6 +85,39 @@ check_gates(TITUS_level *level) {
     NOSCROLL_FLAG = level->gate[i].noscroll;
     OPEN_SCREEN();
 }
+
+void check_finish(TITUS_level *level) {
+    TITUS_player *player = &(level->player);
+    if (boss_alive) { //There is still a boss that needs to be killed!
+        return;
+    }
+    if (level->levelid == 9) { //The level with a cage
+        if ((level->player.sprite2.number != FIRST_OBJET + 26) &&
+          (level->player.sprite2.number != FIRST_OBJET + 27)) {
+            return;
+        }
+    }
+    if (((player->sprite.x & 0xFFF0) != level->finishX) &&
+      ((player->sprite.x & 0xFFF0) - 16 != level->finishX)) {
+        return;
+    }
+    if (((player->sprite.y & 0xFFF0) != level->finishY) &&
+      ((player->sprite.y & 0xFFF0) - 16 != level->finishY)) {
+        return;
+    }
+#ifdef AUDIO_ENABLED
+    SELECT_MUSIC(4);
+    WAIT_SONG();
+#endif
+    CLOSE_SCREEN();
+    NEWLEVEL_FLAG = true;
+}
+
+int CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, and if the player does a kneestand on a secret entrance
+    check_finish(level);
+    check_gates(level);
+}
+
 
 
 int CLOSE_SCREEN() {

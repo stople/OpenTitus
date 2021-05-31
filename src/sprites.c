@@ -36,6 +36,9 @@
 #include "tituserror.h"
 #include "globals.h"
 #include "definitions.h"
+#include "engine.h"
+#include "player.h"
+#include "objects.h"
 
 SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash){
     int i, j;
@@ -244,37 +247,7 @@ int copypixelformat(SDL_PixelFormat * destformat, SDL_PixelFormat * srcformat) {
     return 0;
 }
 
-SPRITES_ANIMATION(TITUS_level *level) {
-    int16 i;
-    //Animate player
-    if ((LAST_ORDER == 0) &&
-      (POCKET_FLAG) &&
-      (ACTION_TIMER >= 35*4)) {
-        updatesprite(level, &(level->player.sprite), 29, false); //"Pause"-sprite
-        if (ACTION_TIMER >= 35*5) {
-            updatesprite(level, &(level->player.sprite), 0, false); //Normal player sprite
-            ACTION_TIMER = 0;
-        }
-    }
-    //Animate other objects
-
-    animate_sprite(level, &(level->player.sprite2));
-    animate_sprite(level, &(level->player.sprite3));
-
-    for (i = 0; i < level->objectcount; i++) {
-        animate_sprite(level, &(level->object[i].sprite));
-    }
-
-    for (i = 0; i < level->enemycount; i++) {
-        animate_sprite(level, &(level->enemy[i].sprite));
-    }
-
-    for (i = 0; i < level->elevatorcount; i++) {
-        animate_sprite(level, &(level->elevator[i].sprite));
-    }
-}
-    
-animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
+void animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
     if (!spr->visible) return; //Not on screen?
     if (!spr->enabled) return;
     if (spr->number == (FIRST_OBJET+26)) { //Cage
@@ -319,6 +292,36 @@ animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
     }
 }
 
+void SPRITES_ANIMATION(TITUS_level *level) {
+    int16 i;
+    //Animate player
+    if ((LAST_ORDER == 0) &&
+      (POCKET_FLAG) &&
+      (ACTION_TIMER >= 35*4)) {
+        updatesprite(level, &(level->player.sprite), 29, false); //"Pause"-sprite
+        if (ACTION_TIMER >= 35*5) {
+            updatesprite(level, &(level->player.sprite), 0, false); //Normal player sprite
+            ACTION_TIMER = 0;
+        }
+    }
+    //Animate other objects
+
+    animate_sprite(level, &(level->player.sprite2));
+    animate_sprite(level, &(level->player.sprite3));
+
+    for (i = 0; i < level->objectcount; i++) {
+        animate_sprite(level, &(level->object[i].sprite));
+    }
+
+    for (i = 0; i < level->enemycount; i++) {
+        animate_sprite(level, &(level->enemy[i].sprite));
+    }
+
+    for (i = 0; i < level->elevatorcount; i++) {
+        animate_sprite(level, &(level->elevator[i].sprite));
+    }
+}
+    
 
 int updatesprite(TITUS_level *level, TITUS_sprite *spr, int16 number, bool clearflags){
     spr->number = number;

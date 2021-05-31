@@ -36,6 +36,16 @@
 #include "globals.h"
 #include "definitions.h"
 #include "elevators.h"
+#include "scroll.h"
+
+void MTSBR(TITUS_elevator *elevator) {
+    elevator->counter++;
+    if (elevator->counter >= elevator->range) {
+        elevator->counter = 0;
+        elevator->sprite.speedX = 0 - elevator->sprite.speedX;
+        elevator->sprite.speedY = 0 - elevator->sprite.speedY;
+    }
+}
 
 int MOVE_TRP(TITUS_level *level) {
     TITUS_elevator *elevator = level->elevator;
@@ -56,14 +66,5 @@ int MOVE_TRP(TITUS_level *level) {
         } else {
             elevator[i].sprite.invisible = true; //Not necessary, but to mimic the original game
         }
-    }
-}
-
-MTSBR(TITUS_elevator *elevator) {
-    elevator->counter++;
-    if (elevator->counter >= elevator->range) {
-        elevator->counter = 0;
-        elevator->sprite.speedX = 0 - elevator->sprite.speedX;
-        elevator->sprite.speedY = 0 - elevator->sprite.speedY;
     }
 }

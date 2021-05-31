@@ -40,7 +40,10 @@
 #include "sprites.h"
 #include "level.h"
 #include "globals.h"
+#include "gates.h"
+#include "scroll.h"
 
+uint8 ALTITUDE_ZERO; //The engine will not scroll below this tile before the player have gone below (Y)
 unsigned int loaduint16(unsigned char c1, unsigned char c2);
 int loadint16(unsigned char c1, unsigned char c2);
 

@@ -52,6 +52,7 @@ int view_password(TITUS_level *level, uint8 level_index);
 int loadpixelformat(SDL_PixelFormat **pixelformat);
 int loadpixelformat_font(SDL_PixelFormat **pixelformat);
 int freepixelformat(SDL_PixelFormat **pixelformat);
+void DISPLAY_SPRITES(TITUS_level *level);
 
 #endif
 

@@ -45,38 +45,38 @@ int initcodes();
 
 int initleveltitles();
 
-char spritefile[256];
-char levelfiles[16][256]; //16 levels in moktar, 15 levels in titus
-char tituslogofile[256];
-int tituslogoformat;
-char titusintrofile[256];
-int titusintroformat;
-char titusmenufile[256];
-int titusmenuformat;
-char titusfinishfile[256];
-int titusfinishformat;
-char fontfile[256];
-int levelcount;
-int devmode;
-int reswidth;
-int resheight;
-int bitdepth;
-int ingamewidth;
-int ingameheight;
-int videomode;
-int game;
+extern char spritefile[256];
+extern char levelfiles[16][256]; //16 levels in moktar, 15 levels in titus
+extern char tituslogofile[256];
+extern int tituslogoformat;
+extern char titusintrofile[256];
+extern int titusintroformat;
+extern char titusmenufile[256];
+extern int titusmenuformat;
+extern char titusfinishfile[256];
+extern int titusfinishformat;
+extern char fontfile[256];
+extern int levelcount;
+extern int devmode;
+extern int reswidth;
+extern int resheight;
+extern int bitdepth;
+extern int ingamewidth;
+extern int ingameheight;
+extern int videomode;
+extern int game;
 
-char levelcode[16][5];
-char leveltitle[16][41];
+extern char levelcode[16][5];
+extern char leveltitle[16][41];
 
-char moduleintrofile[256]; //.mod file
-int  moduleintrofileloop; //loop info
-char moduleprelevelfile[256];
-int  moduleprelevelfileloop;
-char modulelevelfile[6][256]; //6 different level files
-int  modulelevelfileloop[6];
-char modulegameoverfile[256];
-int  modulegameoverfileloop;
-char modulelevel[16]; //Link to modulelevelfiles
+extern char moduleintrofile[256]; //.mod file
+extern int  moduleintrofileloop; //loop info
+extern char moduleprelevelfile[256];
+extern int  moduleprelevelfileloop;
+extern char modulelevelfile[6][256]; //6 different level files
+extern int  modulelevelfileloop[6];
+extern char modulegameoverfile[256];
+extern int  modulegameoverfileloop;
+extern char modulelevel[16]; //Link to modulelevelfiles
 
 #endif
