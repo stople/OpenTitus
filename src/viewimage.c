@@ -35,6 +35,7 @@
 #include "backbuffer.h"
 #include "globals.h"
 #include "common.h"
+#include "keyboard.h"
 
 //Probably not the best way, but it works...
 #define HAVE_CONFIG_H 1

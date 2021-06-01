@@ -32,7 +32,10 @@
 #include "SDL/SDL.h"
 #include "level.h"
 
-int move_objects(TITUS_level *level);
+extern uint8 TAPISFLY_FLAG; //When non-zero, the flying carpet is flying
+extern uint8 GRAVITY_FLAG; //When zero, skip object gravity function
+
+void move_objects(TITUS_level *level);
 bool SPRITES_VS_SPRITES (TITUS_level *level, TITUS_sprite *sprite1, TITUS_sprite *sprite1ref, TITUS_object **object2); //check if there is an object below that can support the input object
 int updateobjectsprite(TITUS_level *level, TITUS_object *obj, int16 number, bool clearflags);
 int loadobjects(TITUS_objectdata ***objects, uint16 *count);

@@ -31,8 +31,24 @@
 
 #include "SDL/SDL.h"
 
+extern bool PERMUT_FLAG; //If false, there are no animated tiles on the screen?
+extern uint8 loop_cycle; //Increased every loop in game loop
+extern uint8 tile_anim; //Current tile animation (0-1-2), changed every 4th game loop cycle
+extern uint8 BITMAP_X; //Screen offset (X) in tiles
+extern uint8 BITMAP_XM; //Point to the left tile in the tile screen (0 to 19)
+extern uint8 BITMAP_Y; //Screen offset (Y) in tiles
+extern uint8 BITMAP_YM; //Point to the top tile in the tile screen (0 to 11)
+extern bool XSCROLL_CENTER; //If true, the screen will scroll in X
+extern int16 XLIMIT_SCROLL; //If scrolling: scroll until player is in this tile (X)
+extern bool YSCROLL_CENTER; //If true, the screen will scroll in Y
+extern uint8 YLIMIT_SCROLL; //If scrolling: scroll until player is in this tile (Y)
+
 int scroll(TITUS_level *level);
 int DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x);
+bool L_SCROLL(TITUS_level *level);
+bool R_SCROLL(TITUS_level *level);
+bool U_SCROLL(TITUS_level *level);
+bool D_SCROLL(TITUS_level *level);
 
 #endif
 

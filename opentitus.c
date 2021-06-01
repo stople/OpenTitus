@@ -66,64 +66,8 @@
 #include "original.h"
 #include "objects.h"
 
-int main(int argc, char *argv[]) {
-
-    int retval;
-    int state = 1; //View the menu when the main loop starts
-    retval = init();
-    if (retval < 0)
-        state = 0;
-
-    if (state) {
-        retval = viewintrotext();
-        if (retval < 0)
-            state = 0;
-    }
-
-    if (state) {
-        retval = viewimage(tituslogofile, tituslogoformat, 0, 4000);
-        if (retval < 0)
-            state = 0;
-    }
-
-#ifdef AUDIO_ENABLED
-    SELECT_MUSIC(15);
-#endif
-
-    if (state) {
-        retval = viewimage(titusintrofile, titusintroformat, 0, 6500);
-        if (retval < 0)
-            state = 0;
-    }
-
-    while (state) {
-        retval = viewmenu(titusmenufile, titusmenuformat);
-
-        if (retval <= 0)
-            state = 0;
-
-        if (state && (retval <= levelcount)) {
-            retval = playtitus(retval - 1);
-            if (retval < 0)
-                state = 0;
-        }
-    }
-    
-    freefonts();
-
-#ifdef AUDIO_ENABLED
-    freeaudio();
-#endif
-
-    SDL_Quit();
-
-    checkerror();
-
-    if (retval == -1)
-        retval = 0;
-
-    return retval;
-}
+char lasterror[200];
+int lasterrornr; //Only to be used when needed, f.ex. when return value is not int (f.ex. in function SDL_Text) (maybe this always should be used?)
 
 int init() {
 
@@ -206,6 +150,65 @@ int init() {
 
     return 0;
 
+}
+
+int main(int argc, char *argv[]) {
+
+    int retval;
+    int state = 1; //View the menu when the main loop starts
+    retval = init();
+    if (retval < 0)
+        state = 0;
+
+    if (state) {
+        retval = viewintrotext();
+        if (retval < 0)
+            state = 0;
+    }
+
+    if (state) {
+        retval = viewimage(tituslogofile, tituslogoformat, 0, 4000);
+        if (retval < 0)
+            state = 0;
+    }
+
+#ifdef AUDIO_ENABLED
+    SELECT_MUSIC(15);
+#endif
+
+    if (state) {
+        retval = viewimage(titusintrofile, titusintroformat, 0, 6500);
+        if (retval < 0)
+            state = 0;
+    }
+
+    while (state) {
+        retval = viewmenu(titusmenufile, titusmenuformat);
+
+        if (retval <= 0)
+            state = 0;
+
+        if (state && (retval <= levelcount)) {
+            retval = playtitus(retval - 1);
+            if (retval < 0)
+                state = 0;
+        }
+    }
+    
+    freefonts();
+
+#ifdef AUDIO_ENABLED
+    freeaudio();
+#endif
+
+    SDL_Quit();
+
+    checkerror();
+
+    if (retval == -1)
+        retval = 0;
+
+    return retval;
 }
 
 void checkerror(void) {

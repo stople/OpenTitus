@@ -34,35 +34,26 @@
 #include "definitions.h"
 #include "backbuffer.h"
 #include "scroll.h"
+#include "level.h"
+#include "gates.h"
+#include "player.h"
 
+bool PERMUT_FLAG; //If false, there are no animated tiles on the screen?
+uint8 loop_cycle; //Increased every loop in game loop
+uint8 tile_anim; //Current tile animation (0-1-2), changed every 4th game loop cycle
+uint8 BITMAP_X; //Screen offset (X) in tiles
+uint8 BITMAP_XM; //Point to the left tile in the tile screen (0 to 19)
+uint8 BITMAP_Y; //Screen offset (Y) in tiles
+uint8 BITMAP_YM; //Point to the top tile in the tile screen (0 to 11)
+bool XSCROLL_CENTER; //If true, the screen will scroll in X
+int16 XLIMIT_SCROLL; //If scrolling: scroll until player is in this tile (X)
+bool YSCROLL_CENTER; //If true, the screen will scroll in Y
+uint8 YLIMIT_SCROLL; //If scrolling: scroll until player is in this tile (Y)
 static uint8 BARRYCENTRE(TITUS_level *level);
 static int REFRESH_COLUMNS(TITUS_level *level, int8 column);
 static int REFRESH_LINE(TITUS_level *level, int8 line);
-bool L_SCROLL(TITUS_level *level);
-bool R_SCROLL(TITUS_level *level);
-bool U_SCROLL(TITUS_level *level);
-bool D_SCROLL(TITUS_level *level);
 
-int scroll(TITUS_level *level) {
-    //Scroll screen and update tile animation
-    loop_cycle++; //Cycle from 0 to 3
-    if (loop_cycle > 3) {
-        loop_cycle = 0;
-    }
-    if (loop_cycle == 0) { //Every 4th call
-        tile_anim++; //Cycle tile animation (0-1-2)
-        if (tile_anim > 2) {
-            tile_anim = 0;
-        }
-    }
-    //Scroll
-    if (!NOSCROLL_FLAG) {
-        X_ADJUST(level);
-        Y_ADJUST(level);
-    }
-}
-
-X_ADJUST(TITUS_level *level) {
+void X_ADJUST(TITUS_level *level) {
     bool block;
     TITUS_player *player = &(level->player);
     int16 pstileX = (player->sprite.x >> 4) - BITMAP_X; //Player screen tile X (0 to 19)
@@ -133,7 +124,7 @@ X_ADJUST(TITUS_level *level) {
     }
 }
 
-Y_ADJUST(TITUS_level *level) {
+void Y_ADJUST(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     if (player->sprite.speedY == 0) {
         YSCROLL_CENTER = false;
@@ -186,6 +177,25 @@ Y_ADJUST(TITUS_level *level) {
                 YSCROLL_CENTER = false;
             }
 		}
+    }
+}
+
+int scroll(TITUS_level *level) {
+    //Scroll screen and update tile animation
+    loop_cycle++; //Cycle from 0 to 3
+    if (loop_cycle > 3) {
+        loop_cycle = 0;
+    }
+    if (loop_cycle == 0) { //Every 4th call
+        tile_anim++; //Cycle tile animation (0-1-2)
+        if (tile_anim > 2) {
+            tile_anim = 0;
+        }
+    }
+    //Scroll
+    if (!NOSCROLL_FLAG) {
+        X_ADJUST(level);
+        Y_ADJUST(level);
     }
 }
 

@@ -32,6 +32,8 @@
 #include "SDL/SDL.h"
 #include "level.h"
 
+extern int16 XLIMIT; //The engine will not scroll past this tile before the player have crossed the line (X)
+
 int CROSSING_GATE(TITUS_level *level); //Check and handle level completion, and if the player does a kneestand on a secret entrance
 int CLOSE_SCREEN();
 int OPEN_SCREEN();

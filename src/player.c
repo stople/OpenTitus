@@ -38,13 +38,49 @@
 #include "original.h"
 #include "common.h"
 #include "settings.h"
+#include "scroll.h"
+#include "audio.h"
+#include "objects.h"
+#include "sprites.h"
+#include "reset.h"
+#include "enemies.h"
+#include "engine.h"
 
-static int TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX);
+uint8 RESETLEVEL_FLAG;
+uint8 BAR_FLAG; //timer for health bar
+bool X_FLAG; //true if left or right key is pressed
+bool Y_FLAG; //true if up or down key is pressed
+uint8 CHOC_FLAG; //headache timer
+uint8 action; //player sprite array
+uint8 KICK_FLAG; //hit/burn timer
+bool GRANDBRULE_FLAG; //If set, player will be "burned" when hit (fireballs)
+bool LADDER_FLAG; //True if in a ladder
+bool PRIER_FLAG; //True if player is forced into kneestanding because of low ceiling
+uint8 SAUT_FLAG; //6 if free fall or in the middle of a jump, decremented if on solid surface. Must be 0 to initiate a jump.
+uint8 LAST_ORDER; //Last action (kneestand + jump = silent walk)
+uint8 FURTIF_FLAG; //Silent walk timer
+bool DROP_FLAG; //True if an object is throwed forward
+bool DROPREADY_FLAG;
+bool CARRY_FLAG; //true if carrying something (add 16 to player sprite)
+bool POSEREADY_FLAG;
+uint8 ACTION_TIMER; //Frames since last action change
+uint8 CROSS_FLAG; //When non-zero, fall through certain floors (after key down)
+uint8 FUME_FLAG; //Smoke when object hits the floor
+Uint8 *keystate; //Keyboard state
+uint8 YFALL;
+bool POCKET_FLAG;
+uint8 SEECHOC_FLAG; //Counter when hit
+bool GODMODE; //If true, the player will not interfere with the enemies
+bool NOCLIP; //If true, the player will move noclip
+uint8 SAUT_COUNT;
+int8 SENSX; //1: walk right, 0: stand still, -1: walk left, triggers the ACTION_TIMER if it changes
+
+static void TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX);
 static int BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX);
 static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX);
 static int XACCELERATION(TITUS_player *player, int16 maxspeed);
 static int YACCELERATION(TITUS_player *player, int16 maxspeed);
-static int BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX);
+static void BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX);
 static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX);
 static int CASE_PASS(TITUS_level *level, uint8 viewlevel, uint8 tileY, uint8 tileX);
 static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX);
@@ -53,6 +89,327 @@ static int GET_IMAGE(TITUS_level *level);
 static int YACCELERATION_NEG(TITUS_player *player, int16 maxspeed);
 static int ACTION_PRG(TITUS_level *level, uint8 action);
 int16 add_carry();
+
+void ARAB_TOMBE(TITUS_level *level) {
+    //No wall under the player; fall down!
+    TITUS_player *player = &(level->player);
+    SAUT_FLAG = 6;
+    if (KICK_FLAG != 0) {
+        return;
+    }
+    XACCELERATION(player, MAX_X*16);
+    YACCELERATION(player, MAX_Y*16);
+    if (CHOC_FLAG != 0) {
+        updatesprite(level, &(player->sprite), 15, true); //sprite when hit
+    } else if (CARRY_FLAG == 0) {
+        updatesprite(level, &(player->sprite), 10, true); //position while falling  (jump sprite?)
+    } else {
+        updatesprite(level, &(player->sprite), 21, true); //position falling and carry  (jump and carry sprite?)
+    }
+    player->sprite.flipped = (SENSX < 0);
+}
+
+void COLLISION_TRP(TITUS_level *level) {
+    //Player versus elevators
+    //Change player's location according to the elevator
+    uint8 i;
+    TITUS_player *player = &(level->player);
+    TITUS_elevator *elevator = level->elevator;
+    if ((player->sprite.speedY >= 0) && (CROSS_FLAG == 0)) {
+        for (i = 0; i < level->elevatorcount; i++) {
+            //Quick test
+            if (!(elevator[i].enabled) ||
+              !(elevator[i].sprite.visible) ||
+              (abs(elevator[i].sprite.x - player->sprite.x) >= 64) ||
+              (abs(elevator[i].sprite.y - player->sprite.y) >= 16)) {
+                continue;
+            }
+
+            //Real test
+            if (player->sprite.x - level->spritedata[0]->refwidth < elevator[i].sprite.x) { //The elevator is right
+                if (player->sprite.x - level->spritedata[0]->refwidth + level->spritedata[0]->collwidth <= elevator[i].sprite.x) { //player->sprite must be 0
+                    continue; //The elevator is too far right
+                }
+            } else { //The elevator is left
+                if (player->sprite.x - level->spritedata[0]->refwidth >= elevator[i].sprite.x + elevator[i].sprite.spritedata->collwidth) {
+                    continue; //The elevator is too far left
+                }
+            }
+
+            if (player->sprite.y - 6 < elevator[i].sprite.y) { //The elevator is below
+                if (player->sprite.y - 6 + 8 <= elevator[i].sprite.y) {
+                    continue; //The elevator is too far below
+                }
+            } else { //The elevator is above
+                if (player->sprite.y - 6 >= elevator[i].sprite.y + elevator[i].sprite.spritedata->collheight) {
+                    continue; //The elevator is too far above
+                }
+            }
+
+            //Skip fall-through-tile action (ACTION_TIMER == 15)
+            if (ACTION_TIMER == 14) {
+                ACTION_TIMER = 16;
+            }
+
+            YFALL = 0;
+            player->sprite.y = elevator[i].sprite.y;
+
+            player->sprite.speedY = 0;
+            subto0(&(SAUT_FLAG));
+            SAUT_COUNT = 0;
+            YFALL = 2;
+
+            player->sprite.x += elevator[i].sprite.speedX;
+            if (elevator[i].sprite.speedY > 0) { //Going down
+                player->sprite.y += elevator[i].sprite.speedY;
+            }
+            return;
+        }
+    }
+}
+
+void COLLISION_OBJET(TITUS_level *level) {
+    //Player versus objects
+    //Collision, spring state, speed up carpet/scooter/skateboard, bounce bouncy objects
+    TITUS_player *player = &(level->player);
+    TITUS_object *off_object;
+    if (player->sprite.speedY < 0) {
+        return;
+    }
+    //Collision with a sprite
+    if (!(SPRITES_VS_SPRITES(level, &(player->sprite), &(level->spritedata[0]), &off_object))) { //check if player stands on an object, use sprite[0] (rest) as collision size (first player tile)
+        return;
+    }
+    player->sprite.y = off_object->sprite.y - off_object->sprite.spritedata->collheight;
+    //If the foot is placed on a spring, it must be soft!
+    if ((off_object->sprite.number == FIRST_OBJET + 24) || (off_object->sprite.number == FIRST_OBJET + 25)) {
+        off_object->sprite.UNDER = off_object->sprite.UNDER | 0x02;
+        off_object->sprite.ONTOP = &(player->sprite);
+    }
+    //If we jump on the flying carpet, let it fly
+    if ((off_object->sprite.number == FIRST_OBJET + 21) || (off_object->sprite.number == FIRST_OBJET + 22)) { //Flying carpet
+        if (!(player->sprite.flipped)) {
+            off_object->sprite.speedX = 6 * 16;
+        } else {
+            off_object->sprite.speedX = 0 - 6 * 16;
+        }
+        off_object->sprite.flipped = player->sprite.flipped;
+        GRAVITY_FLAG = 4;
+        TAPISWAIT_FLAG = 0;
+    } else if ((ACTION_TIMER > 10) && //delay
+      ((LAST_ORDER & 0x0F) == 0) && //Player rests
+      (player->sprite.speedY == 0) && //stable Y
+      ((off_object->sprite.number == 83) || //scooter
+      (off_object->sprite.number == 94))) { //skateboard
+
+        //If you put your foot on a scooter or a skateboard
+        if (!(player->sprite.flipped)) {
+            off_object->sprite.speedX = 16 * 3;
+        } else {
+            off_object->sprite.speedX = 0 - 16 * 3;
+        }
+        off_object->sprite.flipped = player->sprite.flipped;
+        GRAVITY_FLAG = 4;
+    }
+
+    if (off_object->sprite.speedX < 0) {
+        player->sprite.speedX = off_object->sprite.speedX;
+    } else if (off_object->sprite.speedX > 0) {
+        player->sprite.speedX = off_object->sprite.speedX + 16;
+    }
+
+    //If we want to CROSS (cross) it does not bounce
+    if ((CROSS_FLAG == 0) && //No long kneestand
+      (player->sprite.speedY > (16 * 3)) &&
+      (off_object->objectdata->bounce)) {
+        //Bounce on a ball if no long kneestand (down key)
+        if (keystate[KEY_DOWN]) {
+            player->sprite.speedY = 0;
+        } else {
+            if (keystate[KEY_UP] || keystate[KEY_JUMP]) {
+                player->sprite.speedY += 16 * 3; //increase speed
+            } else {
+                player->sprite.speedY -= 16; //reduce speed
+            }
+            player->sprite.speedY = 0 - player->sprite.speedY;
+            if (player->sprite.speedY > 0) {
+                player->sprite.speedY = 0;
+            }
+        }
+        ACTION_TIMER = 0;
+
+        //If the ball lies on the ground
+        if (off_object->sprite.speedY == 0) {
+#ifdef AUDIO_ENABLED
+            FX_START(12); //Sound effect
+#endif        
+            off_object->sprite.speedY = 0 - player->sprite.speedY;
+            off_object->sprite.y -= off_object->sprite.speedY >> 4;
+            GRAVITY_FLAG = 4;
+        }
+    } else {
+        if (off_object->sprite.speedY != 0) {
+            player->sprite.speedY = off_object->sprite.speedY;
+        } else {
+            player->sprite.speedY = 0;
+        }
+        subto0(&(SAUT_FLAG));
+        SAUT_COUNT = 0;
+        YFALL = 2;
+    }
+}
+
+void DEC_LIFE (TITUS_level *level) {
+    //Kill the player, check for gameover, hide the energy bar
+    RESETLEVEL_FLAG = 10;
+    BAR_FLAG = 0;
+    if (level->lives == 0) {
+        GAMEOVER_FLAG = true;
+    }
+}
+    
+void CASE_DEAD_IM (TITUS_level *level) {
+    //Kill the player immediately (spikes/water/flames etc.
+    //Sets RESET_FLAG to 2, in opposite to being killed as a result of 0 HP (then RESET_FLAG is 10)
+    DEC_LIFE(level);
+    RESETLEVEL_FLAG = 2;
+}
+
+void BRK_COLLISION(TITUS_level *level) { //Collision detection between player and tiles/objects/elevators
+    //Point the foot on the block!
+    TITUS_player *player = &(level->player);
+    int16 changeX;
+    int16 height;
+    int16 initY;
+    uint8 tileX;
+    int16 tileY;
+    int16 colltest;
+    uint8 left_tileX;
+    bool first;
+    uint8 hflag;
+    
+    tileX = (player->sprite.x >> 4);
+    tileY = (player->sprite.y >> 4) - 1;
+    initY = tileY;
+
+    //if too low then die!
+    if ((player->sprite.y > ((level->height + 1) << 4)) && !NOCLIP) {
+        CASE_DEAD_IM(level);
+    }
+
+    
+    //Test under the feet of the hero and on his head! (In y)
+    YFALL = 0;
+    //Find the left tile
+    //colltest can be 0 to 15 +- 8 (-1 to -8 will change into 255 to 248)
+    colltest = player->sprite.x & 0x0F;
+    if (colltest < TEST_ZONE) {
+        colltest += 256;
+        tileX--;
+    }
+    colltest -= TEST_ZONE;
+
+    left_tileX = tileX;
+    TAKE_BLK_AND_YTEST(level, tileY, tileX); //Test the tile for vertical blocking
+    if (YFALL == 1) { //Have the fall stopped?
+        //No! Is it necessary to test the right tile?
+        colltest += TEST_ZONE * 2; //4 * 2
+//      if (colltest > 255) {
+//          colltest -= 256;
+//          tileX++;
+//      } elseif
+        if (colltest > 15) {
+            tileX++;
+        }
+        if (tileX != left_tileX) {
+            TAKE_BLK_AND_YTEST(level, tileY, tileX); //Also test the left tile
+        }
+        if (YFALL == 1) {
+            if ((CROSS_FLAG == 0) && (CHOC_FLAG == 0)) {
+                COLLISION_TRP(level); //Player versus elevators
+                if (YFALL == 1) {
+                    COLLISION_OBJET(level); //Player versus objects
+                    if (YFALL == 1) {
+                        ARAB_TOMBE(level); //No wall/elevator/object under the player; fall down!
+                    } else {
+                        player->GLISSE = 0;
+                    }
+                }
+            } else {
+                ARAB_TOMBE(level); //Fall down!
+            }
+        }
+    }
+
+    //How will the player move in X?
+    changeX = TEST_ZONE + MAX_X; //4 + 4 ??? + max_speed_x
+    if (player->sprite.speedX < 0) {
+        changeX = 0 - changeX;
+    } else if (player->sprite.speedX == 0) {
+        changeX = 0;
+    }
+
+    //Test the hero (in x)
+    height = player->sprite.spritedata->collheight;
+    if ((player->sprite.y > MAP_LIMIT_Y + 1) && (initY >= 0) && (initY < level->height)) {
+        tileX = ((player->sprite.x + changeX) >> 4);
+        tileY = initY;
+        first = true;
+        do {
+            hflag = get_horizflag(level, tileY, tileX);
+            if (first) {
+                BLOCK_XXPRG(level, hflag, tileY, tileX);
+                first = false;
+            } else if ((hflag == HFLAG_CODE) || (hflag == HFLAG_BONUS)) { //level code or HP
+                BLOCK_XXPRG(level, hflag, tileY, tileX);
+            }
+            if (tileY == 0) {
+                return;
+            }
+            tileY--;
+            height -= 16;
+        } while (height > 0);
+    }
+}
+
+int t_pause (TITUS_level *level) {
+    bool pass;
+    TITUS_player *player = &(level->player);
+    SDL_Event event;
+    TITUS_sprite tmp;
+    //tmp.buffer = NULL;
+
+    TFR_SCREENM(); //Draw tiles
+    copysprite(level, &(tmp), &(player->sprite));
+    updatesprite(level, &(player->sprite), 29, true); //Pause tile
+    DISPLAY_SPRITES(level); //Draw sprites
+    flip_screen(true); //Display it
+    copysprite(level, &(player->sprite), &(tmp)); //Reset player sprite
+    //SDL_FreeSurface(tmp.buffer);
+    do {
+        titus_sleep();
+        keystate = SDL_GetKeyState(NULL);
+        while(SDL_PollEvent(&event)) { //Check all events
+            if (event.type == SDL_QUIT) {
+                return TITUS_ERROR_QUIT;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == KEY_ESC) {
+                    return TITUS_ERROR_QUIT;
+                } else if (event.key.keysym.sym == KEY_MUSIC) {
+					AUDIOMODE++;
+					if (AUDIOMODE > 1) {
+						AUDIOMODE = 0;
+					}
+					if (AUDIOMODE == 1) {
+						startmusic();
+					}
+                } else if (event.key.keysym.sym == KEY_P) {
+                    return 0;
+                }
+            }
+        }
+    } while (1);
+}
 
 int move_player(TITUS_level *level) {
     //Part 1: Check keyboard input
@@ -141,11 +498,11 @@ int move_player(TITUS_level *level) {
     if (keystate[KEY_F1] && (RESETLEVEL_FLAG == 0)) { //F1 = suicide
         CASE_DEAD_IM(level);
         RESETLEVEL_FLAG--;
-        return;
+        return 0;
     }
     if (keystate[KEY_F2]) { //F2 = game over
         GAMEOVER_FLAG = true;
-        return;
+        return 0;
     }
     if (keystate[KEY_E]) { //E = display energy
         BAR_FLAG = 50;
@@ -187,7 +544,7 @@ int move_player(TITUS_level *level) {
         }
         player->sprite.x += (player->sprite.speedX >> 4);
         player->sprite.y += (player->sprite.speedY >> 4);
-        return;
+        return 0;
     }
 
     if (CHOC_FLAG != 0) {
@@ -363,160 +720,8 @@ int move_player(TITUS_level *level) {
     }
 }
 
-CASE_DEAD_IM (TITUS_level *level) {
-    //Kill the player immediately (spikes/water/flames etc.
-    //Sets RESET_FLAG to 2, in opposite to being killed as a result of 0 HP (then RESET_FLAG is 10)
-    DEC_LIFE(level);
-    RESETLEVEL_FLAG = 2;
-}
 
-
-DEC_LIFE (TITUS_level *level) {
-    //Kill the player, check for gameover, hide the energy bar
-    RESETLEVEL_FLAG = 10;
-    BAR_FLAG = 0;
-    if (level->lives == 0) {
-        GAMEOVER_FLAG = true;
-    }
-}
-    
-t_pause (TITUS_level *level) {
-    bool pass;
-    TITUS_player *player = &(level->player);
-    SDL_Event event;
-    TITUS_sprite tmp;
-    //tmp.buffer = NULL;
-
-    TFR_SCREENM(); //Draw tiles
-    copysprite(level, &(tmp), &(player->sprite));
-    updatesprite(level, &(player->sprite), 29, true); //Pause tile
-    DISPLAY_SPRITES(level); //Draw sprites
-    flip_screen(true); //Display it
-    copysprite(level, &(player->sprite), &(tmp)); //Reset player sprite
-    //SDL_FreeSurface(tmp.buffer);
-    do {
-        titus_sleep();
-        keystate = SDL_GetKeyState(NULL);
-        while(SDL_PollEvent(&event)) { //Check all events
-            if (event.type == SDL_QUIT) {
-                return TITUS_ERROR_QUIT;
-            } else if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == KEY_ESC) {
-                    return TITUS_ERROR_QUIT;
-                } else if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
-                } else if (event.key.keysym.sym == KEY_P) {
-                    return 0;
-                }
-            }
-        }
-    } while (1);
-}
-
-BRK_COLLISION(TITUS_level *level) { //Collision detection between player and tiles/objects/elevators
-    //Point the foot on the block!
-    TITUS_player *player = &(level->player);
-    int16 changeX;
-    int16 height;
-    int16 initY;
-    uint8 tileX;
-    int16 tileY;
-    int16 colltest;
-    uint8 left_tileX;
-    bool first;
-    uint8 hflag;
-    
-    tileX = (player->sprite.x >> 4);
-    tileY = (player->sprite.y >> 4) - 1;
-    initY = tileY;
-
-    //if too low then die!
-    if ((player->sprite.y > ((level->height + 1) << 4)) && !NOCLIP) {
-        CASE_DEAD_IM(level);
-    }
-
-    
-    //Test under the feet of the hero and on his head! (In y)
-    YFALL = 0;
-    //Find the left tile
-    //colltest can be 0 to 15 +- 8 (-1 to -8 will change into 255 to 248)
-    colltest = player->sprite.x & 0x0F;
-    if (colltest < TEST_ZONE) {
-        colltest += 256;
-        tileX--;
-    }
-    colltest -= TEST_ZONE;
-
-    left_tileX = tileX;
-    TAKE_BLK_AND_YTEST(level, tileY, tileX); //Test the tile for vertical blocking
-    if (YFALL == 1) { //Have the fall stopped?
-        //No! Is it necessary to test the right tile?
-        colltest += TEST_ZONE * 2; //4 * 2
-//      if (colltest > 255) {
-//          colltest -= 256;
-//          tileX++;
-//      } elseif
-        if (colltest > 15) {
-            tileX++;
-        }
-        if (tileX != left_tileX) {
-            TAKE_BLK_AND_YTEST(level, tileY, tileX); //Also test the left tile
-        }
-        if (YFALL == 1) {
-            if ((CROSS_FLAG == 0) && (CHOC_FLAG == 0)) {
-                COLLISION_TRP(level); //Player versus elevators
-                if (YFALL == 1) {
-                    COLLISION_OBJET(level); //Player versus objects
-                    if (YFALL == 1) {
-                        ARAB_TOMBE(level); //No wall/elevator/object under the player; fall down!
-                    } else {
-                        player->GLISSE = 0;
-                    }
-                }
-            } else {
-                ARAB_TOMBE(level); //Fall down!
-            }
-        }
-    }
-
-    //How will the player move in X?
-    changeX = TEST_ZONE + MAX_X; //4 + 4 ??? + max_speed_x
-    if (player->sprite.speedX < 0) {
-        changeX = 0 - changeX;
-    } else if (player->sprite.speedX == 0) {
-        changeX = 0;
-    }
-
-    //Test the hero (in x)
-    height = player->sprite.spritedata->collheight;
-    if ((player->sprite.y > MAP_LIMIT_Y + 1) && (initY >= 0) && (initY < level->height)) {
-        tileX = ((player->sprite.x + changeX) >> 4);
-        tileY = initY;
-        first = true;
-        do {
-            hflag = get_horizflag(level, tileY, tileX);
-            if (first) {
-                BLOCK_XXPRG(level, hflag, tileY, tileX);
-                first = false;
-            } else if ((hflag == HFLAG_CODE) || (hflag == HFLAG_BONUS)) { //level code or HP
-                BLOCK_XXPRG(level, hflag, tileY, tileX);
-            }
-            if (tileY == 0) {
-                return;
-            }
-            tileY--;
-            height -= 16;
-        } while (height > 0);
-    }
-}
-
-static int TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX) {
+static void TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX) {
     //Test the current tile for vertical blocking
 
     TITUS_player *player = &(level->player);
@@ -633,6 +838,17 @@ static int BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX
     }
 }
 
+void ARAB_BLOCKX(TITUS_level *level) {
+    TITUS_player *player = &(level->player);
+    //Horizontal hit (wall), stop the player
+    player->sprite.x -= player->sprite.speedX >> 4;
+    player->sprite.speedX = 0;
+   if ((KICK_FLAG != 0) && (SAUT_FLAG != 6)) {
+        CHOC_FLAG = 20;
+        KICK_FLAG = 0;
+    }
+}
+
 static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX) {
     //Action on different horizontal flags
     switch (horiz) {
@@ -666,17 +882,6 @@ static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX
     case 6: //Level 14 code
         CASE_PASS(level, 14 - 1, tileY, tileX);
         break;
-    }
-}
-
-ARAB_BLOCKX(TITUS_level *level) {
-    TITUS_player *player = &(level->player);
-    //Horizontal hit (wall), stop the player
-    player->sprite.x -= player->sprite.speedX >> 4;
-    player->sprite.speedX = 0;
-   if ((KICK_FLAG != 0) && (SAUT_FLAG != 6)) {
-        CHOC_FLAG = 20;
-        KICK_FLAG = 0;
     }
 }
 
@@ -722,27 +927,6 @@ TITUS_object *FORCE_POSE(TITUS_level *level) {
     }
 }
 
-
-
-ARAB_TOMBE(TITUS_level *level) {
-    //No wall under the player; fall down!
-    TITUS_player *player = &(level->player);
-    SAUT_FLAG = 6;
-    if (KICK_FLAG != 0) {
-        return;
-    }
-    XACCELERATION(player, MAX_X*16);
-    YACCELERATION(player, MAX_Y*16);
-    if (CHOC_FLAG != 0) {
-        updatesprite(level, &(player->sprite), 15, true); //sprite when hit
-    } else if (CARRY_FLAG == 0) {
-        updatesprite(level, &(player->sprite), 10, true); //position while falling  (jump sprite?)
-    } else {
-        updatesprite(level, &(player->sprite), 21, true); //position falling and carry  (jump and carry sprite?)
-    }
-    player->sprite.flipped = (SENSX < 0);
-}
-
 static int XACCELERATION(TITUS_player *player, int16 maxspeed) {
     //Sideway acceleration
     int16 changeX;
@@ -771,7 +955,27 @@ static int YACCELERATION(TITUS_player *player, int16 maxspeed) {
 }
 
 
-static int BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX) {
+void ARAB_BLOCK_YU(TITUS_player *player) {
+    //Floor; the player will not fall through
+    POCKET_FLAG = true;
+    player->GLISSE = 0;
+    if (player->sprite.speedY < 0) {
+        YFALL = YFALL | 0x01;
+        return;
+    }
+    player->sprite.y = player->sprite.y & 0xFFF0;
+    player->sprite.speedY = 0;
+    subto0(&SAUT_FLAG);
+    SAUT_COUNT = 0;
+    YFALL = 2;
+}
+
+void ARAB_TOMBE_F() {
+    //Player free fall (doesn't touch floor)
+    YFALL = YFALL | 0x01;
+}
+
+static void BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX) {
     //Action on different floor flags
     TITUS_player *player = &(level->player);
     uint8 order;
@@ -875,24 +1079,14 @@ static int BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8
     }
 }
 
-ARAB_TOMBE_F() {
-    //Player free fall (doesn't touch floor)
-    YFALL = YFALL | 0x01;
-}
-
-ARAB_BLOCK_YU(TITUS_player *player) {
-    //Floor; the player will not fall through
-    POCKET_FLAG = true;
-    player->GLISSE = 0;
-    if (player->sprite.speedY < 0) {
-        YFALL = YFALL | 0x01;
-        return;
+void INC_ENERGY(TITUS_level *level) {
+    TITUS_player *player = &(level->player);
+    BAR_FLAG = 50;
+    player->hp++;
+    if (player->hp > MAXIMUM_ENERGY) {
+        player->hp = MAXIMUM_ENERGY;
+        level->extrabonus++;
     }
-    player->sprite.y = player->sprite.y & 0xFFF0;
-    player->sprite.speedY = 0;
-    subto0(&SAUT_FLAG);
-    SAUT_COUNT = 0;
-    YFALL = 2;
 }
 
 static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX) {
@@ -949,17 +1143,7 @@ static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX) {
     }
 }
 
-INC_ENERGY(TITUS_level *level) {
-    TITUS_player *player = &(level->player);
-    BAR_FLAG = 50;
-    player->hp++;
-    if (player->hp > MAXIMUM_ENERGY) {
-        player->hp = MAXIMUM_ENERGY;
-        level->extrabonus++;
-    }
-}
-
-DEC_ENERGY(TITUS_level *level) {
+void DEC_ENERGY(TITUS_level *level) {
     TITUS_player *player = &(level->player);
 	BAR_FLAG = 50;
     if (RESETLEVEL_FLAG == 0) {
@@ -969,6 +1153,24 @@ DEC_ENERGY(TITUS_level *level) {
             DEC_LIFE(level);
         }
     }
+}
+
+void DECELERATION(TITUS_player *player) {
+    //Stop acceleration
+    uint8 friction = (3 * 4) >> player->GLISSE;
+    int16 speed;
+    if (player->sprite.speedX < 0) {
+        speed = player->sprite.speedX + friction;
+        if (speed > 0) {
+            speed = 0;
+        }
+    } else {
+        speed = player->sprite.speedX - friction;
+        if (speed < 0) {
+            speed = 0;
+        }
+    }
+    player->sprite.speedX = speed;
 }
 
 static int ACTION_PRG(TITUS_level *level, uint8 action) {
@@ -1419,24 +1621,6 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
 
 }
 
-DECELERATION(TITUS_player *player) {
-    //Stop acceleration
-    uint8 friction = (3 * 4) >> player->GLISSE;
-    int16 speed;
-    if (player->sprite.speedX < 0) {
-        speed = player->sprite.speedX + friction;
-        if (speed > 0) {
-            speed = 0;
-        }
-    } else {
-        speed = player->sprite.speedX - friction;
-        if (speed < 0) {
-            speed = 0;
-        }
-    }
-    player->sprite.speedX = speed;
-}
-
 static int NEW_FORM(TITUS_player *player, uint8 action) {
     //if the order is changed, change player animation
     if ((LAST_ORDER != action) || (player->sprite.animation == NULL)) {
@@ -1475,155 +1659,5 @@ int16 add_carry() {
         return 16;
     } else {
         return 0;
-    }
-}
-
-COLLISION_TRP(TITUS_level *level) {
-    //Player versus elevators
-    //Change player's location according to the elevator
-    uint8 i;
-    TITUS_player *player = &(level->player);
-    TITUS_elevator *elevator = level->elevator;
-    if ((player->sprite.speedY >= 0) && (CROSS_FLAG == 0)) {
-        for (i = 0; i < level->elevatorcount; i++) {
-            //Quick test
-            if (!(elevator[i].enabled) ||
-              !(elevator[i].sprite.visible) ||
-              (abs(elevator[i].sprite.x - player->sprite.x) >= 64) ||
-              (abs(elevator[i].sprite.y - player->sprite.y) >= 16)) {
-                continue;
-            }
-
-            //Real test
-            if (player->sprite.x - level->spritedata[0]->refwidth < elevator[i].sprite.x) { //The elevator is right
-                if (player->sprite.x - level->spritedata[0]->refwidth + level->spritedata[0]->collwidth <= elevator[i].sprite.x) { //player->sprite must be 0
-                    continue; //The elevator is too far right
-                }
-            } else { //The elevator is left
-                if (player->sprite.x - level->spritedata[0]->refwidth >= elevator[i].sprite.x + elevator[i].sprite.spritedata->collwidth) {
-                    continue; //The elevator is too far left
-                }
-            }
-
-            if (player->sprite.y - 6 < elevator[i].sprite.y) { //The elevator is below
-                if (player->sprite.y - 6 + 8 <= elevator[i].sprite.y) {
-                    continue; //The elevator is too far below
-                }
-            } else { //The elevator is above
-                if (player->sprite.y - 6 >= elevator[i].sprite.y + elevator[i].sprite.spritedata->collheight) {
-                    continue; //The elevator is too far above
-                }
-            }
-
-            //Skip fall-through-tile action (ACTION_TIMER == 15)
-            if (ACTION_TIMER == 14) {
-                ACTION_TIMER = 16;
-            }
-
-            YFALL = 0;
-            player->sprite.y = elevator[i].sprite.y;
-
-            player->sprite.speedY = 0;
-            subto0(&(SAUT_FLAG));
-            SAUT_COUNT = 0;
-            YFALL = 2;
-
-            player->sprite.x += elevator[i].sprite.speedX;
-            if (elevator[i].sprite.speedY > 0) { //Going down
-                player->sprite.y += elevator[i].sprite.speedY;
-            }
-            return;
-        }
-    }
-}
-
-COLLISION_OBJET(TITUS_level *level) {
-    //Player versus objects
-    //Collision, spring state, speed up carpet/scooter/skateboard, bounce bouncy objects
-    TITUS_player *player = &(level->player);
-    TITUS_object *off_object;
-    if (player->sprite.speedY < 0) {
-        return;
-    }
-    //Collision with a sprite
-    if (!(SPRITES_VS_SPRITES(level, &(player->sprite), &(level->spritedata[0]), &off_object))) { //check if player stands on an object, use sprite[0] (rest) as collision size (first player tile)
-        return;
-    }
-    player->sprite.y = off_object->sprite.y - off_object->sprite.spritedata->collheight;
-    //If the foot is placed on a spring, it must be soft!
-    if ((off_object->sprite.number == FIRST_OBJET + 24) || (off_object->sprite.number == FIRST_OBJET + 25)) {
-        off_object->sprite.UNDER = off_object->sprite.UNDER | 0x02;
-        off_object->sprite.ONTOP = &(player->sprite);
-    }
-    //If we jump on the flying carpet, let it fly
-    if ((off_object->sprite.number == FIRST_OBJET + 21) || (off_object->sprite.number == FIRST_OBJET + 22)) { //Flying carpet
-        if (!(player->sprite.flipped)) {
-            off_object->sprite.speedX = 6 * 16;
-        } else {
-            off_object->sprite.speedX = 0 - 6 * 16;
-        }
-        off_object->sprite.flipped = player->sprite.flipped;
-        GRAVITY_FLAG = 4;
-        TAPISWAIT_FLAG = 0;
-    } else if ((ACTION_TIMER > 10) && //delay
-      ((LAST_ORDER & 0x0F) == 0) && //Player rests
-      (player->sprite.speedY == 0) && //stable Y
-      ((off_object->sprite.number == 83) || //scooter
-      (off_object->sprite.number == 94))) { //skateboard
-
-        //If you put your foot on a scooter or a skateboard
-        if (!(player->sprite.flipped)) {
-            off_object->sprite.speedX = 16 * 3;
-        } else {
-            off_object->sprite.speedX = 0 - 16 * 3;
-        }
-        off_object->sprite.flipped = player->sprite.flipped;
-        GRAVITY_FLAG = 4;
-    }
-
-    if (off_object->sprite.speedX < 0) {
-        player->sprite.speedX = off_object->sprite.speedX;
-    } else if (off_object->sprite.speedX > 0) {
-        player->sprite.speedX = off_object->sprite.speedX + 16;
-    }
-
-    //If we want to CROSS (cross) it does not bounce
-    if ((CROSS_FLAG == 0) && //No long kneestand
-      (player->sprite.speedY > (16 * 3)) &&
-      (off_object->objectdata->bounce)) {
-        //Bounce on a ball if no long kneestand (down key)
-        if (keystate[KEY_DOWN]) {
-            player->sprite.speedY = 0;
-        } else {
-            if (keystate[KEY_UP] || keystate[KEY_JUMP]) {
-                player->sprite.speedY += 16 * 3; //increase speed
-            } else {
-                player->sprite.speedY -= 16; //reduce speed
-            }
-            player->sprite.speedY = 0 - player->sprite.speedY;
-            if (player->sprite.speedY > 0) {
-                player->sprite.speedY = 0;
-            }
-        }
-        ACTION_TIMER = 0;
-
-        //If the ball lies on the ground
-        if (off_object->sprite.speedY == 0) {
-#ifdef AUDIO_ENABLED
-            FX_START(12); //Sound effect
-#endif        
-            off_object->sprite.speedY = 0 - player->sprite.speedY;
-            off_object->sprite.y -= off_object->sprite.speedY >> 4;
-            GRAVITY_FLAG = 4;
-        }
-    } else {
-        if (off_object->sprite.speedY != 0) {
-            player->sprite.speedY = off_object->sprite.speedY;
-        } else {
-            player->sprite.speedY = 0;
-        }
-        subto0(&(SAUT_FLAG));
-        SAUT_COUNT = 0;
-        YFALL = 2;
     }
 }

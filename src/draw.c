@@ -46,6 +46,20 @@
 #include "common.h"
 #include "tituserror.h"
 #include "original.h"
+#include "scroll.h"
+#include "player.h"
+#include "audio.h"
+#include "gates.h"
+#include "keyboard.h"
+#include "fonts.h"
+
+bool DISPLAYLOOPTIME; //If true, display loop time in milliseconds
+static uint8_t LOOPTIME; //Loop time
+static uint8_t SUBTIME[16]; //Sub time
+static uint16_t FPS; //Frames pr second
+static uint16_t FPS_LAST; //Frames pr second
+static uint16_t LAST_CLOCK_CORR; //Correction to LAST_CLOCK
+static int LAST_CLOCK; //Used for fixed framerate
 
 SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr);
 
@@ -114,71 +128,7 @@ int TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
     SDL_BlitSurface(tilescreen, &src, screen, &dest);
 }
 
-
-//Loop through all sprites, and draw the sprites that should be visible on the screen (NOT by using the visible flag, it uses the coordinates)
-//If the flash bit is set, the first 3 planes will be 0, the last plane will be normal (colour & 0x01, odd colors gets white, even colours gets black)
-
-
-DISPLAY_SPRITES(TITUS_level *level) {
-    int16 i;
-    char buffer[7]; //xxx ms
-
-    for (i = level->elevatorcount - 1; i >= 0; i--) {
-        display_sprite(level, &(level->elevator[i].sprite));
-    }
-
-    for (i = level->trashcount - 1; i >= 0; i--) {
-        display_sprite(level, &(level->trash[i]));
-    }
-
-    for (i = level->enemycount - 1; i >= 0; i--) {
-        display_sprite(level, &(level->enemy[i].sprite));
-    }
-
-    for (i = level->objectcount - 1; i >= 0; i--) {
-        display_sprite(level, &(level->object[i].sprite));
-    }
-
-    display_sprite(level, &(level->player.sprite3));
-    display_sprite(level, &(level->player.sprite2));
-    display_sprite(level, &(level->player.sprite));
-
-    if (GODMODE) {
-        SDL_Print_Text("GODMODE", 30 * 8, 0 * 12);
-    }
-    if (NOCLIP) {
-        SDL_Print_Text("NOCLIP", 30 * 8, 1 * 12);
-    }
-
-#ifdef DEBUG_VERSION
-    if (DISPLAYLOOPTIME) {
-        sprintf(buffer, "%3u ms", LOOPTIME);
-        SDL_Print_Text(buffer, 30 * 8, 2 * 12); //Loop time in ms
-
-        sprintf(buffer, "FPS %u", FPS_LAST);
-        SDL_Print_Text(buffer, 30 * 8, 4 * 12); //Last second's FPS count
-
-        sprintf(buffer, "CL %d", LAST_CLOCK);
-        SDL_Print_Text(buffer, 30 * 8, 6 * 12); //Clock
-
-        sprintf(buffer, "CORR %d", LAST_CLOCK_CORR);
-        SDL_Print_Text(buffer, 30 * 8, 8 * 12); //Correction to the clock
-
-
-		for (i = 0; i <= 15; i++) {
-			sprintf(buffer, "%d %3u", i, SUBTIME[i]);
-			SDL_Print_Text(buffer, 0 * 8, i * 12); //Sub times from main loop in ms
-		}
-
-		sprintf(buffer, "%d %3u", i, SUBTIME[i]);
-		SDL_Print_Text(buffer, 0 * 8, i * 12);
-	}
-	
-#endif
-
-}
-
-display_sprite(TITUS_level *level, TITUS_sprite *spr) {
+void display_sprite(TITUS_level *level, TITUS_sprite *spr) {
     SDL_Surface *image;
     SDL_Rect src, dest;
     if (!spr->enabled) {
@@ -248,6 +198,68 @@ display_sprite(TITUS_level *level, TITUS_sprite *spr) {
 
 }
 
+//Loop through all sprites, and draw the sprites that should be visible on the screen (NOT by using the visible flag, it uses the coordinates)
+//If the flash bit is set, the first 3 planes will be 0, the last plane will be normal (colour & 0x01, odd colors gets white, even colours gets black)
+
+void DISPLAY_SPRITES(TITUS_level *level) {
+    int16 i;
+    char buffer[7]; //xxx ms
+
+    for (i = level->elevatorcount - 1; i >= 0; i--) {
+        display_sprite(level, &(level->elevator[i].sprite));
+    }
+
+    for (i = level->trashcount - 1; i >= 0; i--) {
+        display_sprite(level, &(level->trash[i]));
+    }
+
+    for (i = level->enemycount - 1; i >= 0; i--) {
+        display_sprite(level, &(level->enemy[i].sprite));
+    }
+
+    for (i = level->objectcount - 1; i >= 0; i--) {
+        display_sprite(level, &(level->object[i].sprite));
+    }
+
+    display_sprite(level, &(level->player.sprite3));
+    display_sprite(level, &(level->player.sprite2));
+    display_sprite(level, &(level->player.sprite));
+
+    if (GODMODE) {
+        SDL_Print_Text("GODMODE", 30 * 8, 0 * 12);
+    }
+    if (NOCLIP) {
+        SDL_Print_Text("NOCLIP", 30 * 8, 1 * 12);
+    }
+
+#ifdef DEBUG_VERSION
+    if (DISPLAYLOOPTIME) {
+        sprintf(buffer, "%3u ms", LOOPTIME);
+        SDL_Print_Text(buffer, 30 * 8, 2 * 12); //Loop time in ms
+
+        sprintf(buffer, "FPS %u", FPS_LAST);
+        SDL_Print_Text(buffer, 30 * 8, 4 * 12); //Last second's FPS count
+
+        sprintf(buffer, "CL %d", LAST_CLOCK);
+        SDL_Print_Text(buffer, 30 * 8, 6 * 12); //Clock
+
+        sprintf(buffer, "CORR %d", LAST_CLOCK_CORR);
+        SDL_Print_Text(buffer, 30 * 8, 8 * 12); //Correction to the clock
+
+
+		for (i = 0; i <= 15; i++) {
+			sprintf(buffer, "%d %3u", i, SUBTIME[i]);
+			SDL_Print_Text(buffer, 0 * 8, i * 12); //Sub times from main loop in ms
+		}
+
+		sprintf(buffer, "%d %3u", i, SUBTIME[i]);
+		SDL_Print_Text(buffer, 0 * 8, i * 12);
+	}
+	
+#endif
+
+}
+
 SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr) {
 	TITUS_spritecache *cache = level->spritecache;
 	TITUS_spritedata *spritedata = level->spritedata[spr->number];
@@ -298,53 +310,7 @@ SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr) {
 	}
 }
 			
-		
-int flip_screen(bool slow) {
-    int tick = SDL_GetTicks();
-    SDL_Flip(screen);
-    int oldtick = tick;
-    tick = SDL_GetTicks();
-    SUBTIME[14] = tick - oldtick;
-    
-    //if (slow) {
-        NO_FAST_CPU(slow); //TODO: 
-    //}
-}
-
-/*
-NO_FAST_CPU(bool slow) {
-    int tick, duration, delay, tick2;
-    tick = SDL_GetTicks();
-    if (slow) {
-        delay = 29; //28.53612, fps: 70.09Hz/2
-    } else {
-        delay = 10;
-    }
-    LOOPTIME = (tick - LAST_CLOCK);
-    delay = delay - (tick - LAST_CLOCK);
-    if ((delay < 0) || (delay > 40)) {
-        delay = 1;
-    }
-    SDL_Delay(delay);
-    //do {
-        //SDL_Delay(1);
-    //    tick = SDL_GetTicks();
-    //    duration = abs(LAST_CLOCK - tick);
-    //} while (duration < delay);
-    tick2 = SDL_GetTicks();
-	if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
-		FPS_LAST = FPS;
-		FPS = 0;
-    }
-	FPS++;
-	LAST_CLOCK_CORR = tick2 - tick - delay;
-	
-	LAST_CLOCK = tick2;
-    SUBTIME[15] = LAST_CLOCK - tick;
-}
-*/
-
-NO_FAST_CPU(bool slow) {
+void NO_FAST_CPU(bool slow) {
     int tick, duration, delay, tick2;
     tick = SDL_GetTicks();
     if (slow) {
@@ -402,7 +368,51 @@ NO_FAST_CPU(bool slow) {
 
     SUBTIME[15] = LAST_CLOCK - tick;
 }
+		
+int flip_screen(bool slow) {
+    int tick = SDL_GetTicks();
+    SDL_Flip(screen);
+    int oldtick = tick;
+    tick = SDL_GetTicks();
+    SUBTIME[14] = tick - oldtick;
+    
+    //if (slow) {
+        NO_FAST_CPU(slow); //TODO: 
+    //}
+}
 
+/*
+NO_FAST_CPU(bool slow) {
+    int tick, duration, delay, tick2;
+    tick = SDL_GetTicks();
+    if (slow) {
+        delay = 29; //28.53612, fps: 70.09Hz/2
+    } else {
+        delay = 10;
+    }
+    LOOPTIME = (tick - LAST_CLOCK);
+    delay = delay - (tick - LAST_CLOCK);
+    if ((delay < 0) || (delay > 40)) {
+        delay = 1;
+    }
+    SDL_Delay(delay);
+    //do {
+        //SDL_Delay(1);
+    //    tick = SDL_GetTicks();
+    //    duration = abs(LAST_CLOCK - tick);
+    //} while (duration < delay);
+    tick2 = SDL_GetTicks();
+	if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
+		FPS_LAST = FPS;
+		FPS = 0;
+    }
+	FPS++;
+	LAST_CLOCK_CORR = tick2 - tick - delay;
+	
+	LAST_CLOCK = tick2;
+    SUBTIME[15] = LAST_CLOCK - tick;
+}
+*/
 
 int viewstatus(TITUS_level *level, bool countbonus){
     int retval, i, j;
@@ -486,15 +496,7 @@ int INIT_SCREENM(TITUS_level *level) {
 }
 
 
-int DISPLAY_COUNT(TITUS_level *level) {
-    subto0(&(BAR_FLAG));
-    if (BAR_FLAG != 0) {
-        DISPLAY_ENERGY(level);
-    }
-}
-
-
-DISPLAY_ENERGY(TITUS_level *level) {
+void DISPLAY_ENERGY(TITUS_level *level) {
     uint8 offset = 96;
     uint8 i;
     SDL_Rect dest;
@@ -515,6 +517,14 @@ DISPLAY_ENERGY(TITUS_level *level) {
         offset += 8;
     }
 }
+
+int DISPLAY_COUNT(TITUS_level *level) {
+    subto0(&(BAR_FLAG));
+    if (BAR_FLAG != 0) {
+        DISPLAY_ENERGY(level);
+    }
+}
+
 
 int fadeout() {
     SDL_Surface *image;

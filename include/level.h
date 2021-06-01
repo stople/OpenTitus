@@ -231,6 +231,8 @@ struct _TITUS_level {
 
 };
 
+extern uint8 ALTITUDE_ZERO; //The engine will not scroll below this tile before the player have gone below (Y)
+
 int loadlevel(TITUS_level *level, unsigned char *leveldata, int leveldatasize, TITUS_spritedata **spritedata, TITUS_spritecache *spritecache, TITUS_objectdata **objectdata);
 int freelevel(TITUS_level *level);
 uint8 get_horizflag(TITUS_level *level, int16 tileY, int16 tileX);

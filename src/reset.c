@@ -41,6 +41,23 @@
 #include "player.h"
 #include "objects.h"
 #include "enemies.h"
+#include "tile_animation.h"
+#include "engine.h"
+#include "audio.h"
+#include "keyboard.h"
+
+bool NOSCROLL_FLAG;
+bool NEWLEVEL_FLAG; //Finish a level
+bool NFC_FLAG; //Skip NO_FAST_CPU
+
+void MOVE_HIM(TITUS_level *level, TITUS_sprite *spr) {
+    int16 *pointer = spr->animation + 1;
+    while (*pointer < 0) {
+        pointer += (*pointer / 2); //End of animation, jump back
+    }
+    updatesprite(level, spr, *pointer, true);
+    spr->animation = pointer;
+}
 
 //Possible return states:
 
@@ -48,7 +65,6 @@
 //1 - New level
 //2 - Game over
 //3 - Death
-
 
 uint8 RESET_LEVEL(TITUS_level *level) {
     TITUS_player *player = &(level->player);
@@ -179,102 +195,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
     return 0;
 }
 
-
-MOVE_HIM(TITUS_level *level, TITUS_sprite *spr) {
-    int16 *pointer = spr->animation + 1;
-    while (*pointer < 0) {
-        pointer += (*pointer / 2); //End of animation, jump back
-    }
-    updatesprite(level, spr, *pointer, true);
-    spr->animation = pointer;
-}
-
-
-int CLEAR_DATA(TITUS_level *level) {
-    loop_cycle = 0;
-    tile_anim = 0;
-    BIGNMI_NBR = 0;
-    IMAGE_COUNTER = 0;
-    TAUPE_FLAG = 0;
-    GRANDBRULE_FLAG = 0;
-    NOSCROLL_FLAG = 0;
-    TAPISWAIT_FLAG = 0;
-    TAPISFLY_FLAG = 0;
-    FUME_FLAG = 0;
-    BAR_FLAG = 0;
-    X_FLAG = 0;
-    Y_FLAG = 0;
-    CARRY_FLAG = 0;
-    DROP_FLAG = 0;
-    DROPREADY_FLAG = 0;
-    POSEREADY_FLAG = 0;
-    LADDER_FLAG = 0;
-    PRIER_FLAG = 0;
-    SAUT_FLAG = 0;
-    CROSS_FLAG = 0;
-    GRAVITY_FLAG = 0;
-    FURTIF_FLAG = 0;
-    CHOC_FLAG = 0;
-    KICK_FLAG = 0;
-    SEECHOC_FLAG = 0;
-    RESETLEVEL_FLAG = 0;
-    GAMEOVER_FLAG = false;
-    NEWLEVEL_FLAG = false;
-    NFC_FLAG = false;
-    INVULNERABLE_FLAG = 0;
-    POCKET_FLAG = 0;
-    SAUT_COUNT = 0;
-    ACTION_TIMER = 0;
-    XSCROLL_CENTER = 0;
-    YSCROLL_CENTER = 0;
-    XLIMIT_SCROLL = 0;
-    YLIMIT_SCROLL = 0;
-    YFALL = 0;
-
-    TAPISFLY_FLAG = 0;
-    CROSS_FLAG = 0;
-    GRAVITY_FLAG = 4;
-    LADDER_FLAG = 0;
-    FURTIF_FLAG = 0;
-    KICK_FLAG = 0;
-    CHOC_FLAG = 0;
-    FUME_FLAG = 0;
-    DROP_FLAG = 0;
-    CARRY_FLAG = 0;
-    NOSCROLL_FLAG = 0;
-    GAMEOVER_FLAG = 0;
-    NEWLEVEL_FLAG = false;
-    RESETLEVEL_FLAG = 0;
-    INVULNERABLE_FLAG = 0;
-    TAUPE_FLAG = 0;
-    SENSX = 0;
-    LAST_ORDER = 0;
-    
-    SET_ALL_SPRITES(level);
-
-    SET_DATA_NMI(level);
-
-}
-
-
-SET_DATA_NMI(TITUS_level *level) {
-    boss_alive = false;
-    int i, anim;
-    for (i = 0; i < level->enemycount; i++) {
-        anim = -1;
-        if (!level->enemy[i].init_enabled) continue;
-        do {
-            anim++;
-        } while (anim_enemy[anim] + FIRST_NMI != level->enemy[i].sprite.number);
-        level->enemy[i].sprite.animation = &(anim_enemy[anim]);
-        if (level->enemy[i].boss) {
-            boss_alive = true;
-        }
-    }
-    BIGNMI_POWER = NMI_POWER[level->levelid];
-}
-
-clearsprite(TITUS_sprite *spr){
+void clearsprite(TITUS_sprite *spr){
     //SDL_FreeSurface(spr->buffer);
     //spr->buffer = NULL;
     spr->enabled = false;
@@ -295,11 +216,9 @@ clearsprite(TITUS_sprite *spr){
     spr->droptobottom = false;
     spr->killing = false;
     spr->invisible = false;
-    return (0);
 }
 
-
-SET_ALL_SPRITES(TITUS_level *level) {
+void SET_ALL_SPRITES(TITUS_level *level) {
     int16 i;
     TITUS_player *player = &(level->player);
     
@@ -369,3 +288,87 @@ SET_ALL_SPRITES(TITUS_level *level) {
     level->player.animcycle = 0;
     updatesprite(level, &(level->player.sprite), 0, true);
 }
+
+void SET_DATA_NMI(TITUS_level *level) {
+    boss_alive = false;
+    int i, anim;
+    for (i = 0; i < level->enemycount; i++) {
+        anim = -1;
+        if (!level->enemy[i].init_enabled) continue;
+        do {
+            anim++;
+        } while (anim_enemy[anim] + FIRST_NMI != level->enemy[i].sprite.number);
+        level->enemy[i].sprite.animation = &(anim_enemy[anim]);
+        if (level->enemy[i].boss) {
+            boss_alive = true;
+        }
+    }
+    BIGNMI_POWER = NMI_POWER[level->levelid];
+}
+
+int CLEAR_DATA(TITUS_level *level) {
+    loop_cycle = 0;
+    tile_anim = 0;
+    IMAGE_COUNTER = 0;
+    TAUPE_FLAG = 0;
+    GRANDBRULE_FLAG = 0;
+    NOSCROLL_FLAG = 0;
+    TAPISWAIT_FLAG = 0;
+    TAPISFLY_FLAG = 0;
+    FUME_FLAG = 0;
+    BAR_FLAG = 0;
+    X_FLAG = 0;
+    Y_FLAG = 0;
+    CARRY_FLAG = 0;
+    DROP_FLAG = 0;
+    DROPREADY_FLAG = 0;
+    POSEREADY_FLAG = 0;
+    LADDER_FLAG = 0;
+    PRIER_FLAG = 0;
+    SAUT_FLAG = 0;
+    CROSS_FLAG = 0;
+    GRAVITY_FLAG = 0;
+    FURTIF_FLAG = 0;
+    CHOC_FLAG = 0;
+    KICK_FLAG = 0;
+    SEECHOC_FLAG = 0;
+    RESETLEVEL_FLAG = 0;
+    GAMEOVER_FLAG = false;
+    NEWLEVEL_FLAG = false;
+    NFC_FLAG = false;
+    INVULNERABLE_FLAG = 0;
+    POCKET_FLAG = 0;
+    SAUT_COUNT = 0;
+    ACTION_TIMER = 0;
+    XSCROLL_CENTER = 0;
+    YSCROLL_CENTER = 0;
+    XLIMIT_SCROLL = 0;
+    YLIMIT_SCROLL = 0;
+    YFALL = 0;
+
+    TAPISFLY_FLAG = 0;
+    CROSS_FLAG = 0;
+    GRAVITY_FLAG = 4;
+    LADDER_FLAG = 0;
+    FURTIF_FLAG = 0;
+    KICK_FLAG = 0;
+    CHOC_FLAG = 0;
+    FUME_FLAG = 0;
+    DROP_FLAG = 0;
+    CARRY_FLAG = 0;
+    NOSCROLL_FLAG = 0;
+    GAMEOVER_FLAG = 0;
+    NEWLEVEL_FLAG = false;
+    RESETLEVEL_FLAG = 0;
+    INVULNERABLE_FLAG = 0;
+    TAUPE_FLAG = 0;
+    SENSX = 0;
+    LAST_ORDER = 0;
+    
+    SET_ALL_SPRITES(level);
+
+    SET_DATA_NMI(level);
+
+}
+
+

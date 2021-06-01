@@ -34,8 +34,59 @@
 #include "objects.h"
 #include "tituserror.h"
 #include "settings.h"
+#include "engine.h"
+#include "audio.h"
+#include "sprites.h"
 
-int move_objects(TITUS_level *level) {
+uint8 TAPISFLY_FLAG; //When non-zero, the flying carpet is flying
+uint8 GRAVITY_FLAG; //When zero, skip object gravity function
+uint8 TAPISWAIT_FLAG; //Flying carpet state
+
+void shock(TITUS_level *level, TITUS_object *object) { //Falling object versus player
+
+    TITUS_player *player = &(level->player);
+
+    //Quick test
+    if (object->mass < 10) return;
+    if (player->sprite.speedY >= MAX_Y*16) return;
+    if (abs(player->sprite.y - object->sprite.y) >= 32) {
+        return;
+    }
+    if (abs(player->sprite.x - object->sprite.x) >= 32) {
+        return;
+    }
+
+    //Test X
+    if (object->sprite.x > player->sprite.x) { //Object center is right for player
+        if (object->sprite.x > player->sprite.x + 24) return; //Object is too far right
+    } else { //Object center is left for center
+        if (object->sprite.x + object->sprite.spritedata->collwidth < player->sprite.x) return; //Return if object is too far left
+    }    
+    
+    //Test Y
+    
+    if (object->sprite.y < player->sprite.y) { //Object bottom is above player bottom
+        if (object->sprite.y <= player->sprite.y - 32) return; //Return if object is completely above the player
+    } else { //Object bottom is below player bottom
+        if (object->sprite.y - object->sprite.spritedata->collheight + 1 >= player->sprite.y) return; //Return if object is completely below the player
+    }
+
+    //Hit!
+    
+#ifdef AUDIO_ENABLED
+    FX_START(5); //Sound effect
+#endif
+    CHOC_FLAG = 24;
+    if (object->sprite.killing) {
+        if (!GODMODE) {
+            DEC_ENERGY(level);
+        }
+        object->sprite.killing = false;
+    }
+}
+
+
+void move_objects(TITUS_level *level) {
 
     if (GRAVITY_FLAG == 0) return; //Skip execution if there are no active objects
 
@@ -317,50 +368,6 @@ int move_objects(TITUS_level *level) {
         shock(level, &(level->object[i])); //Falling object versus player
     }
 }
-
-int shock(TITUS_level *level, TITUS_object *object) { //Falling object versus player
-
-    TITUS_player *player = &(level->player);
-
-    //Quick test
-    if (object->mass < 10) return;
-    if (player->sprite.speedY >= MAX_Y*16) return;
-    if (abs(player->sprite.y - object->sprite.y) >= 32) {
-        return;
-    }
-    if (abs(player->sprite.x - object->sprite.x) >= 32) {
-        return;
-    }
-
-    //Test X
-    if (object->sprite.x > player->sprite.x) { //Object center is right for player
-        if (object->sprite.x > player->sprite.x + 24) return; //Object is too far right
-    } else { //Object center is left for center
-        if (object->sprite.x + object->sprite.spritedata->collwidth < player->sprite.x) return; //Return if object is too far left
-    }    
-    
-    //Test Y
-    
-    if (object->sprite.y < player->sprite.y) { //Object bottom is above player bottom
-        if (object->sprite.y <= player->sprite.y - 32) return; //Return if object is completely above the player
-    } else { //Object bottom is below player bottom
-        if (object->sprite.y - object->sprite.spritedata->collheight + 1 >= player->sprite.y) return; //Return if object is completely below the player
-    }
-
-    //Hit!
-    
-#ifdef AUDIO_ENABLED
-    FX_START(5); //Sound effect
-#endif
-    CHOC_FLAG = 24;
-    if (object->sprite.killing) {
-        if (!GODMODE) {
-            DEC_ENERGY(level);
-        }
-        object->sprite.killing = false;
-    }
-}
-
 
 
 bool SPRITES_VS_SPRITES (TITUS_level *level, TITUS_sprite *sprite1, TITUS_sprite *sprite1ref, TITUS_object **object2) { //check if there is an object below that can support the input object

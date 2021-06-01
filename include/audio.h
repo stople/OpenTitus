@@ -33,13 +33,13 @@
 //#include "SDL/SDL_mixer.h"
 
 int initaudio();
-int freeaudio();
+void freeaudio();
 int SELECT_MUSIC(int song_number);
 int WAIT_SONG();
 int FX_START(int fx_number);
 int RETURN_MUSIC();
 int startmusic();
-int refreshaudio();
+void refreshaudio();
 
 
 /*

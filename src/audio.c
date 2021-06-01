@@ -35,6 +35,7 @@
 #include "tituserror.h"
 #include "opl.h"
 #include "common.h"
+#include "player.h"
 
 
 #define ADLIB_DATA_COUNT 10
@@ -50,6 +51,7 @@
 
 #define ADLIB_PORT 0x388
 
+uint8_t AUDIOMODE;
 char playing;
 int rate;
 
@@ -132,12 +134,26 @@ int SELECT_MUSIC(int song_number);
 void all_vox_zero();
 void TimerCallback(void *data);
 
-int FX_DRIVER();
 int FX_STOP();
 
 void updatechip(int reg, int val)
 {
     OPL_WriteRegister(reg, val);
+}
+
+void FX_DRIVER() {
+    ADLIB_DATA *aad = &(sdl_player_data.aad);
+	if (!FX_ON) return;
+	updatechip(0xBD, 0xEF & aad->perc_stat);
+	updatechip(0xA6, 0x57);
+	updatechip(0xB6, 1);
+	updatechip(0xB6, 5);
+	updatechip(0xBD, 0x10 | aad->perc_stat);
+	FX_TIME--;
+	if (FX_TIME == 0) {
+		FX_STOP();
+	}
+	return;
 }
 
 int fillchip(ADLIB_DATA *aad)
@@ -552,14 +568,14 @@ int startmusic() {
 	return 0;
 }
 
-int refreshaudio() {
+void refreshaudio() {
     if (AUDIOMODE != 1)
     {
         return;
     }
     int tick = SDL_GetTicks();
 	if (tick - lastaudiotick < audiodelay) {
-		return 0;
+		return;
 	}
 	//Update the chip!
 	lastaudiotick += audiodelay;
@@ -570,7 +586,30 @@ int refreshaudio() {
 		audiodelay--;
 	}
     sdl_player_data.playing = fillchip(&(sdl_player_data.aad));
-	return 0;
+	return;
+}
+
+int initsfx() {
+    ADLIB_DATA *aad = &(sdl_player_data.aad);
+    unsigned char *raw_data = aad->data;
+	FX_ON = false;
+	FX_TIME = 0;
+	uint16 tmp1;
+	int i, k;
+
+	tmp1 = SFX_OFFSET;
+
+    for (i = 0; i < ADLIB_SFX_COUNT; i++) {
+        for (k = 0; k < 5; k++)
+            aad->sfx[i].op[0][k] = raw_data[tmp1++];
+
+        for (k = 0; k < 5; k++)
+            aad->sfx[i].op[1][k] = raw_data[tmp1++];
+
+        aad->sfx[i].fb_alg = raw_data[tmp1++];
+	}
+
+    return 0;
 }
 
 int initaudio(){
@@ -644,7 +683,7 @@ int initaudio(){
 	return 0;
 }
 
-int freeaudio(){
+void freeaudio(){
     free (sdl_player_data.aad.data);
 
     OPL_Shutdown();
@@ -653,30 +692,7 @@ int freeaudio(){
 
     SDL_CloseAudio();
 
-    return 0;
-}
-
-int initsfx() {
-    ADLIB_DATA *aad = &(sdl_player_data.aad);
-    unsigned char *raw_data = aad->data;
-	FX_ON = false;
-	FX_TIME = 0;
-	uint16 tmp1;
-	int i, k;
-
-	tmp1 = SFX_OFFSET;
-
-    for (i = 0; i < ADLIB_SFX_COUNT; i++) {
-        for (k = 0; k < 5; k++)
-            aad->sfx[i].op[0][k] = raw_data[tmp1++];
-
-        for (k = 0; k < 5; k++)
-            aad->sfx[i].op[1][k] = raw_data[tmp1++];
-
-        aad->sfx[i].fb_alg = raw_data[tmp1++];
-	}
-
-    return 0;
+    return;
 }
 
 int WAIT_SONG(){
@@ -722,21 +738,6 @@ int FX_START(int fx_number){
     updatechip(0xC6, aad->sfx[fx_number].fb_alg); //Channel 6 (Feedback/Algorithm)
 	SDL_UnlockAudio();
     return 0;
-}
-
-int FX_DRIVER() {
-    ADLIB_DATA *aad = &(sdl_player_data.aad);
-	if (!FX_ON) return;
-	updatechip(0xBD, 0xEF & aad->perc_stat);
-	updatechip(0xA6, 0x57);
-	updatechip(0xB6, 1);
-	updatechip(0xB6, 5);
-	updatechip(0xBD, 0x10 | aad->perc_stat);
-	FX_TIME--;
-	if (FX_TIME == 0) {
-		FX_STOP();
-	}
-	return 0;
 }
 
 int FX_STOP() {
