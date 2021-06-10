@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "sqz.h"
 #include "backbuffer.h"
 #include "menu.h"
@@ -84,7 +84,6 @@ int viewmenu(char * menufile, int menuformat) {
                 palette->colors[i].r = (menudata[i * 3] & 0xFF) * 4;
                 palette->colors[i].g = (menudata[i * 3 + 1] & 0xFF) * 4;
                 palette->colors[i].b = (menudata[i * 3 + 2] & 0xFF) * 4;
-                palette->colors[i].unused = 0; 
             }
             palette->ncolors = 256;
         }
@@ -95,7 +94,7 @@ int viewmenu(char * menufile, int menuformat) {
             tmpchar++;
         }
 
-        image = SDL_DisplayFormat(surface);
+        image = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
         palette = NULL;
 
         SDL_FreeSurface(surface);
@@ -152,11 +151,11 @@ int viewmenu(char * menufile, int menuformat) {
             }
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-                if (event.key.keysym.sym == KEY_MUSIC) {
+                if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;
@@ -174,7 +173,7 @@ int viewmenu(char * menufile, int menuformat) {
             image_alpha = 255;
 
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-        SDL_SetAlpha(image, SDL_SRCALPHA, image_alpha);
+        SDL_SetSurfaceAlphaMod(image, image_alpha);
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_BlitSurface(image, &sel[1], screen, &sel[0]);
         SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
@@ -194,17 +193,17 @@ int viewmenu(char * menufile, int menuformat) {
             }
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-                if (event.key.keysym.sym == SDLK_UP)
+                if (event.key.keysym.scancode == SDL_SCANCODE_UP)
                     selection = 0;
-                if (event.key.keysym.sym == SDLK_DOWN)
+                if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
                     selection = 1;
-                if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE)
+                if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE)
                     menuloop = 0;
-                if (event.key.keysym.sym == KEY_MUSIC) {
+                if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;
@@ -260,11 +259,11 @@ int viewmenu(char * menufile, int menuformat) {
             }
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-                if (event.key.keysym.sym == KEY_MUSIC) {
+                if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;
@@ -282,7 +281,7 @@ int viewmenu(char * menufile, int menuformat) {
             image_alpha = 255;
 
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-        SDL_SetAlpha(image, SDL_SRCALPHA, 255 - image_alpha);
+        SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_FillRect(screen, &sel[0], 0); //SDL_MapRGB(surface->format, 0, 0, 0));
         SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
@@ -303,40 +302,26 @@ int enterpassword(){
     int retval;
     char code[] = "____";
     int i;
-    SDL_Event event;
-    char tmpchar;
 
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-    SDL_Flip(screen);
+    SDL_RenderPresent(renderer);
 
     SDL_Print_Text("CODE", 111, 80);
 
+    SDL_StartTextInput();
     for (i = 0; i < 4; ) {
+        SDL_Event event;
         while(SDL_PollEvent(&event)) { //Check all events
             if (event.type == SDL_QUIT) {
                 return (-1);
             }
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     return (-1);
                 }
 
-                if ((event.key.keysym.unicode & 0xFF80) == 0) {
-                    tmpchar = (char)(event.key.keysym.unicode & 0x007F);
-
-                    if ((tmpchar >= CHAR_0) && (tmpchar <= CHAR_9))
-                        code[i++] = tmpchar;
-
-                    if ((tmpchar >= CHAR_a) && (tmpchar <= CHAR_f))
-                        tmpchar -= (CHAR_a - CHAR_A);
-
-                    if ((tmpchar >= CHAR_A) && (tmpchar <= CHAR_F))
-                        code[i++] = tmpchar;
-
-                }
-
-                if (event.key.keysym.sym == KEY_MUSIC) {
+                if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;

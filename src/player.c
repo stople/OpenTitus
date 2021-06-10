@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "level.h"
 #include "player.h"
 #include "globals.h"
@@ -70,20 +70,20 @@ int move_player(TITUS_level *level) {
 
     //Part 1: Check keyboard input
     SDL_PumpEvents(); //Update keyboard state
-    keystate = SDL_GetKeyState(NULL);
+    keystate = SDL_GetKeyboardState(NULL);
 
     while(SDL_PollEvent(&event)) { //Check all events
         if (event.type == SDL_QUIT) {
             return TITUS_ERROR_QUIT;
         } else if (event.type == SDL_KEYDOWN) {
-            if ((event.key.keysym.sym == KEY_GODMODE) && (devmode == 1)) {
+            if ((event.key.keysym.scancode == KEY_GODMODE) && (devmode == 1)) {
                 if (GODMODE) {
                     GODMODE = false;
                     NOCLIP = false;
                 } else {
                     GODMODE = true;
                 }
-            } else if ((event.key.keysym.sym == KEY_NOCLIP) && (devmode == 1)) {
+            } else if ((event.key.keysym.scancode == KEY_NOCLIP) && (devmode == 1)) {
                 if (NOCLIP) {
                     NOCLIP = false;
                 } else {
@@ -92,11 +92,11 @@ int move_player(TITUS_level *level) {
                 }
 #ifdef DEBUG_VERSION
 //Will display debug information
-            } else if (event.key.keysym.sym == KEY_DEBUG) {
+            } else if (event.key.keysym.scancode == KEY_DEBUG) {
                 DISPLAYLOOPTIME = !DISPLAYLOOPTIME;
 #endif
 
-            } else if (event.key.keysym.sym == KEY_MUSIC) {
+            } else if (event.key.keysym.scancode == KEY_MUSIC) {
                 AUDIOMODE++;
                 if (AUDIOMODE > 1) {
                     AUDIOMODE = 0;
@@ -104,7 +104,7 @@ int move_player(TITUS_level *level) {
                 if (AUDIOMODE == 1) {
                     startmusic();
                 }
-            } else if (event.key.keysym.sym == KEY_P) {
+            } else if (event.key.keysym.scancode == KEY_P) {
                 pause = true;
             }
         }
@@ -124,7 +124,7 @@ int move_player(TITUS_level *level) {
     if (keystate[KEY_E]) { //E = display energy
         BAR_FLAG = 50;
     }
-    if (keystate[SDLK_s] && (devmode == 1)) { //S = skip to next level
+    if (keystate[SDL_SCANCODE_S] && (devmode == 1)) { //S = skip to next level
         NEWLEVEL_FLAG = true;
     }
     if (keystate[KEY_F4]) { //F4 = view status page
@@ -369,14 +369,14 @@ t_pause (TITUS_level *level) {
     //SDL_FreeSurface(tmp.buffer);
     do {
         titus_sleep();
-        keystate = SDL_GetKeyState(NULL);
+        keystate = SDL_GetKeyboardState(NULL);
         while(SDL_PollEvent(&event)) { //Check all events
             if (event.type == SDL_QUIT) {
                 return TITUS_ERROR_QUIT;
             } else if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == KEY_ESC) {
+                if (event.key.keysym.scancode == KEY_ESC) {
                     return TITUS_ERROR_QUIT;
-                } else if (event.key.keysym.sym == KEY_MUSIC) {
+                } else if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;
@@ -384,7 +384,7 @@ t_pause (TITUS_level *level) {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
-                } else if (event.key.keysym.sym == KEY_P) {
+                } else if (event.key.keysym.scancode == KEY_P) {
                     return 0;
                 }
             }

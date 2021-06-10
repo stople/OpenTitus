@@ -51,11 +51,6 @@ extern int titusfinishformat;
 extern char fontfile[256];
 extern int levelcount;
 extern int devmode;
-extern int reswidth;
-extern int resheight;
-extern int bitdepth;
-extern int ingamewidth;
-extern int ingameheight;
 extern int videomode;
 extern int game;
 

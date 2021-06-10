@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "sqz.h"
 #include "settings.h"
 #include "fonts.h"
@@ -411,7 +411,7 @@ void gameover(TITUS_level *level) {
         player->sprite2.x += 8;
         player->sprite3.x -= 8;
     }
-    SCREEN_5C(); //Secret: display picture if LCtrl+LAlt+E is pressed
+    // SCREEN_5C(); //Secret: display picture if LCtrl+LAlt+E is pressed
     retval = waitforbutton();
     if (retval < 0)
         return;
@@ -419,19 +419,18 @@ void gameover(TITUS_level *level) {
     fadeout();
 }
 
+/*
 void SCREEN_5C() {
     uint16 key;
     int retval;
-    if (keystate[SDLK_LCTRL] && //LCtrl
-      keystate[SDLK_LALT] && //LAlt
-      keystate[SDLK_e]) { //E
+    if (keystate[SDLK_LCTRL] && keystate[SDLK_LALT] && keystate[SDLK_e]) {
         for (key = SDLK_FIRST; key <= SDLK_LAST; key++) {
             if (key == SDLK_LCTRL) continue;
             if (key == SDLK_LALT) continue;
             if (key == SDLK_e) continue;
             if (keystate[key]) return;
         }
-        if (game == 0) { //Titus
+        if (game == 0) {
             retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
             if (retval < 0)
                 return;
@@ -439,3 +438,4 @@ void SCREEN_5C() {
         SELECT_MUSIC(9);
     }
 }
+*/

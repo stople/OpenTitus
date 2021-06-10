@@ -37,7 +37,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "globals.h"
 #include "backbuffer.h"
 #include "sprites.h"
@@ -56,7 +56,7 @@ int TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
     dest.x = 0;
     dest.y = screen_height * 16;
     dest.w = screen_width * 16;
-    dest.h = resheight - screen_height * 16;
+    dest.h = 200 - screen_height * 16;
     SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
 
     // Tile screen:  | Output screen:
@@ -548,11 +548,11 @@ int fadeout() {
             }
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-                if (event.key.keysym.sym == KEY_MUSIC) {
+                if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;
@@ -569,7 +569,7 @@ int fadeout() {
         if (image_alpha > 255)
             image_alpha = 255;
 
-        SDL_SetAlpha(image, SDL_SRCALPHA, 255 - image_alpha);
+        SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_Flip(screen);
@@ -637,7 +637,6 @@ int loadpixelformat(SDL_PixelFormat **pixelformat){
         (*pixelformat)->palette->colors[i].r = orig_palette_colour[i].r;
         (*pixelformat)->palette->colors[i].g = orig_palette_colour[i].g;
         (*pixelformat)->palette->colors[i].b = orig_palette_colour[i].b;
-        (*pixelformat)->palette->colors[i].unused = orig_palette_colour[i].unused;
     }
 
     (*pixelformat)->BitsPerPixel = 8;
@@ -658,8 +657,8 @@ int loadpixelformat(SDL_PixelFormat **pixelformat){
     (*pixelformat)->Bmask = 0;
     (*pixelformat)->Amask = 0;
 
-    (*pixelformat)->colorkey = 0;
-    (*pixelformat)->alpha = 255;
+    //(*pixelformat)->colorkey = 0;
+    //(*pixelformat)->alpha = 255;
 
     return (0);
 }
@@ -691,7 +690,6 @@ int loadpixelformat_font(SDL_PixelFormat **pixelformat){
         (*pixelformat)->palette->colors[i].r = orig_palette_font_colour[i].r;
         (*pixelformat)->palette->colors[i].g = orig_palette_font_colour[i].g;
         (*pixelformat)->palette->colors[i].b = orig_palette_font_colour[i].b;
-        (*pixelformat)->palette->colors[i].unused = orig_palette_font_colour[i].unused;
     }
 
     (*pixelformat)->BitsPerPixel = 8;
@@ -712,8 +710,8 @@ int loadpixelformat_font(SDL_PixelFormat **pixelformat){
     (*pixelformat)->Bmask = 0;
     (*pixelformat)->Amask = 0;
 
-    (*pixelformat)->colorkey = 0;
-    (*pixelformat)->alpha = 255;
+    //(*pixelformat)->colorkey = 0;
+    //(*pixelformat)->alpha = 255;
 
     return (0);
 }

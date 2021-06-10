@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "sqz.h"
 #include "settings.h"
 #include "fonts.h"
@@ -86,7 +86,6 @@ int loadlevel(TITUS_level *level, unsigned char *leveldata, int leveldatasize, T
     level->pixelformat->palette->colors[14].r = orig_palette_level_colour[level->levelnumber].r;
     level->pixelformat->palette->colors[14].g = orig_palette_level_colour[level->levelnumber].g;
     level->pixelformat->palette->colors[14].b = orig_palette_level_colour[level->levelnumber].b;
-    level->pixelformat->palette->colors[14].unused = orig_palette_level_colour[level->levelnumber].unused;
 
     offset = level->height * level->width;
     j = 256; //j is used for "last tile with animation flag"

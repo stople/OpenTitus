@@ -29,7 +29,7 @@
 #ifndef RESET_H
 #define RESET_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "level.h"
 
 int INIT_SCREENM(TITUS_level *level);

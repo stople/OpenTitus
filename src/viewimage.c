@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "viewimage.h"
 #include "sqz.h"
 #include "settings.h"
@@ -76,7 +76,6 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 palette->colors[i].r = i * 16;
                 palette->colors[i].g = i * 16;
                 palette->colors[i].b = i * 16;
-                palette->colors[i].unused = 0; 
             }
         }
 
@@ -106,7 +105,6 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 palette->colors[i].r = (imagedata[i * 3] & 0xFF) * 4;
                 palette->colors[i].g = (imagedata[i * 3 + 1] & 0xFF) * 4;
                 palette->colors[i].b = (imagedata[i * 3 + 2] & 0xFF) * 4;
-                palette->colors[i].unused = 0; 
             }
         }
 
@@ -119,7 +117,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
     }
 
     free (imagedata);
-    image = SDL_DisplayFormat(surface);
+    image = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
 
     src.x = 0;
     src.y = 0;
@@ -144,18 +142,18 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 }
 
                 if (event.type == SDL_KEYDOWN) {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                         SDL_FreeSurface(image);
                         SDL_FreeSurface(surface);
                         return (-1);
                     }
 
-                    if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE) {
+                    if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE) {
                         activedelay = 0;
                         fadeoutskip = 255 - image_alpha;
                     }
 
-                    if (event.key.keysym.sym == KEY_MUSIC) {
+                    if (event.key.keysym.scancode == KEY_MUSIC) {
                         AUDIOMODE++;
                         if (AUDIOMODE > 1) {
                             AUDIOMODE = 0;
@@ -173,7 +171,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
             if (image_alpha > 255)
                 image_alpha = 255;
 
-            SDL_SetAlpha(image, SDL_SRCALPHA, image_alpha);
+            SDL_SetSurfaceAlphaMod(image, image_alpha);
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
@@ -190,16 +188,16 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 }
 
                 if (event.type == SDL_KEYDOWN) {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                         SDL_FreeSurface(image);
                         SDL_FreeSurface(surface);
                         return (-1);
                     }
 
-                    if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE)
+                    if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE)
                         activedelay = 0;
 
-                    if (event.key.keysym.sym == KEY_MUSIC) {
+                    if (event.key.keysym.scancode == KEY_MUSIC) {
                         AUDIOMODE++;
                         if (AUDIOMODE > 1) {
                             AUDIOMODE = 0;
@@ -227,12 +225,12 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 }
 
                 if (event.type == SDL_KEYDOWN) {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                         SDL_FreeSurface(image);
                         SDL_FreeSurface(surface);
                         return (-1);
                     }
-                    if (event.key.keysym.sym == KEY_MUSIC) {
+                    if (event.key.keysym.scancode == KEY_MUSIC) {
                         AUDIOMODE++;
                         if (AUDIOMODE > 1) {
                             AUDIOMODE = 0;
@@ -249,7 +247,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
             if (image_alpha > 255)
                 image_alpha = 255;
 
-            SDL_SetAlpha(image, SDL_SRCALPHA, 255 - image_alpha);
+            SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
@@ -280,12 +278,12 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 }
 
                 if (event.type == SDL_KEYDOWN) {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                         SDL_FreeSurface(image);
                         SDL_FreeSurface(surface);
                         return (-1);
                     }
-                    if (event.key.keysym.sym == KEY_MUSIC) {
+                    if (event.key.keysym.scancode == KEY_MUSIC) {
                         AUDIOMODE++;
                         if (AUDIOMODE > 1) {
                             AUDIOMODE = 0;
@@ -302,7 +300,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
             if (image_alpha > 255)
                 image_alpha = 255;
 
-            SDL_SetAlpha(image, SDL_SRCALPHA, 255 - image_alpha);
+            SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);

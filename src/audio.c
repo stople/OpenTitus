@@ -18,9 +18,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
-#include <SDL/SDL_audio.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_audio.h>
 #include "audio.h"
 #include "globals.h"
 #include "settings.h"
@@ -536,7 +536,7 @@ void TimerCallback(void *data)
 
     // Schedule the next timer callback.
 
-    OPL_SetCallback(delay, TimerCallback, sdlp);
+    OPL_SetCallback(13750, TimerCallback, sdlp);
 
 }
 
@@ -680,14 +680,14 @@ int WAIT_SONG(){
     }
     do {
         titus_sleep();
-        keystate = SDL_GetKeyState(NULL);
+        keystate = SDL_GetKeyboardState(NULL);
         while(SDL_PollEvent(&event)) { //Check all events
             if (event.type == SDL_QUIT) {
                 return TITUS_ERROR_QUIT;
             } else if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == KEY_ESC) {
+                if (event.key.keysym.scancode == KEY_ESC) {
                     return TITUS_ERROR_QUIT;
-                } else if (event.key.keysym.sym == KEY_MUSIC) {
+                } else if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;

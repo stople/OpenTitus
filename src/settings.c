@@ -46,11 +46,7 @@ int titusfinishformat;
 char fontfile[256];
 int levelcount;
 int devmode;
-int reswidth;
 int resheight;
-int bitdepth;
-int ingamewidth;
-int ingameheight;
 int videomode;
 int game;
 
@@ -128,18 +124,8 @@ int readconfig(char *configfile) {
             }
             strcpy (levelfiles[i - 1], tmp);
             tmpcount++;
-        } else if (strcmp (tmp, "reswidth") == 0)
-            sscanf (line, "%*s %255d", &reswidth);
-        else if (strcmp (tmp, "resheight") == 0)
-            sscanf (line, "%*s %255d", &resheight);
-        else if (strcmp (tmp, "devmode") == 0)
+        } else if (strcmp (tmp, "devmode") == 0)
             sscanf (line, "%*s %255d", &devmode);
-        else if (strcmp (tmp, "bitdepth") == 0)
-            sscanf (line, "%*s %255d", &bitdepth);
-        else if (strcmp (tmp, "ingamewidth") == 0)
-            sscanf (line, "%*s %255d", &ingamewidth);
-        else if (strcmp (tmp, "ingameheight") == 0)
-            sscanf (line, "%*s %255d", &ingameheight);
         else if (strcmp (tmp, "videomode") == 0)
             sscanf (line, "%*s %255d", &videomode);
         else if (strcmp (tmp, "game") == 0)

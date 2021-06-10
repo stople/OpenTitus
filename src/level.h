@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "definitions.h"
 
 typedef struct _TITUS_tile TITUS_tile;

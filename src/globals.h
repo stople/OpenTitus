@@ -28,29 +28,28 @@
 
 #pragma once
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "definitions.h"
 #include "level.h"
-#include "dingoo.h"
 
-#define KEY_F1 SDLK_F1 //Loose a life
-#define KEY_F2 SDLK_F2 //Game over
-#define KEY_E SDLK_e //Display energy
-#define KEY_F4 SDLK_F4 //Status page
-#define KEY_LEFT SDLK_LEFT //Left
-#define KEY_RIGHT SDLK_RIGHT //Right
-#define KEY_UP SDLK_UP //Up
-#define KEY_DOWN SDLK_DOWN //Down
-#define KEY_JUMP SDLK_UP //Up
-#define KEY_SPACE SDLK_SPACE //Space
-#define KEY_ENTER SDLK_KP_ENTER //Enter
-#define KEY_RETURN SDLK_RETURN //Return
-#define KEY_ESC SDLK_ESCAPE //Quit
-#define KEY_P SDLK_p //Toggle pause
-#define KEY_NOCLIP SDLK_n //Toggle noclip
-#define KEY_GODMODE SDLK_g //Toggle godmode
-#define KEY_DEBUG SDLK_d //Toggle debug mode
-#define KEY_MUSIC SDLK_F3 //Toggle music
+#define KEY_F1 SDL_SCANCODE_F1 //Loose a life
+#define KEY_F2 SDL_SCANCODE_F2 //Game over
+#define KEY_E SDL_SCANCODE_E //Display energy
+#define KEY_F4 SDL_SCANCODE_F4 //Status page
+#define KEY_LEFT SDL_SCANCODE_LEFT //Left
+#define KEY_RIGHT SDL_SCANCODE_RIGHT //Right
+#define KEY_UP SDL_SCANCODE_UP //Up
+#define KEY_DOWN SDL_SCANCODE_DOWN //Down
+#define KEY_JUMP SDL_SCANCODE_UP //Up
+#define KEY_SPACE SDL_SCANCODE_SPACE //Space
+#define KEY_ENTER SDL_SCANCODE_KP_ENTER //Enter
+#define KEY_RETURN SDL_SCANCODE_RETURN //Return
+#define KEY_ESC SDL_SCANCODE_ESCAPE //Quit
+#define KEY_P SDL_SCANCODE_P //Toggle pause
+#define KEY_NOCLIP SDL_SCANCODE_N //Toggle noclip
+#define KEY_GODMODE SDL_SCANCODE_G //Toggle godmode
+#define KEY_DEBUG SDL_SCANCODE_D //Toggle debug mode
+#define KEY_MUSIC SDL_SCANCODE_F3 //Toggle music
 
 #define TEST_ZONE 4
 #define MAX_X 4

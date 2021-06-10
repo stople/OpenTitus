@@ -26,7 +26,7 @@
  * Keyboard functions
  */
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "keyboard.h"
 #include "globals.h"
 #include "common.h"
@@ -45,13 +45,13 @@ int waitforbutton() {
                 waiting = -1;
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE)
+                if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE)
                     waiting = 0;
 
-                if (event.key.keysym.sym == SDLK_ESCAPE)
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                     waiting = -1;
 
-                if (event.key.keysym.sym == KEY_MUSIC) {
+                if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
                         AUDIOMODE = 0;

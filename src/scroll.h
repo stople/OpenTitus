@@ -29,7 +29,7 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 int scroll(TITUS_level *level);
 int DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x);

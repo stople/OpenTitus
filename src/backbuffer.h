@@ -29,8 +29,11 @@
 #ifndef BACKBUFFER_H
 #define BACKBUFFER_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
+void SDL_Flip(SDL_Surface * screen);
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
 extern SDL_Surface *screen; //Backbuffer
 extern SDL_Surface *tilescreen; //Tile screen
 

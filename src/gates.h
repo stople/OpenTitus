@@ -29,7 +29,7 @@
 #ifndef GATES_H
 #define GATES_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "level.h"
 
 int CROSSING_GATE(TITUS_level *level); //Check and handle level completion, and if the player does a kneestand on a secret entrance

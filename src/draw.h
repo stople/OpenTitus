@@ -38,7 +38,7 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "level.h"
 #include "definitions.h"
 

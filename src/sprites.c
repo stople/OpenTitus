@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 //#include <stdlib.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "sprites.h"
 #include "sqz.h"
 #include "settings.h"
@@ -36,6 +36,7 @@
 #include "tituserror.h"
 #include "globals.h"
 #include "definitions.h"
+#include "backbuffer.h"
 
 SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash){
     int i, j;
@@ -45,7 +46,7 @@ SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash){
     if (surface == NULL)
         return NULL;
 
-    SDL_SetColorKey(surface, SDL_SRCCOLORKEY|SDL_RLEACCEL, 0); //Set transparent colour
+    SDL_SetColorKey(surface, SDL_TRUE|SDL_RLEACCEL, 0); //Set transparent colour
 
     char *orig_pixels = (char*) original->pixels;
     char *dest_pixels = (char*) surface->pixels;
@@ -66,7 +67,7 @@ SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash){
             }
         }
     }
-    surface2 = SDL_DisplayFormat(surface);
+    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
     SDL_FreeSurface(surface);
     return(surface2);
 }
@@ -202,7 +203,7 @@ SDL_Surface * SDL_LoadTile(unsigned char * first, int i, SDL_PixelFormat * pixel
             tmpchar++;
         }
     }
-    surface2 = SDL_DisplayFormat(surface);
+    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
     SDL_FreeSurface(surface);
     return(surface2);
 }
@@ -216,7 +217,6 @@ int copypixelformat(SDL_PixelFormat * destformat, SDL_PixelFormat * srcformat) {
             destformat->palette->colors[i].r = srcformat->palette->colors[i].r;
             destformat->palette->colors[i].g = srcformat->palette->colors[i].g;
             destformat->palette->colors[i].b = srcformat->palette->colors[i].b;
-            destformat->palette->colors[i].unused = srcformat->palette->colors[i].unused;
         }
     }
 
@@ -238,8 +238,8 @@ int copypixelformat(SDL_PixelFormat * destformat, SDL_PixelFormat * srcformat) {
     destformat->Bmask = srcformat->Bmask;
     destformat->Amask = srcformat->Amask;
 
-    destformat->colorkey = srcformat->colorkey;
-    destformat->alpha = srcformat->alpha;
+    //destformat->colorkey = srcformat->colorkey;
+    //destformat->alpha = srcformat->alpha;
 
     return 0;
 }

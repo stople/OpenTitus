@@ -34,7 +34,7 @@
 #ifndef ENEMIES_H
 #define ENEMIES_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "level.h"
 
 

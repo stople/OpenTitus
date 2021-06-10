@@ -1,5 +1,12 @@
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 cmake_minimum_required(VERSION 3.20)
 project(opentitus LANGUAGES C)
+
+find_package(SDL2 2.0.7)
+find_package(SDL2_mixer 2.0.2)
+
+add_subdirectory(opl)
 
 set(TITUS_SOURCES
     opentitus.c
@@ -29,21 +36,8 @@ set(TITUS_SOURCES
     src/viewimage.c
 )
 
-find_package(SDL REQUIRED)
-find_package(SDL_mixer REQUIRED)
-
-add_library(SDL INTERFACE)
-target_link_libraries(SDL INTERFACE ${SDL_LIBRARIES} ${SDL_MIXER_LIBRARIES})
-target_include_directories(SDL INTERFACE ${SDL_INCLUDE_DIRS} ${SDL_MIXER_INCLUDE_DIRS})
-
-add_library(opl INTERFACE)
-target_link_libraries(opl INTERFACE "${CMAKE_SOURCE_DIR}/opl/libopl_linux.a")
-target_include_directories(opl INTERFACE "opl")
-
 add_executable(opentitus ${TITUS_SOURCES})
 set_property(TARGET opentitus PROPERTY POSITION_INDEPENDENT_CODE FALSE)
-target_compile_options(opentitus PRIVATE "-no-pie")
-target_link_options(opentitus PRIVATE "-no-pie")
 target_include_directories(opentitus PRIVATE "src")
-target_link_libraries(opentitus m SDL opl)
+target_link_libraries(opentitus m opl SDL2::SDL2main SDL2::SDL2 SDL2::mixer)
 install(TARGETS opentitus DESTINATION ".")

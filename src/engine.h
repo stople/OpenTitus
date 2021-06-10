@@ -29,7 +29,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 int playtitus(int firstlevel);
 

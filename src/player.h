@@ -29,7 +29,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "level.h"
 
 int move_player(TITUS_level *level);

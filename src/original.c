@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "original.h"
 #include "settings.h"
 #include "definitions.h"
@@ -441,252 +441,201 @@ int initoriginal() {
     orig_palette_colour[0].r = 1 * 4; // Transparent color, needs to be different from the others
     orig_palette_colour[0].g = 1 * 4;
     orig_palette_colour[0].b = 1 * 4;
-    orig_palette_colour[0].unused = 0 * 4; 
 
     orig_palette_colour[1].r = 60 * 4;
     orig_palette_colour[1].g = 60 * 4;
     orig_palette_colour[1].b = 60 * 4;
-    orig_palette_colour[1].unused = 0 * 4; 
 
     orig_palette_colour[2].r = 0 * 4;
     orig_palette_colour[2].g = 0 * 4;
     orig_palette_colour[2].b = 0 * 4;
-    orig_palette_colour[2].unused = 0 * 4; 
 
     orig_palette_colour[3].r = 24 * 4;
     orig_palette_colour[3].g = 8 * 4;
     orig_palette_colour[3].b = 0 * 4;
-    orig_palette_colour[3].unused = 0 * 4; 
 
     orig_palette_colour[4].r = 28 * 4;
     orig_palette_colour[4].g = 16 * 4;
     orig_palette_colour[4].b = 0 * 4;
-    orig_palette_colour[4].unused = 0 * 4; 
 
     orig_palette_colour[5].r = 40 * 4;
     orig_palette_colour[5].g = 24 * 4;
     orig_palette_colour[5].b = 16 * 4;
-    orig_palette_colour[5].unused = 0 * 4; 
 
     orig_palette_colour[6].r = 48 * 4;
     orig_palette_colour[6].g = 40 * 4;
     orig_palette_colour[6].b = 24 * 4;
-    orig_palette_colour[6].unused = 0 * 4; 
 
     orig_palette_colour[7].r = 60 * 4;
     orig_palette_colour[7].g = 48 * 4;
     orig_palette_colour[7].b = 32 * 4;
-    orig_palette_colour[7].unused = 0 * 4; 
 
     orig_palette_colour[8].r = 16 * 4;
     orig_palette_colour[8].g = 8 * 4;
     orig_palette_colour[8].b = 0 * 4;
-    orig_palette_colour[8].unused = 0 * 4; 
 
     orig_palette_colour[9].r = 28 * 4;
     orig_palette_colour[9].g = 20 * 4;
     orig_palette_colour[9].b = 20 * 4;
-    orig_palette_colour[9].unused = 0 * 4; 
 
     orig_palette_colour[10].r = 40 * 4;
     orig_palette_colour[10].g = 32 * 4;
     orig_palette_colour[10].b = 32 * 4;
-    orig_palette_colour[10].unused = 0 * 4; 
 
     orig_palette_colour[11].r = 12 * 4;
     orig_palette_colour[11].g = 12 * 4;
     orig_palette_colour[11].b = 28 * 4;
-    orig_palette_colour[11].unused = 0 * 4; 
 
     orig_palette_colour[12].r = 24 * 4;
     orig_palette_colour[12].g = 24 * 4;
     orig_palette_colour[12].b = 40 * 4;
-    orig_palette_colour[12].unused = 0 * 4; 
 
     orig_palette_colour[13].r = 32 * 4;
     orig_palette_colour[13].g = 32 * 4;
     orig_palette_colour[13].b = 48 * 4;
-    orig_palette_colour[13].unused = 0 * 4; 
 
     orig_palette_colour[14].r = 0 * 4; //I think this is only used by 16 bit colour images (TITREEGA.SQZ and MENUEGA.SQZ), on levels this color is replaced with orig_palette_level_colour[levelnr]
     orig_palette_colour[14].g = 16 * 4;
     orig_palette_colour[14].b = 0 * 4;
-    orig_palette_colour[14].unused = 0 * 4; 
 
     orig_palette_colour[15].r = 8 * 4;
     orig_palette_colour[15].g = 8 * 4;
     orig_palette_colour[15].b = 24 * 4;
-    orig_palette_colour[15].unused = 0 * 4; 
 
 
     orig_palette_level_colour[0].r = 0 * 4;
     orig_palette_level_colour[0].g = 16 * 4;
     orig_palette_level_colour[0].b = 0 * 4;
-    orig_palette_level_colour[0].unused = 0 * 4; 
 
     orig_palette_level_colour[1].r = 0 * 4;
     orig_palette_level_colour[1].g = 16 * 4;
     orig_palette_level_colour[1].b = 0 * 4;
-    orig_palette_level_colour[1].unused = 0 * 4; 
 
     orig_palette_level_colour[2].r = 0 * 4;
     orig_palette_level_colour[2].g = 16 * 4;
     orig_palette_level_colour[2].b = 0 * 4;
-    orig_palette_level_colour[2].unused = 0 * 4; 
 
     orig_palette_level_colour[3].r = 20 * 4;
     orig_palette_level_colour[3].g = 12 * 4;
     orig_palette_level_colour[3].b = 12 * 4;
-    orig_palette_level_colour[3].unused = 0 * 4; 
 
     orig_palette_level_colour[4].r = 40 * 4;
     orig_palette_level_colour[4].g = 12 * 4;
     orig_palette_level_colour[4].b = 4 * 4;
-    orig_palette_level_colour[4].unused = 0 * 4; 
 
     orig_palette_level_colour[5].r = 20 * 4;
     orig_palette_level_colour[5].g = 12 * 4;
     orig_palette_level_colour[5].b = 12 * 4;
-    orig_palette_level_colour[5].unused = 0 * 4; 
 
     orig_palette_level_colour[6].r = 20 * 4;
     orig_palette_level_colour[6].g = 12 * 4;
     orig_palette_level_colour[6].b = 12 * 4;
-    orig_palette_level_colour[6].unused = 0 * 4; 
 
     orig_palette_level_colour[7].r = 0 * 4;
     orig_palette_level_colour[7].g = 16 * 4;
     orig_palette_level_colour[7].b = 0 * 4;
-    orig_palette_level_colour[7].unused = 0 * 4; 
 
     orig_palette_level_colour[8].r = 40 * 4;
     orig_palette_level_colour[8].g = 28 * 4;
     orig_palette_level_colour[8].b = 12 * 4;
-    orig_palette_level_colour[8].unused = 0 * 4; 
 
     orig_palette_level_colour[9].r = 0 * 4;
     orig_palette_level_colour[9].g = 20 * 4;
     orig_palette_level_colour[9].b = 16 * 4;
-    orig_palette_level_colour[9].unused = 0 * 4; 
 
     orig_palette_level_colour[10].r = 40 * 4;
     orig_palette_level_colour[10].g = 28 * 4;
     orig_palette_level_colour[10].b = 12 * 4;
-    orig_palette_level_colour[10].unused = 0 * 4; 
 
     orig_palette_level_colour[11].r = 40 * 4;
     orig_palette_level_colour[11].g = 28 * 4;
     orig_palette_level_colour[11].b = 12 * 4;
-    orig_palette_level_colour[11].unused = 0 * 4; 
 
     orig_palette_level_colour[12].r = 40 * 4;
     orig_palette_level_colour[12].g = 28 * 4;
     orig_palette_level_colour[12].b = 12 * 4;
-    orig_palette_level_colour[12].unused = 0 * 4; 
 
     orig_palette_level_colour[13].r = 40 * 4;
     orig_palette_level_colour[13].g = 28 * 4;
     orig_palette_level_colour[13].b = 12 * 4;
-    orig_palette_level_colour[13].unused = 0 * 4; 
 
     if (game == 0) { //Titus
         orig_palette_level_colour[14].r = 48 * 4;
         orig_palette_level_colour[14].g = 8 * 4;
         orig_palette_level_colour[14].b = 0 * 4;
-        orig_palette_level_colour[14].unused = 0 * 4; 
     } else if (game == 1) { //Moktar
         orig_palette_level_colour[14].r = 40 * 4;
         orig_palette_level_colour[14].g = 28 * 4;
         orig_palette_level_colour[14].b = 12 * 4;
-        orig_palette_level_colour[14].unused = 0 * 4; 
     }
 
     orig_palette_level_colour[15].r = 48 * 4;
     orig_palette_level_colour[15].g = 8 * 4;
     orig_palette_level_colour[15].b = 0 * 4;
-    orig_palette_level_colour[15].unused = 0 * 4; 
-
 
     orig_palette_font_colour[0].r = 0 * 4; // Unused
     orig_palette_font_colour[0].g = 63 * 4;
     orig_palette_font_colour[0].b = 63 * 4;
-    orig_palette_font_colour[0].unused = 0 * 4; 
 
     orig_palette_font_colour[1].r = 0 * 4; // Black
     orig_palette_font_colour[1].g = 0 * 4;
     orig_palette_font_colour[1].b = 0 * 4;
-    orig_palette_font_colour[1].unused = 0 * 4; 
 
     orig_palette_font_colour[2].r = 63 * 4; // Unused
     orig_palette_font_colour[2].g = 0 * 4;
     orig_palette_font_colour[2].b = 0 * 4;
-    orig_palette_font_colour[2].unused = 0 * 4; 
 
     orig_palette_font_colour[3].r = 0 * 4; // Unused
     orig_palette_font_colour[3].g = 63 * 4;
     orig_palette_font_colour[3].b = 0 * 4;
-    orig_palette_font_colour[3].unused = 0 * 4; 
 
     orig_palette_font_colour[4].r = 0 * 4; // Unused
     orig_palette_font_colour[4].g = 0 * 4;
     orig_palette_font_colour[4].b = 63 * 4;
-    orig_palette_font_colour[4].unused = 0 * 4; 
 
     orig_palette_font_colour[5].r = 60 * 4; // Brightest yellow
     orig_palette_font_colour[5].g = 60 * 4;
     orig_palette_font_colour[5].b = 28 * 4;
-    orig_palette_font_colour[5].unused = 0 * 4; 
 
     orig_palette_font_colour[6].r = 60 * 4;
     orig_palette_font_colour[6].g = 60 * 4;
     orig_palette_font_colour[6].b = 12 * 4;
-    orig_palette_font_colour[6].unused = 0 * 4; 
 
     orig_palette_font_colour[7].r = 60 * 4;
     orig_palette_font_colour[7].g = 56 * 4;
     orig_palette_font_colour[7].b = 0 * 4;
-    orig_palette_font_colour[7].unused = 0 * 4; 
 
     orig_palette_font_colour[8].r = 56 * 4;
     orig_palette_font_colour[8].g = 48 * 4;
     orig_palette_font_colour[8].b = 0 * 4;
-    orig_palette_font_colour[8].unused = 0 * 4; 
 
     orig_palette_font_colour[9].r = 52 * 4;
     orig_palette_font_colour[9].g = 44 * 4;
     orig_palette_font_colour[9].b = 0 * 4;
-    orig_palette_font_colour[9].unused = 0 * 4; 
 
     orig_palette_font_colour[10].r = 52 * 4;
     orig_palette_font_colour[10].g = 36 * 4;
     orig_palette_font_colour[10].b = 0 * 4;
-    orig_palette_font_colour[10].unused = 0 * 4; 
 
     orig_palette_font_colour[11].r = 44 * 4;
     orig_palette_font_colour[11].g = 36 * 4;
     orig_palette_font_colour[11].b = 0 * 4;
-    orig_palette_font_colour[11].unused = 0 * 4; 
 
     orig_palette_font_colour[12].r = 36 * 4;
     orig_palette_font_colour[12].g = 28 * 4;
     orig_palette_font_colour[12].b = 0 * 4;
-    orig_palette_font_colour[12].unused = 0 * 4; 
 
     orig_palette_font_colour[13].r = 32 * 4;
     orig_palette_font_colour[13].g = 24 * 4;
     orig_palette_font_colour[13].b = 0 * 4;
-    orig_palette_font_colour[13].unused = 0 * 4; 
 
     orig_palette_font_colour[14].r = 24 * 4;
     orig_palette_font_colour[14].g = 20 * 4;
     orig_palette_font_colour[14].b = 0 * 4;
-    orig_palette_font_colour[14].unused = 0 * 4; 
 
     orig_palette_font_colour[15].r = 20 * 4; // Darkest yellow
     orig_palette_font_colour[15].g = 16 * 4;
     orig_palette_font_colour[15].b = 0 * 4;
-    orig_palette_font_colour[15].unused = 0 * 4; 
-
 
     return 0;
 }

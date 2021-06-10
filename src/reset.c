@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "globals.h"
 #include "sprites.h"
 #include "draw.h"
@@ -134,9 +134,9 @@ uint8 RESET_LEVEL(TITUS_level *level) {
                 if (event.type == SDL_QUIT) {
                     return TITUS_ERROR_QUIT;
                 } else if (event.type == SDL_KEYDOWN) {
-                    if (event.key.keysym.sym == KEY_ESC) {
+                    if (event.key.keysym.scancode == KEY_ESC) {
                         return TITUS_ERROR_QUIT;
-                    } else if (event.key.keysym.sym == KEY_MUSIC) {
+                    } else if (event.key.keysym.scancode == KEY_MUSIC) {
                         AUDIOMODE++;
                         if (AUDIOMODE > 1) {
                             AUDIOMODE = 0;
@@ -146,7 +146,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
                         }
                     }
                 } else if (event.type == SDL_KEYUP) {
-                    if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE) {
+                    if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE) {
                         pass = true;
                         break;
                     }

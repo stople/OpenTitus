@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 #include "config.h"
 
@@ -48,6 +48,9 @@
 #include "original.h"
 #include "objects.h"
 
+SDL_Window *window;
+SDL_Renderer *renderer;
+
 int init() {
 
     int retval;
@@ -61,23 +64,49 @@ int init() {
         return TITUS_ERROR_SDL_ERROR;
     }
 
+
+    Uint32 windowflags = 0;
+    int w;
+    int h;
     switch (videomode) {
-    case 0: //window mode
-        screen = SDL_SetVideoMode(reswidth, resheight, 0, SDL_HWSURFACE | SDL_DOUBLEBUF);
-        SDL_WM_SetCaption(OPENTITUS_WINDOW_TEXT, 0);
-        break;
-    case 1: //fullscreen
-        SDL_ShowCursor(SDL_DISABLE);
-        screen = SDL_SetVideoMode(reswidth, resheight, bitdepth, SDL_DOUBLEBUF | SDL_FULLSCREEN);
-        break;
+        default:
+        case 0: //window mode
+            w = 320;
+            h = 200;
+            windowflags = SDL_WINDOW_RESIZABLE;
+            break;
+        case 1: // fullscreen
+            w = 0;
+            h = 0;
+            windowflags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+            break;
     }
 
-    if (screen == NULL) {
+    window = SDL_CreateWindow(
+        OPENTITUS_WINDOW_TEXT,
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        w,
+        h,
+        windowflags
+    );
+    /*
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
         printf("Unable to set video mode: %s\n", SDL_GetError());
         return TITUS_ERROR_SDL_ERROR;
     }
+    */
 
-    SDL_EnableUNICODE (1);
+    screen = SDL_GetWindowSurface(window);
+    // screen = SDL_CreateRGBSurface(0, 320, 200, 8, 0, 0, 0, 0);
+
+    /*
+    SDL_RenderSetLogicalSize(renderer, 320, 200);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+    */
 
     initaudio();
 
