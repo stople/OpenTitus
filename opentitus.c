@@ -88,23 +88,17 @@ int init() {
         h,
         windowflags
     );
-    /*
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) {
         printf("Unable to set video mode: %s\n", SDL_GetError());
         return TITUS_ERROR_SDL_ERROR;
     }
-    */
 
-    screen = SDL_GetWindowSurface(window);
-    // screen = SDL_CreateRGBSurface(0, 320, 200, 8, 0, 0, 0, 0);
+    // screen = SDL_GetWindowSurface(window);
+    screen = SDL_CreateRGBSurfaceWithFormat(0, 320, 200, 32, SDL_GetWindowPixelFormat(window));
 
-    /*
     SDL_RenderSetLogicalSize(renderer, 320, 200);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-    */
 
     initaudio();
 
