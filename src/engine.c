@@ -51,12 +51,7 @@
 #include "objects.h"
 #include "enemies.h"
 
-//Probably not the best way, but it works...
-#define HAVE_CONFIG_H 1
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef AUDIO_ENABLED
 #include "audio.h"

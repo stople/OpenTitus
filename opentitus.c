@@ -30,28 +30,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "SDL/SDL.h"
-//#include "opentitus.h"
 
-//Probably not the best way, but it works...
-#define HAVE_CONFIG_H 1
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef AUDIO_ENABLED
 #include "audio.h"
 #endif
-
-/*
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-#include <mikmod.h>
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-#include "SDL/SDL_mixer.h"
-#endif
-*/
 
 #include "tituserror.h"
 #include "sqz.h"
@@ -168,31 +152,6 @@ int init() {
     }
 
     SDL_EnableUNICODE (1);
-
-/*
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-    MikMod_RegisterAllDrivers();
-    MikMod_RegisterAllLoaders();
-    md_mode = AUDIO_MIKMOD_MODE;
-    if (MikMod_Init("")) {
-        printf("Could not initialize sound, reason: %s\n", MikMod_strerror(MikMod_errno));
-        return TITUS_ERROR_AUDIO_ERROR;
-    }
-#endif
-
-#ifdef AUDIO_MIKMOD_MULTITHREAD
-    retval = startmodulethread();
-    if (retval < 0)
-        return retval;
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024)==-1) {
-        printf("Mix_OpenAudio: %s\n", Mix_GetError());
-        return TITUS_ERROR_AUDIO_ERROR;
-    }
-#endif
-*/
 
 	initaudio();
 

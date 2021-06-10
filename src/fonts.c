@@ -39,6 +39,9 @@
 #include "draw.h"
 #include <time.h>
 
+TITUS_font *font; //Malloced
+SDL_Surface *font_undefined; //Pointer
+
 SDL_Surface * SDL_LoadChar(unsigned char * fontdata, int offset, SDL_PixelFormat * pixelformat);
 int freesubfont(TITUS_font *f_sub);
 

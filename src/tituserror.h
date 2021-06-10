@@ -22,48 +22,19 @@
  * General Public License for more details.
  */
 
-/* fonts.h
- * Font functions
+/* tituserror.h
+ * Error handling functions
  */
 
- #ifndef FONTS_H
-#define FONTS_H
+#pragma once
 
-#include "definitions.h"
-
-#define CHAR_a 97
-#define CHAR_A 65
-#define CHAR_f 102
-#define CHAR_F 70
-#define CHAR_z 122
-#define CHAR_Z 90
-#define CHAR_0 48
-#define CHAR_9 57
-#define CHAR_EXCLAMATION 33
-#define CHAR_QUESTION 63
-#define CHAR_DOT 46
-#define CHAR_DOLLAR 36
-#define CHAR_UNDERSCORE 95
-#define CHAR_SPACE 32
-
-typedef struct _TITUS_font TITUS_font;
-
-struct _TITUS_font {
-    uint8 type[256]; //0: not in use, 1: malloced sub, 2: malloced surface, 3: surface pointer, 4: invalid UTF-8
-    void *sub[256]; //May be malloced
-};
-
-TITUS_font *font; //Malloced
-SDL_Surface *font_undefined; //Pointer
-
-int loadfonts(void);
-int freefonts(void);
-
-//SDL_Surface * SDL_Text(char *text, bool inv_back);
-//int SDL_Print_Text(char *text, int x, int y, bool inv_back);
-int SDL_Print_Text(uint8 *text, int x, int y);
-
-int viewintrotext();
-
-#endif
-
+#define TITUS_ERROR_QUIT -1
+#define TITUS_ERROR_NOT_ENOUGH_MEMORY -2
+#define TITUS_ERROR_FILE_NOT_FOUND -3
+#define TITUS_ERROR_INVALID_FILE -4
+#define TITUS_ERROR_SDL_ERROR -5
+#define TITUS_ERROR_AUDIO_ERROR -6
+#define TITUS_ERROR_INVALID_UTF8 -4
+extern char lasterror[200];
+extern int lasterrornr; //Only to be used when needed, f.ex. when return value is not int (f.ex. in function SDL_Text) (maybe this always should be used?)
+extern void checkerror(void);

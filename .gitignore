@@ -1,7 +1,4 @@
 bin/
 /bin/*
-
-*.o
-*.exe
-opentitus
-*.dge
+build/
+*.kdev4
