@@ -43,7 +43,7 @@ cmake .. -DCMAKE_INSTALL_PREFIX="../bin/"
 make install
 ```
 
-To test out your build, copy it into the game folder and follow the instructions inside `bin/README.md`.
+To test out your build, follow the instructions inside `bin/README.md`.
 
 You need the original game files to make use of OpenTitus. OpenTitus parses the original files. It works with both Titus the Fox and Moktar.
 
