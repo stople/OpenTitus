@@ -5,8 +5,8 @@ http://opentitus.sourceforge.net/
 OpenTitus is released under the Gnu GPL version 3 or (at your option) any later version of the license, and it is released "as is"; without any warranty.
 
 ## The OpenTitus team:
-Eirik Stople - Main developer - eirik@pcfood.net
-Eitan Tal - Valuable assistant, technical advisor
+* Eirik Stople - Main developer - eirik@pcfood.net
+* Eitan Tal - Valuable assistant, technical advisor
 
 ## Thanks to:
 * Eric Zmiro and his team in Titus Interactive who made the great games Titus the Fox and Moktar!
@@ -25,22 +25,27 @@ Eitan Tal - Valuable assistant, technical advisor
 * Various tutorials/information sources on the net!
 
 
-## Git instructions:
-Compile according to COMPILING.
-To test out your build, copy it into the game folder and follow the instructions inside bin/README.
-Precompiled binaries are available in builds/
+## Getting started:
+You need:
+* Some sort of compiler
+* Recent version of CMake
+* SDL and SDL_mixer libraries available and usable for development
+
+This should get things built and ready for testing/use:
+```
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX="../bin/"
+make install
+```
+
+To test out your build, copy it into the game folder and follow the instructions inside `bin/README.md`.
 
 You need the original game files to make use of OpenTitus. OpenTitus parses the original files. It works with both Titus the Fox and Moktar.
+
 Place the original game files in the "titus" or "moktar" folder. The files must be placed according to titus.conf.
 
-## Runtime dependencies:
-SDL runtime library
-SDL_mixer runtime library
-
-To run the game, run opentitus (in Linux) or opentitus.exe (windows).
-
-To quickly start up Titus, copy a Titus game directory to the same folder as the opentitus executable, and name the folder "titus".
-To quickly start up Moktar, copy a Moktar game directory to the same folder as the opentitus executable, and name the folder "moktar". You can modify titus.conf if you like, or use the preconfigured "titus_moktar.conf" which you need to rename "titus.conf".
+To run the game, run opentitus (in Linux) or opentitus.exe (windows) in `bin`.
 
 The game engine are ported from the original game, and modified to fit OpenTitus' level structure. Movement are equal to the original game.
 
