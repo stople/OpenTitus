@@ -33,45 +33,6 @@
 #include "level.h"
 #include "dingoo.h"
 
-//To simplify porting:
-#ifdef _DINGUX
-
-/*
-#define DINGOO_BUTTON_UP            SDLK_UP
-#define DINGOO_BUTTON_DOWN          SDLK_DOWN
-#define DINGOO_BUTTON_RIGHT         SDLK_RIGHT
-#define DINGOO_BUTTON_LEFT          SDLK_LEFT
-#define DINGOO_BUTTON_R             SDLK_BACKSPACE
-#define DINGOO_BUTTON_L             SDLK_TAB
-#define DINGOO_BUTTON_A             SDLK_LCTRL
-#define DINGOO_BUTTON_B             SDLK_LALT
-#define DINGOO_BUTTON_X             SDLK_SPACE
-#define DINGOO_BUTTON_Y             SDLK_LSHIFT
-#define DINGOO_BUTTON_SELECT        SDLK_ESCAPE
-#define DINGOO_BUTTON_START         SDLK_RETURN
-#define DINGOO_BUTTON_END           SDLK_UNKNOWN
-*/
-
-#define KEY_F1          SDLK_F1 //Loose a life, not in use
-#define KEY_F2          SDLK_F2 //Game over, not in use
-#define KEY_STATUS      DINGOO_BUTTON_A //Energy + status page
-#define KEY_LEFT        DINGOO_BUTTON_LEFT //Left
-#define KEY_RIGHT       DINGOO_BUTTON_RIGHT //Right
-#define KEY_UP          DINGOO_BUTTON_UP //Up
-#define KEY_DOWN        DINGOO_BUTTON_DOWN //Down
-#define KEY_JUMP        DINGOO_BUTTON_X //Jump
-#define KEY_SPACE       DINGOO_BUTTON_B //Space
-#define KEY_ENTER       DINGOO_BUTTON_START //Enter
-#define KEY_RETURN      DINGOO_BUTTON_START //Return
-#define KEY_ESC         DINGOO_BUTTON_SELECT //Quit
-#define KEY_P           DINGOO_BUTTON_START //Toggle pause (A button)
-#define KEY_CHEAT       DINGOO_BUTTON_L //Toggle cheat noclip/godmode
-#define KEY_SKIPLEVEL   DINGOO_BUTTON_R //Skip level
-#define KEY_DEBUG       DINGOO_BUTTON_Y //Toggle debug mode
-#define KEY_MUSIC       DINGOO_BUTTON_Y //Toggle music
-
-#else
-
 #define KEY_F1 SDLK_F1 //Loose a life
 #define KEY_F2 SDLK_F2 //Game over
 #define KEY_E SDLK_e //Display energy
@@ -90,9 +51,6 @@
 #define KEY_GODMODE SDLK_g //Toggle godmode
 #define KEY_DEBUG SDLK_d //Toggle debug mode
 #define KEY_MUSIC SDLK_F3 //Toggle music
-
-#endif
-
 
 #define TEST_ZONE 4
 #define MAX_X 4

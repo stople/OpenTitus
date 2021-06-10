@@ -76,27 +76,6 @@ int move_player(TITUS_level *level) {
         if (event.type == SDL_QUIT) {
             return TITUS_ERROR_QUIT;
         } else if (event.type == SDL_KEYDOWN) {
-#ifdef _DINGUX
-            if (event.key.keysym.sym == KEY_CHEAT && (devmode == 1)) {
-                if (keystate[KEY_SKIPLEVEL]) {
-                    NEWLEVEL_FLAG = true;
-                } else if (!GODMODE && !NOCLIP) {
-                    GODMODE = true;
-                    NOCLIP = false;
-                } else if (GODMODE && !NOCLIP) {
-                    GODMODE = true;
-                    NOCLIP = true;
-                } else {
-                    GODMODE = false;
-                    NOCLIP = false;
-                }
-            } else if (event.key.keysym.sym == KEY_STATUS) {
-                if (BAR_FLAG == 0) {
-                    BAR_FLAG = 50; //Display energy
-                } else {
-                    viewstatus(level, false); //View status screen
-                }
-#else
             if ((event.key.keysym.sym == KEY_GODMODE) && (devmode == 1)) {
                 if (GODMODE) {
                     GODMODE = false;
@@ -111,8 +90,6 @@ int move_player(TITUS_level *level) {
                     NOCLIP = true;
                     GODMODE = true;
                 }
-#endif
-
 #ifdef DEBUG_VERSION
 //Will display debug information
             } else if (event.key.keysym.sym == KEY_DEBUG) {
@@ -135,9 +112,6 @@ int move_player(TITUS_level *level) {
     if (keystate[KEY_ESC]) {
         return TITUS_ERROR_QUIT;
     }
-#ifdef _DINGUX
-
-#else
     if (keystate[KEY_F1] && (RESETLEVEL_FLAG == 0)) { //F1 = suicide
         CASE_DEAD_IM(level);
         RESETLEVEL_FLAG--;
@@ -156,7 +130,6 @@ int move_player(TITUS_level *level) {
     if (keystate[KEY_F4]) { //F4 = view status page
         viewstatus(level, false);
     }
-#endif
 // TODO: ADD!    SCREEN_3(); //Test for hidden credits screen
     if (pause) {
         retval = t_pause(level); //Apply pause

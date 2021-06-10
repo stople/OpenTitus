@@ -33,9 +33,4 @@
 //#undef DEBUG_VERSION
 //#define DEBUG_VERSION 1
 
-/* Define to 1 if you want to compile with audio support */
-//#undef AUDIO_ENABLED
-#define AUDIO_ENABLED 1
-
-
 #endif //CONFIG_H

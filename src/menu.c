@@ -311,11 +311,6 @@ int enterpassword(){
 
     SDL_Print_Text("CODE", 111, 80);
 
-#ifdef _DINGUX
-    int index = 0;
-    int counter = 0;
-#endif
-
     for (i = 0; i < 4; ) {
         while(SDL_PollEvent(&event)) { //Check all events
             if (event.type == SDL_QUIT) {
@@ -326,27 +321,6 @@ int enterpassword(){
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
                     return (-1);
                 }
-#ifdef _DINGUX
-                if (event.key.keysym.sym == KEY_UP) {
-                    index++;
-                    if (index > 15) {
-                        index = 0;
-                    }
-                } else if (event.key.keysym.sym == KEY_DOWN) {
-                    index--;
-                    if (index < 0) {
-                        index = 15;
-                    }
-                } else if (event.key.keysym.sym == KEY_SPACE) {
-                    if (index < 10) {
-                        code[i] = index + CHAR_0;
-                    } else {
-                        code[i] = index - 10 + CHAR_A;
-                    }
-                    i++;
-                    index = 0;
-                }
-#else
 
                 if ((event.key.keysym.unicode & 0xFF80) == 0) {
                     tmpchar = (char)(event.key.keysym.unicode & 0x007F);
@@ -361,7 +335,6 @@ int enterpassword(){
                         code[i++] = tmpchar;
 
                 }
-#endif
 
                 if (event.key.keysym.sym == KEY_MUSIC) {
                     AUDIOMODE++;
@@ -374,22 +347,6 @@ int enterpassword(){
                 }
             }
         }
-#ifdef _DINGUX
-        if (i < 4) {
-            counter++;
-            if (counter > 10) {
-                counter = 0;
-            } else if (counter > 5) {
-                code[i] = *"_";
-            } else {
-                if (index < 10) {
-                    code[i] = index + CHAR_0;
-                } else {
-                    code[i] = index - 10 + CHAR_A;
-                }
-            }
-        }
-#endif
         SDL_Print_Text(code, 159, 80);
         SDL_Flip(screen);
         titus_sleep();

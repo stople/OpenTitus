@@ -61,11 +61,6 @@ int init() {
         return TITUS_ERROR_SDL_ERROR;
     }
 
-#ifdef _DINGUX
-    //fullscreen
-    SDL_ShowCursor(SDL_DISABLE);
-    screen = SDL_SetVideoMode(reswidth, resheight, bitdepth, SDL_SWSURFACE);
-#else
     switch (videomode) {
     case 0: //window mode
         screen = SDL_SetVideoMode(reswidth, resheight, 0, SDL_HWSURFACE | SDL_DOUBLEBUF);
@@ -76,7 +71,6 @@ int init() {
         screen = SDL_SetVideoMode(reswidth, resheight, bitdepth, SDL_DOUBLEBUF | SDL_FULLSCREEN);
         break;
     }
-#endif
 
     if (screen == NULL) {
         printf("Unable to set video mode: %s\n", SDL_GetError());
