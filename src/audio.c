@@ -12,9 +12,6 @@
  * General Public License for more details.
  */
 
-//Probably not the best way, but it works...
-#include "config.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

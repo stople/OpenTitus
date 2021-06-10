@@ -39,8 +39,6 @@
 #include "globals.h"
 #include "common.h"
 
-#include "config.h"
-
 #include "audio.h"
 
 int viewmenu(char * menufile, int menuformat) {

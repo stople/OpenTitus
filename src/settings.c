@@ -31,8 +31,6 @@
 #include <string.h>
 #include "settings.h"
 
-#include "config.h"
-
 char spritefile[256];
 char levelfiles[16][256]; //16 levels in moktar, 15 levels in titus
 char tituslogofile[256];

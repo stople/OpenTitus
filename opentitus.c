@@ -31,8 +31,6 @@
 #include <string.h>
 #include "SDL2/SDL.h"
 
-#include "config.h"
-
 #include "audio.h"
 
 #include "tituserror.h"

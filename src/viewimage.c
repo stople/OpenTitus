@@ -36,8 +36,6 @@
 #include "globals.h"
 #include "common.h"
 
-#include "config.h"
-
 #include "audio.h"
 
 int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {

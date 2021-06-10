@@ -51,8 +51,6 @@
 #include "objects.h"
 #include "enemies.h"
 
-#include "config.h"
-
 #include "audio.h"
 
 static int playlevel(TITUS_level *level);
