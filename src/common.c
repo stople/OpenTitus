@@ -44,6 +44,6 @@ int subto0(uint8 *number) {
 }
 
 int titus_sleep() {
-	//refreshaudio();
+    //refreshaudio();
     SDL_Delay(1);
 }

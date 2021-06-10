@@ -25,7 +25,7 @@
 /* engine.h
  * Engine functions
  */
- 
+
 #ifndef ENGINE_H
 #define ENGINE_H
 

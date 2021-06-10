@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
                 state = 0;
         }
     }
-    
+
     freefonts();
 
     freeaudio();

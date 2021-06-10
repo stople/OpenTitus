@@ -67,7 +67,7 @@ int move_player(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     int16 newX, newY;
     bool pause = false;
-    
+
     //Part 1: Check keyboard input
     SDL_PumpEvents(); //Update keyboard state
     keystate = SDL_GetKeyState(NULL);
@@ -101,9 +101,9 @@ int move_player(TITUS_level *level) {
                 if (AUDIOMODE > 1) {
                     AUDIOMODE = 0;
                 }
-				if (AUDIOMODE == 1) {
-					startmusic();
-				}
+                if (AUDIOMODE == 1) {
+                    startmusic();
+                }
             } else if (event.key.keysym.sym == KEY_P) {
                 pause = true;
             }
@@ -352,7 +352,7 @@ DEC_LIFE (TITUS_level *level) {
         GAMEOVER_FLAG = true;
     }
 }
-    
+
 t_pause (TITUS_level *level) {
     bool pass;
     TITUS_player *player = &(level->player);
@@ -377,13 +377,13 @@ t_pause (TITUS_level *level) {
                 if (event.key.keysym.sym == KEY_ESC) {
                     return TITUS_ERROR_QUIT;
                 } else if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 } else if (event.key.keysym.sym == KEY_P) {
                     return 0;
                 }
@@ -404,7 +404,7 @@ BRK_COLLISION(TITUS_level *level) { //Collision detection between player and til
     uint8 left_tileX;
     bool first;
     uint8 hflag;
-    
+
     tileX = (player->sprite.x >> 4);
     tileY = (player->sprite.y >> 4) - 1;
     initY = tileY;
@@ -414,7 +414,7 @@ BRK_COLLISION(TITUS_level *level) { //Collision detection between player and til
         CASE_DEAD_IM(level);
     }
 
-    
+
     //Test under the feet of the hero and on his head! (In y)
     YFALL = 0;
     //Find the left tile
@@ -886,7 +886,7 @@ static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX) {
     }
     //Return the original tile underneath the bonus
     level->tilemap[tileY][tileX] = level->bonus[i].replacetile;
-    
+
     DISPLAY_CHAR(level, level->bonus[i].replacetile, tileY % screen_height, tileX % screen_width);
     GRAVITY_FLAG = 4;
     PERMUT_FLAG = true;
@@ -928,7 +928,7 @@ void INC_ENERGY(TITUS_level *level) {
 
 void DEC_ENERGY(TITUS_level *level) {
     TITUS_player *player = &(level->player);
-	BAR_FLAG = 50;
+    BAR_FLAG = 50;
     if (RESETLEVEL_FLAG == 0) {
         player->hp--;
         if (player->hp < 0) {
@@ -984,7 +984,7 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
             GET_IMAGE(level);
         }
         break;
-    
+
     case 3:
         //Handle crawling
         NEW_FORM(player, action);
@@ -1196,7 +1196,7 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
                          //           continue; //This should not execute
                          //       }
                          //   }
-                            
+
 
                             //What it probably should have been
                             if (level->enemy[i].sprite.x > player->sprite.x) { //The enemy is right
@@ -1411,7 +1411,7 @@ static int GET_IMAGE(TITUS_level *level) {
     if (frame < 0) { //frame is a negative number, telling how many bytes to jump back
         player->sprite.animation += (frame / 2); //jump back to first frame of animation
         frame = *(player->sprite.animation);
-        
+
     }
     updatesprite(level, &(player->sprite), frame, true);
     player->sprite.flipped = (SENSX < 0);

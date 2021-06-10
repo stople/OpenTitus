@@ -49,7 +49,7 @@ int loadlevel(TITUS_level *level, unsigned char *leveldata, int leveldatasize, T
     int j;
     unsigned int offset;
     unsigned int pre_size;
-    
+
     level->player.inithp = 16;
     level->player.cageX = 0;
     level->player.cageY = 0;
@@ -343,13 +343,13 @@ int loadlevel(TITUS_level *level, unsigned char *leveldata, int leveldatasize, T
         return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
     }
     level->trashcount = pre_size;
-	/*
+    /*
     for (i = 0; i < level->trashcount; i++) {
         level->trash[i].buffer = NULL;
     }
 */
-	
-	
+
+
     return (0);
 }
 

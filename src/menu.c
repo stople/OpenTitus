@@ -109,7 +109,7 @@ int viewmenu(char * menufile, int menuformat) {
     src.y = 0;
     src.w = image->w;
     src.h = image->h;
-	
+
     dest.x = 0;
     dest.y = 0;
     dest.w = image->w;
@@ -121,7 +121,7 @@ int viewmenu(char * menufile, int menuformat) {
         sel[0].y = 160;
         sel[0].w = 8;
         sel[0].h = 8;
-	
+
         sel[1].x = 120;
         sel[1].y = 173;
         sel[1].w = 8;
@@ -133,7 +133,7 @@ int viewmenu(char * menufile, int menuformat) {
         sel[0].y = 167;
         sel[0].w = 8;
         sel[0].h = 8;
-	
+
         sel[1].x = 130;
         sel[1].y = 180;
         sel[1].w = 8;

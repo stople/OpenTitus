@@ -126,21 +126,21 @@ int CLOSE_SCREEN() {
         dest.w = screen_width * 16;
         dest.h = i * incY;
         SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
-        
+
         //Clear left
         dest.x = 0;
         dest.y = 0;
         dest.w = i * incX;
         dest.h = screen_height * 16;
         SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
-        
+
         //Clear bottom
         dest.x = 0;
         dest.y = rheight - (i * incY);
         dest.w = screen_width * 16;
         dest.h = i * incY;
         SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
-        
+
         //Clear right
         dest.x = rwidth - (i * incX);
         dest.y = 0;
@@ -160,7 +160,7 @@ int OPEN_SCREEN() {
     int16 blockY = 192 / (step_count * 2); //9 (192: resolution height)
     int8 i, j;
     TFR_SCREENM(); //Draw tiles on the backbuffer
-    
+
     //BLACK_SCREEN
     dest.x = 0;
     dest.y = 0;
@@ -185,7 +185,7 @@ int copytiles(int16 destX, int16 destY, int16 width, int16 height) {
     int16 sepY = BITMAP_YM * 16;
     int16 sepXi = (S_COLUMNS - BITMAP_XM) * 16;
     int16 sepYi = (S_LINES - BITMAP_YM) * 16;
-    
+
     // Tile screen:  | Output screen:
     //               |
     // D | C         | A | B
@@ -252,7 +252,7 @@ int copytiles(int16 destX, int16 destY, int16 width, int16 height) {
         }
         SDL_BlitSurface(tilescreen, &src, screen, &dest);
     }
-    
+
     //Lower right on screen (D)
     if (((destX + width) > sepXi) &&
       ((destY + height) > sepYi)) {

@@ -94,7 +94,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
         } while (player->sprite2.x > player->sprite.x + 28);
         //Lovers in one sprite
         updatesprite(level, &(player->sprite2), 346, true);
-        
+
         player->sprite2.flipped = true;
         player->sprite2.x -= 24;
         //Smoke
@@ -137,14 +137,14 @@ uint8 RESET_LEVEL(TITUS_level *level) {
                     if (event.key.keysym.sym == KEY_ESC) {
                         return TITUS_ERROR_QUIT;
                     } else if (event.key.keysym.sym == KEY_MUSIC) {
-						AUDIOMODE++;
-						if (AUDIOMODE > 1) {
-							AUDIOMODE = 0;
-						}
-						if (AUDIOMODE == 1) {
-							startmusic();
-						}
-					}
+                        AUDIOMODE++;
+                        if (AUDIOMODE > 1) {
+                            AUDIOMODE = 0;
+                        }
+                        if (AUDIOMODE == 1) {
+                            startmusic();
+                        }
+                    }
                 } else if (event.type == SDL_KEYUP) {
                     if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE) {
                         pass = true;
@@ -249,7 +249,7 @@ int CLEAR_DATA(TITUS_level *level) {
     TAUPE_FLAG = 0;
     SENSX = 0;
     LAST_ORDER = 0;
-    
+
     SET_ALL_SPRITES(level);
 
     SET_DATA_NMI(level);
@@ -302,7 +302,7 @@ int clearsprite(TITUS_sprite *spr){
 void SET_ALL_SPRITES(TITUS_level *level) {
     int16 i;
     TITUS_player *player = &(level->player);
-    
+
     for (i = 0; i < level->trashcount; i++) {
         clearsprite(&(level->trash[i]));
     }

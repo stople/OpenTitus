@@ -83,13 +83,13 @@ struct _TITUS_spritedata {
     uint8 collwidth;
     int16 refheight;
     uint8 refwidth;
-	TITUS_spritebuffer *spritebuffer[1]; //Not malloced
+    TITUS_spritebuffer *spritebuffer[1]; //Not malloced
 };
 
 struct _TITUS_spritebuffer {
     SDL_Surface *data; //Malloced
     TITUS_spritedata *spritedata;
-	uint8 index;
+    uint8 index;
 };
 
 struct _TITUS_spritecache {

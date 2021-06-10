@@ -1080,7 +1080,7 @@ int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool
     } else {
         enemy->boss = false;
     }
-    
+
     return (0);
 }
 

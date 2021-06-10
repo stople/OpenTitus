@@ -52,7 +52,7 @@ SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr);
 int TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
     SDL_Rect src, dest;
 
-	//First of all: make the screen black, at least the lower part of the screen
+    //First of all: make the screen black, at least the lower part of the screen
     dest.x = 0;
     dest.y = screen_height * 16;
     dest.w = screen_width * 16;
@@ -67,8 +67,8 @@ int TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
     //
     // The screens are splitted in 4 parts by BITMAP_XM and BITMAP_YM
     // The code below will move the 4 rectangles with tiles to their right place on the output screen
-    
-    
+
+
     //Upper left on screen (A)
     src.x = BITMAP_XM * 16;
     src.y = BITMAP_YM * 16;
@@ -165,15 +165,15 @@ DISPLAY_SPRITES(TITUS_level *level) {
         SDL_Print_Text(buffer, 30 * 8, 8 * 12); //Correction to the clock
 
 
-		for (i = 0; i <= 15; i++) {
-			sprintf(buffer, "%d %3u", i, SUBTIME[i]);
-			SDL_Print_Text(buffer, 0 * 8, i * 12); //Sub times from main loop in ms
-		}
+        for (i = 0; i <= 15; i++) {
+            sprintf(buffer, "%d %3u", i, SUBTIME[i]);
+            SDL_Print_Text(buffer, 0 * 8, i * 12); //Sub times from main loop in ms
+        }
 
-		sprintf(buffer, "%d %3u", i, SUBTIME[i]);
-		SDL_Print_Text(buffer, 0 * 8, i * 12);
-	}
-	
+        sprintf(buffer, "%d %3u", i, SUBTIME[i]);
+        SDL_Print_Text(buffer, 0 * 8, i * 12);
+    }
+
 #endif
 
 }
@@ -196,25 +196,25 @@ display_sprite(TITUS_level *level, TITUS_sprite *spr) {
         dest.x = spr->x + spr->spritedata->refwidth - spr->spritedata->data->w - (BITMAP_X << 4);
     }
     dest.y = spr->y + spr->spritedata->refheight - spr->spritedata->data->h + 1 - (BITMAP_Y << 4);
-    
+
     if ((dest.x >= screen_width * 16) || //Right for the screen
       (dest.x + spr->spritedata->data->w < 0) || //Left for the screen
       (dest.y + spr->spritedata->data->h < 0) || //Above the screen
       (dest.y >= screen_height * 16)) { //Below the screen
         return;
     }
-	
-	image = sprite_from_cache(level, spr);
-/*	
+
+    image = sprite_from_cache(level, spr);
+/*
     if ((spr->flipped != spr->flipped_last) ||
       (spr->flash != spr->flash_last)) {
         SDL_FreeSurface(spr->buffer);
         spr->buffer = copysurface(spr->spritedata->data, spr->flipped, spr->flash);
     }
-    
+
     spr->flipped_last = spr->flipped;
     spr->flash_last = spr->flash;
-    
+
     SDL_Surface *image = spr->buffer;
 */
     src.x = 0;
@@ -238,7 +238,7 @@ display_sprite(TITUS_level *level, TITUS_sprite *spr) {
     if (dest.y + src.h > screen_height * 16) {
         src.h = screen_height * 16 - dest.y;
     }
-    
+
     SDL_BlitSurface(image, &src, screen, &dest);
 
 
@@ -249,63 +249,63 @@ display_sprite(TITUS_level *level, TITUS_sprite *spr) {
 }
 
 SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr) {
-	TITUS_spritecache *cache = level->spritecache;
-	TITUS_spritedata *spritedata = level->spritedata[spr->number];
-	TITUS_spritebuffer *spritebuffer;
-	uint8 index;
-	int16 i;
+    TITUS_spritecache *cache = level->spritecache;
+    TITUS_spritedata *spritedata = level->spritedata[spr->number];
+    TITUS_spritebuffer *spritebuffer;
+    uint8 index;
+    int16 i;
 
-	if (spr->flipped) {index = 1;} else {index = 0;};
+    if (spr->flipped) {index = 1;} else {index = 0;};
 
     if (spr->flash) {
-		for (i = cache->count - cache->tmpcount; i < cache->count; i++) {
-			spritebuffer = cache->spritebuffer[i];
-			if (spritebuffer != NULL) {
-				if ((spritebuffer->spritedata == spritedata) &&
-				  (spritebuffer->index == index + 2)) {
-				    return spritebuffer->data; //Already in buffer
-				}
-			}
-		}
-		//Not found, load into buffer
-		cache->cycle2++;
-		if (cache->cycle2 >= cache->count) { //The last 3 buffer surfaces is temporary (reserved for flash)
-			cache->cycle2 = cache->count - cache->tmpcount;
-		}
-		spritebuffer = cache->spritebuffer[cache->cycle2];
-		SDL_FreeSurface(spritebuffer->data); //Free old surface
-		spritebuffer->data = copysurface(spritedata->data, spr->flipped, spr->flash);
-		spritebuffer->spritedata = spritedata;
-		spritebuffer->index = index + 2;
+        for (i = cache->count - cache->tmpcount; i < cache->count; i++) {
+            spritebuffer = cache->spritebuffer[i];
+            if (spritebuffer != NULL) {
+                if ((spritebuffer->spritedata == spritedata) &&
+                  (spritebuffer->index == index + 2)) {
+                    return spritebuffer->data; //Already in buffer
+                }
+            }
+        }
+        //Not found, load into buffer
+        cache->cycle2++;
+        if (cache->cycle2 >= cache->count) { //The last 3 buffer surfaces is temporary (reserved for flash)
+            cache->cycle2 = cache->count - cache->tmpcount;
+        }
+        spritebuffer = cache->spritebuffer[cache->cycle2];
+        SDL_FreeSurface(spritebuffer->data); //Free old surface
+        spritebuffer->data = copysurface(spritedata->data, spr->flipped, spr->flash);
+        spritebuffer->spritedata = spritedata;
+        spritebuffer->index = index + 2;
         return spritebuffer->data;
     } else {
         if (spritedata->spritebuffer[index] == NULL) {
-		    cache->cycle++;
-			if (cache->cycle + cache->tmpcount >= cache->count) { //The last 3 buffer surfaces is temporary (reserved for flash)
-			    cache->cycle = 0;
-		    }
-			spritebuffer = cache->spritebuffer[cache->cycle];
-			if (spritebuffer->spritedata != NULL) {
-				spritebuffer->spritedata->spritebuffer[spritebuffer->index] = NULL; //Remove old link
-			}
-			SDL_FreeSurface(spritebuffer->data); //Free old surface
-			spritebuffer->data = copysurface(spritedata->data, spr->flipped, spr->flash);
-			spritebuffer->spritedata = spritedata;
-			spritebuffer->index = index;
-			spritedata->spritebuffer[index] = spritebuffer;
-		}
-		return spritedata->spritebuffer[index]->data;
-	}
+            cache->cycle++;
+            if (cache->cycle + cache->tmpcount >= cache->count) { //The last 3 buffer surfaces is temporary (reserved for flash)
+                cache->cycle = 0;
+            }
+            spritebuffer = cache->spritebuffer[cache->cycle];
+            if (spritebuffer->spritedata != NULL) {
+                spritebuffer->spritedata->spritebuffer[spritebuffer->index] = NULL; //Remove old link
+            }
+            SDL_FreeSurface(spritebuffer->data); //Free old surface
+            spritebuffer->data = copysurface(spritedata->data, spr->flipped, spr->flash);
+            spritebuffer->spritedata = spritedata;
+            spritebuffer->index = index;
+            spritedata->spritebuffer[index] = spritebuffer;
+        }
+        return spritedata->spritebuffer[index]->data;
+    }
 }
-			
-		
+
+
 int flip_screen(bool slow) {
     int tick = SDL_GetTicks();
     SDL_Flip(screen);
     int oldtick = tick;
     tick = SDL_GetTicks();
     SUBTIME[14] = tick - oldtick;
-    
+
     //if (slow) {
         NO_FAST_CPU(slow); //TODO: 
     //}
@@ -332,14 +332,14 @@ NO_FAST_CPU(bool slow) {
     //    duration = abs(LAST_CLOCK - tick);
     //} while (duration < delay);
     tick2 = SDL_GetTicks();
-	if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
-		FPS_LAST = FPS;
-		FPS = 0;
+    if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
+        FPS_LAST = FPS;
+        FPS = 0;
     }
-	FPS++;
-	LAST_CLOCK_CORR = tick2 - tick - delay;
-	
-	LAST_CLOCK = tick2;
+    FPS++;
+    LAST_CLOCK_CORR = tick2 - tick - delay;
+
+    LAST_CLOCK = tick2;
     SUBTIME[15] = LAST_CLOCK - tick;
 }
 */
@@ -367,8 +367,8 @@ NO_FAST_CPU(bool slow) {
     tick2 = SDL_GetTicks();
     duration = abs(tick - tick2);
     while (duration < delay) {
-		titus_sleep(); 
-		//SDL_Delay(1);
+        titus_sleep();
+        //SDL_Delay(1);
         tick2 = SDL_GetTicks();
         duration = abs(tick - tick2);
     }
@@ -386,19 +386,19 @@ NO_FAST_CPU(bool slow) {
     //    duration = abs(LAST_CLOCK - tick);
     //} while (duration < delay);
     tick2 = SDL_GetTicks();
-	if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
-		FPS_LAST = FPS;
-		FPS = 0;
+    if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
+        FPS_LAST = FPS;
+        FPS = 0;
     }
-	FPS++;
+    FPS++;
 
 
-	LAST_CLOCK_CORR += tick2 - tick - delay;
+    LAST_CLOCK_CORR += tick2 - tick - delay;
         if (LAST_CLOCK_CORR > 25) {
             LAST_CLOCK_CORR = 25;
         }
 
-	LAST_CLOCK = tick2;
+    LAST_CLOCK = tick2;
 
     SUBTIME[15] = LAST_CLOCK - tick;
 }
@@ -529,7 +529,7 @@ int fadeout() {
     src.y = 0;
     src.w = screen->w;
     src.h = screen->h;
-	
+
     dest.x = 0;
     dest.y = 0;
     dest.w = screen->w;
@@ -568,7 +568,7 @@ int fadeout() {
 
         if (image_alpha > 255)
             image_alpha = 255;
-            
+
         SDL_SetAlpha(image, SDL_SRCALPHA, 255 - image_alpha);
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
         SDL_BlitSurface(image, &src, screen, &dest);

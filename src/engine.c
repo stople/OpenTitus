@@ -25,7 +25,7 @@
 /* engine.c
  * Engine functions
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -159,7 +159,7 @@ int playtitus(int firstlevel){
             if (retval < 0) {
                 freelevel (&level);
                 freeobjects(&objects, object_count);
-				freespritecache(&spritecache);
+                freespritecache(&spritecache);
                 freesprites(&sprites, sprite_count);
                 freepixelformat(&(level.pixelformat));
                 return retval;
@@ -174,12 +174,12 @@ int playtitus(int firstlevel){
             TFR_SCREENM(); //Draws tiles
             flip_screen(true); //Flip backbuffer
 
-            
+
             retval = playlevel (&level);
             if (retval < 0) {
                 freelevel (&level);
                 freeobjects(&objects, object_count);
-				freespritecache(&spritecache);
+                freespritecache(&spritecache);
                 freesprites(&sprites, sprite_count);
                 freepixelformat(&(level.pixelformat));
                 return retval;
@@ -196,16 +196,16 @@ int playtitus(int firstlevel){
                     death(&level);
                 }
             }
-            
-            
-            
-            
+
+
+
+
             if (GAMEOVER_FLAG) {
                 gameover(&level);
-            
+
                 freelevel (&level);
                 freeobjects(&objects, object_count);
-				freespritecache(&spritecache);
+                freespritecache(&spritecache);
                 freesprites(&sprites, sprite_count);
                 freepixelformat(&(level.pixelformat));
                 return 0;
@@ -222,7 +222,7 @@ int playtitus(int firstlevel){
             if (level.player.globalstatus == PLAYER_GLOBAL_STATUS_GAMEOVER) {
             }
             */
-            
+
         }
 
         freelevel (&level);

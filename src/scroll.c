@@ -140,7 +140,7 @@ Y_ADJUST(TITUS_level *level) {
     }
     int16 pstileY = (player->sprite.y >> 4) - BITMAP_Y; //Player screen tile Y (0 to 11)
     if (!YSCROLL_CENTER) {
-		if ((player->sprite.speedY == 0) &&
+        if ((player->sprite.speedY == 0) &&
           (LADDER_FLAG == 0)) {
             if (pstileY >= screen_height - 1) {
                 YLIMIT_SCROLL = screen_height - 2;
@@ -178,14 +178,14 @@ Y_ADJUST(TITUS_level *level) {
             if (U_SCROLL(level)) {
                 YSCROLL_CENTER = false;
             }
-		} else if ((player->sprite.y <= ((ALTITUDE_ZERO + screen_height) << 4)) && //If the player is above the horizontal limit
+        } else if ((player->sprite.y <= ((ALTITUDE_ZERO + screen_height) << 4)) && //If the player is above the horizontal limit
           (BITMAP_Y > ALTITUDE_ZERO)) { //... and the screen is below the horizontal limit
             YSCROLL_CENTER = false; //Stop scrolling
         } else {
             if (D_SCROLL(level)) { //Scroll down
                 YSCROLL_CENTER = false;
             }
-		}
+        }
     }
 }
 

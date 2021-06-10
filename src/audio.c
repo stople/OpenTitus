@@ -142,8 +142,8 @@ int fillchip(ADLIB_DATA *aad)
     unsigned int tmp1, tmp2;
     unsigned char tmpC;
 
-	FX_DRIVER();
-	
+    FX_DRIVER();
+
     aad->skip_delay_counter--;
     if (aad->skip_delay_counter == 0) {
         aad->skip_delay_counter = aad->skip_delay;
@@ -396,7 +396,7 @@ int SELECT_MUSIC(int song_number)
 
     //Load instruments
     j = INS_OFFSET;
-	SDL_LockAudio();
+    SDL_LockAudio();
 
     for (i = 0; i < song_number; i++) {
         do {
@@ -477,7 +477,7 @@ int SELECT_MUSIC(int song_number)
         aad->lie_late[i] = 0;
         j += 2;
     }
-	SDL_UnlockAudio();
+    SDL_UnlockAudio();
     SDL_PauseAudio(0); //perhaps unneccessary
 
 }
@@ -520,14 +520,14 @@ void TimerCallback(void *data)
     {
         return;
     }
-    SDL_PLAYER	*sdlp = (SDL_PLAYER *)data;
-	//Delay is original 13.75 ms
+    SDL_PLAYER    *sdlp = (SDL_PLAYER *)data;
+    //Delay is original 13.75 ms
     int delay = 14;
-	AUDIOTIMING++;
-	if (AUDIOTIMING > 3) {
-		AUDIOTIMING = 0;
-		delay--;
-	}
+    AUDIOTIMING++;
+    if (AUDIOTIMING > 3) {
+        AUDIOTIMING = 0;
+        delay--;
+    }
 
     // Read data until we must make a delay.
 
@@ -542,7 +542,7 @@ void TimerCallback(void *data)
 
 int startmusic() {
     OPL_SetCallback(0, TimerCallback, &sdl_player_data);
-	return 0;
+    return 0;
 }
 
 int refreshaudio() {
@@ -551,62 +551,62 @@ int refreshaudio() {
         return;
     }
     int tick = SDL_GetTicks();
-	if (tick - lastaudiotick < audiodelay) {
-		return 0;
-	}
-	//Update the chip!
-	lastaudiotick += audiodelay;
+    if (tick - lastaudiotick < audiodelay) {
+        return 0;
+    }
+    //Update the chip!
+    lastaudiotick += audiodelay;
     audiodelay = 14;
-	AUDIOTIMING++;
-	if (AUDIOTIMING > 3) {
-		AUDIOTIMING = 0;
-		audiodelay--;
-	}
+    AUDIOTIMING++;
+    if (AUDIOTIMING > 3) {
+        AUDIOTIMING = 0;
+        audiodelay--;
+    }
     sdl_player_data.playing = fillchip(&(sdl_player_data.aad));
-	return 0;
+    return 0;
 }
 
 int initaudio(){
     AUDIOMODE = 1;
-	AUDIOTIMING = 0;
+    AUDIOTIMING = 0;
     lastaudiotick = SDL_GetTicks();
-	audiodelay = 14;
+    audiodelay = 14;
     last_song = 0;
     int in_len;
     FILE *ifp;
 
     if (game == 0) { //Titus
-		seg_reduction = 1301;
-		ifp = fopen("music.bin", "rb");
-		if (ifp == NULL) {
-			sprintf(lasterror, "Error: music.bin not found!\n");
-			return (TITUS_ERROR_FILE_NOT_FOUND);
-		} else {
-			fseek(ifp, 0L, SEEK_END);
-			in_len = ftell(ifp);
-			if (in_len != 18749) {
-				sprintf(lasterror, "Error: music.bin is invalid!\n");
-				fclose (ifp);
-				return (TITUS_ERROR_INVALID_FILE);
-			}
-			fclose (ifp);
-		}
+        seg_reduction = 1301;
+        ifp = fopen("music.bin", "rb");
+        if (ifp == NULL) {
+            sprintf(lasterror, "Error: music.bin not found!\n");
+            return (TITUS_ERROR_FILE_NOT_FOUND);
+        } else {
+            fseek(ifp, 0L, SEEK_END);
+            in_len = ftell(ifp);
+            if (in_len != 18749) {
+                sprintf(lasterror, "Error: music.bin is invalid!\n");
+                fclose (ifp);
+                return (TITUS_ERROR_INVALID_FILE);
+            }
+            fclose (ifp);
+        }
     } else if (game == 1) { //Moktar
-		seg_reduction = 1345;
-		ifp = fopen("music_mok.bin", "rb");
-		if (ifp == NULL) {
-			sprintf(lasterror, "Error: music_mok.bin not found!\n");
-			return (TITUS_ERROR_FILE_NOT_FOUND);
-		} else {
-			fseek(ifp, 0L, SEEK_END);
-			in_len = ftell(ifp);
-			if (in_len != 18184) {
-				sprintf(lasterror, "Error: music_mok.bin is invalid!\n");
-				fclose (ifp);
-				return (TITUS_ERROR_INVALID_FILE);
-			}
-			fclose (ifp);
-		}
+        seg_reduction = 1345;
+        ifp = fopen("music_mok.bin", "rb");
+        if (ifp == NULL) {
+            sprintf(lasterror, "Error: music_mok.bin not found!\n");
+            return (TITUS_ERROR_FILE_NOT_FOUND);
+        } else {
+            fseek(ifp, 0L, SEEK_END);
+            in_len = ftell(ifp);
+            if (in_len != 18184) {
+                sprintf(lasterror, "Error: music_mok.bin is invalid!\n");
+                fclose (ifp);
+                return (TITUS_ERROR_INVALID_FILE);
+            }
+            fclose (ifp);
+        }
     }
 
 
@@ -621,20 +621,20 @@ int initaudio(){
     }
 
     if (game == 0) { //Titus
-		sdl_player_data.aad.data_size = load_file("music.bin", &(sdl_player_data.aad.data));
+        sdl_player_data.aad.data_size = load_file("music.bin", &(sdl_player_data.aad.data));
     } else if (game == 1) { //Moktar
-		sdl_player_data.aad.data_size = load_file("music_mok.bin", &(sdl_player_data.aad.data));
-	}
+        sdl_player_data.aad.data_size = load_file("music_mok.bin", &(sdl_player_data.aad.data));
+    }
     if (sdl_player_data.aad.data_size < 0) {
         freeaudio();
         return 0;
     }
-	
-	initsfx();
+
+    initsfx();
 
     OPL_SetCallback(0, TimerCallback, &sdl_player_data);
 
-	return 0;
+    return 0;
 }
 
 int freeaudio(){
@@ -652,12 +652,12 @@ int freeaudio(){
 int initsfx() {
     ADLIB_DATA *aad = &(sdl_player_data.aad);
     unsigned char *raw_data = aad->data;
-	FX_ON = false;
-	FX_TIME = 0;
-	uint16 tmp1;
-	int i, k;
+    FX_ON = false;
+    FX_TIME = 0;
+    uint16 tmp1;
+    int i, k;
 
-	tmp1 = SFX_OFFSET;
+    tmp1 = SFX_OFFSET;
 
     for (i = 0; i < ADLIB_SFX_COUNT; i++) {
         for (k = 0; k < 5; k++)
@@ -667,7 +667,7 @@ int initsfx() {
             aad->sfx[i].op[1][k] = raw_data[tmp1++];
 
         aad->sfx[i].fb_alg = raw_data[tmp1++];
-	}
+    }
 
     return 0;
 }
@@ -688,14 +688,14 @@ int WAIT_SONG(){
                 if (event.key.keysym.sym == KEY_ESC) {
                     return TITUS_ERROR_QUIT;
                 } else if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-						waiting = false;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                        waiting = false;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
             }
         }
@@ -707,41 +707,41 @@ int WAIT_SONG(){
 
 int FX_START(int fx_number){
     ADLIB_DATA *aad = &(sdl_player_data.aad);
-	FX_TIME = 15;
-	FX_ON = true;
-	SDL_LockAudio();
-	insmaker(aad->sfx[fx_number].op[0], 0x13); //Channel 6 operator 1
-	insmaker(aad->sfx[fx_number].op[1], 0x10); //Channel 6 operator 2
+    FX_TIME = 15;
+    FX_ON = true;
+    SDL_LockAudio();
+    insmaker(aad->sfx[fx_number].op[0], 0x13); //Channel 6 operator 1
+    insmaker(aad->sfx[fx_number].op[1], 0x10); //Channel 6 operator 2
     updatechip(0xC6, aad->sfx[fx_number].fb_alg); //Channel 6 (Feedback/Algorithm)
-	SDL_UnlockAudio();
+    SDL_UnlockAudio();
     return 0;
 }
 
 int FX_DRIVER() {
     ADLIB_DATA *aad = &(sdl_player_data.aad);
-	if (!FX_ON) return;
-	updatechip(0xBD, 0xEF & aad->perc_stat);
-	updatechip(0xA6, 0x57);
-	updatechip(0xB6, 1);
-	updatechip(0xB6, 5);
-	updatechip(0xBD, 0x10 | aad->perc_stat);
-	FX_TIME--;
-	if (FX_TIME == 0) {
-		FX_STOP();
-	}
-	return 0;
+    if (!FX_ON) return;
+    updatechip(0xBD, 0xEF & aad->perc_stat);
+    updatechip(0xA6, 0x57);
+    updatechip(0xB6, 1);
+    updatechip(0xB6, 5);
+    updatechip(0xBD, 0x10 | aad->perc_stat);
+    FX_TIME--;
+    if (FX_TIME == 0) {
+        FX_STOP();
+    }
+    return 0;
 }
 
 int FX_STOP() {
-	unsigned char tmpins1[] = {0xF5, 0x7F, 0x00, 0x11, 0x00};
-	unsigned char tmpins2[] = {0xF8, 0xFF, 0x04, 0x30, 0x00};
-	SDL_LockAudio();
-	updatechip(0xB6, 32);
-	insmaker(tmpins1, 0x13); //Channel 6 operator 1
-	insmaker(tmpins2, 0x10); //Channel 6 operator 2
+    unsigned char tmpins1[] = {0xF5, 0x7F, 0x00, 0x11, 0x00};
+    unsigned char tmpins2[] = {0xF8, 0xFF, 0x04, 0x30, 0x00};
+    SDL_LockAudio();
+    updatechip(0xB6, 32);
+    insmaker(tmpins1, 0x13); //Channel 6 operator 1
+    insmaker(tmpins2, 0x10); //Channel 6 operator 2
     updatechip(0xC6, 0x08); //Channel 6 (Feedback/Algorithm)
-	SDL_UnlockAudio();
-	FX_ON = false;
+    SDL_UnlockAudio();
+    FX_ON = false;
 }
 
 int RETURN_MUSIC(){

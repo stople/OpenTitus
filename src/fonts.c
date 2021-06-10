@@ -61,7 +61,7 @@ int loadfonts(void) {
         return (0);
     }
 
-    
+
     retval = loadpixelformat_font(&(pixelformat));
     if (retval < 0) {
         return retval;
@@ -79,7 +79,7 @@ int loadfonts(void) {
         font->type[i] = 0;
         font->sub[i] = NULL;
     }
-    
+
 /*    
     //Second byte
     font->sub[0] = (TITUS_font *)SDL_malloc(sizeof(TITUS_font) * 256);
@@ -94,7 +94,7 @@ int loadfonts(void) {
         f_sub->type[i] = 0;
         f_sub->sub[i] = NULL;
     }
-    
+
     //Third byte
     f_sub->sub[0] = (TITUS_font *)SDL_malloc(sizeof(TITUS_font) * 256);
     if (f_sub->sub[0] == NULL) {
@@ -108,7 +108,7 @@ int loadfonts(void) {
         f_sub->type[i] = 0;
         f_sub->sub[i] = NULL;
     }
-    
+
     //Fourth byte
     f_sub->sub[0] = (TITUS_font *)SDL_malloc(sizeof(TITUS_font) * 256);
     if (f_sub->sub[0] == NULL) {
@@ -132,7 +132,7 @@ int loadfonts(void) {
         }
         font->type[i + CHAR_0] = 2; //Malloced surface
     }
-    
+
     if ((font->sub[CHAR_EXCLAMATION] = SDL_LoadChar(fontdata, 10, pixelformat)) == NULL) { //"!"
         freepixelformat(&(pixelformat));
         return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
@@ -176,7 +176,7 @@ int loadfonts(void) {
         font->sub[i + CHAR_a] = font->sub[i + CHAR_A]; //Use the same surface as the uppercase letter
         font->type[i + CHAR_a] = 3; //Surface pointer
     }
-    
+
     surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 8, 12, 8, 0, 0, 0, 0); //" "
     if (surface == NULL) {
         sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
@@ -218,7 +218,7 @@ SDL_Surface * SDL_LoadChar(unsigned char * fontdata, int offset, SDL_PixelFormat
         sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
         return (NULL);
     }
-    
+
     copypixelformat(surface->format, pixelformat);
 
     tmpchar = (char *)surface->pixels;
@@ -367,7 +367,7 @@ SDL_Surface * SDL_Text(char *text, bool inv_back){
         palette->colors[15].unused = 0 * 4; 
 
         palette->ncolors = 16;
-    }	
+    }    
 
     if (inv_back) //Invisible (transparent) background
         SDL_SetColorKey(surface, SDL_SRCCOLORKEY|SDL_RLEACCEL, 1);
@@ -450,7 +450,7 @@ int SDL_Print_Text(char *text, int x, int y, bool inv_back){
     src.y = 0;
     src.w = image->w;
     src.h = image->h;
-	
+
     dest.x = x;
     dest.y = y;
     dest.w = image->w;
@@ -468,7 +468,7 @@ int SDL_Print_Text(uint8 *text, int x, int y){
     uint8 i, j;
     SDL_Rect src, dest;
     SDL_Surface *image;
-    
+
     src.x = 0;
     src.y = 0;
     dest.x = x;
@@ -493,7 +493,7 @@ int SDL_Print_Text(uint8 *text, int x, int y){
             }
             f_sub = (TITUS_font *)f_sub->sub[text[i]];
         }
-        
+
         switch (f_sub->type[text[i]]) {
         case 0: //Undefined character
             image = font_undefined;

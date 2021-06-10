@@ -118,8 +118,8 @@ int loadsprites(TITUS_spritedata ***sprites, char * spritedata, int spritedatasi
         (*sprites)[i]->collwidth = spritecollwidth[i];
         (*sprites)[i]->refheight = 0 - ((int16)spriterefheight[i] - spriteheight[i]);
         (*sprites)[i]->refwidth = spriterefwidth[i];
-		(*sprites)[i]->spritebuffer[0] = NULL;
-		(*sprites)[i]->spritebuffer[1] = NULL;
+        (*sprites)[i]->spritebuffer[0] = NULL;
+        (*sprites)[i]->spritebuffer[1] = NULL;
         offset += ((unsigned int)spritewidth[i] * (unsigned int)spriteheight[i]) >> 1;
     }
 
@@ -142,13 +142,13 @@ int freesprites(TITUS_spritedata ***sprites, uint16 count) {
 
 int initspritecache(TITUS_spritecache *spritecache, uint16 count, uint16 tmpcount) {
     int i;
-	
-	spritecache->count = count;
-	spritecache->tmpcount = tmpcount;
-	spritecache->cycle = 0;
-	spritecache->cycle2 = spritecache->count - spritecache->tmpcount;
-	
-	spritecache->spritebuffer = (TITUS_spritebuffer **)SDL_malloc(sizeof(TITUS_spritebuffer *) * spritecache->count);
+
+    spritecache->count = count;
+    spritecache->tmpcount = tmpcount;
+    spritecache->cycle = 0;
+    spritecache->cycle2 = spritecache->count - spritecache->tmpcount;
+
+    spritecache->spritebuffer = (TITUS_spritebuffer **)SDL_malloc(sizeof(TITUS_spritebuffer *) * spritecache->count);
     if (spritecache->spritebuffer == NULL) {
         sprintf(lasterror, "Error: Not enough memory to initialize sprite buffer!\n");
         return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
@@ -161,9 +161,9 @@ int initspritecache(TITUS_spritecache *spritecache, uint16 count, uint16 tmpcoun
             return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
         }
         spritecache->spritebuffer[i]->data = NULL;
-		spritecache->spritebuffer[i]->spritedata = NULL;
-		spritecache->spritebuffer[i]->index = 0;
-	}
+        spritecache->spritebuffer[i]->spritedata = NULL;
+        spritecache->spritebuffer[i]->index = 0;
+    }
 
     return 0;
 }
@@ -273,7 +273,7 @@ SPRITES_ANIMATION(TITUS_level *level) {
         animate_sprite(level, &(level->elevator[i].sprite));
     }
 }
-    
+
 animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
     if (!spr->visible) return; //Not on screen?
     if (!spr->enabled) return;

@@ -125,7 +125,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
     src.y = 0;
     src.w = image->w;
     src.h = image->h;
-	
+
     dest.x = 0;
     dest.y = 0;
     dest.w = image->w;
