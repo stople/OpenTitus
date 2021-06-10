@@ -40,11 +40,11 @@
 #include "settings.h"
 
 static int TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX);
-static int BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX);
+static void BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX);
 static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX);
 static int XACCELERATION(TITUS_player *player, int16 maxspeed);
 static int YACCELERATION(TITUS_player *player, int16 maxspeed);
-static int BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX);
+static void BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX);
 static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX);
 static int CASE_PASS(TITUS_level *level, uint8 viewlevel, uint8 tileY, uint8 tileX);
 static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX);
@@ -575,7 +575,7 @@ static int TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX) {
     }
 }
 
-static int BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX) {
+static void BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX) {
     TITUS_player *player = &(level->player);
     TITUS_object *object;
     uint8 hflag;
@@ -771,7 +771,7 @@ static int YACCELERATION(TITUS_player *player, int16 maxspeed) {
 }
 
 
-static int BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX) {
+static void BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX) {
     //Action on different floor flags
     TITUS_player *player = &(level->player);
     uint8 order;
@@ -875,12 +875,12 @@ static int BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8
     }
 }
 
-ARAB_TOMBE_F() {
+void ARAB_TOMBE_F() {
     //Player free fall (doesn't touch floor)
     YFALL = YFALL | 0x01;
 }
 
-ARAB_BLOCK_YU(TITUS_player *player) {
+void ARAB_BLOCK_YU(TITUS_player *player) {
     //Floor; the player will not fall through
     POCKET_FLAG = true;
     player->GLISSE = 0;
@@ -908,9 +908,7 @@ static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX) {
     //If the bonus is 253-255, it's HP. Increase life!
     if (level->bonus[i].bonustile >= 255 - 2) {
         //Increase HP if tile number is >= 253
-#ifdef AUDIO_ENABLED
         SELECT_MUSIC(6);
-#endif
         INC_ENERGY(level);
     }
     //Return the original tile underneath the bonus
@@ -924,9 +922,7 @@ static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX) {
 
 static int CASE_PASS(TITUS_level *level, uint8 level_index, uint8 tileY, uint8 tileX) {
     //Codelamp
-#ifdef AUDIO_ENABLED
     SELECT_MUSIC(7);
-#endif
     if (CASE_BONUS(level, tileY, tileX)) { //if the bonus is found in the bonus list
         view_password(level, level_index);
     }
@@ -935,9 +931,7 @@ static int CASE_PASS(TITUS_level *level, uint8 level_index, uint8 tileY, uint8 t
 static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX) {
     TITUS_player *player = &(level->player);
     //Padlock, store X/Y coordinates
-#ifdef AUDIO_ENABLED
     SELECT_MUSIC(5);
-#endif
     if (CASE_BONUS(level, tileY, tileX)) { //if the bonus is found in the bonus list
         player->initX = player->sprite.x;
         player->initY = player->sprite.y;
@@ -949,7 +943,7 @@ static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX) {
     }
 }
 
-INC_ENERGY(TITUS_level *level) {
+void INC_ENERGY(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     BAR_FLAG = 50;
     player->hp++;
@@ -959,7 +953,7 @@ INC_ENERGY(TITUS_level *level) {
     }
 }
 
-DEC_ENERGY(TITUS_level *level) {
+void DEC_ENERGY(TITUS_level *level) {
     TITUS_player *player = &(level->player);
 	BAR_FLAG = 50;
     if (RESETLEVEL_FLAG == 0) {
@@ -1173,9 +1167,7 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
                         }
 
                         //Take the object
-#ifdef AUDIO_ENABLED
                         FX_START(9); //Sound effect
-#endif
                         FUME_FLAG = 0;
                         level->object[i].sprite.speedY = 0;
                         level->object[i].sprite.speedX = 0;
@@ -1265,9 +1257,7 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
                                 }
                             }
 
-#ifdef AUDIO_ENABLED
                             FX_START(9); //Sound effect
-#endif
                             FUME_FLAG = 0;
                             level->enemy[i].sprite.speedY = 0;
                             level->enemy[i].sprite.speedX = 0;
@@ -1333,17 +1323,13 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
                         DROP_FLAG = true;
                         player->sprite2.speedX = speedX;
                         player->sprite2.speedY = speedY;
-#ifdef AUDIO_ENABLED
                         FX_START(3); //Sound effect
-#endif
                     }
                 } else { //Ordinary throw
                     DROP_FLAG = true;
                     player->sprite2.speedX = speedX;
                     player->sprite2.speedY = speedY;
-#ifdef AUDIO_ENABLED
                     FX_START(3); //Sound effect
-#endif
                 }
             }
             updatesprite(level, &(player->sprite), 10, true); //The same as in free fall
@@ -1419,7 +1405,7 @@ static int ACTION_PRG(TITUS_level *level, uint8 action) {
 
 }
 
-DECELERATION(TITUS_player *player) {
+void DECELERATION(TITUS_player *player) {
     //Stop acceleration
     uint8 friction = (3 * 4) >> player->GLISSE;
     int16 speed;
@@ -1478,7 +1464,7 @@ int16 add_carry() {
     }
 }
 
-COLLISION_TRP(TITUS_level *level) {
+void COLLISION_TRP(TITUS_level *level) {
     //Player versus elevators
     //Change player's location according to the elevator
     uint8 i;
@@ -1537,7 +1523,7 @@ COLLISION_TRP(TITUS_level *level) {
     }
 }
 
-COLLISION_OBJET(TITUS_level *level) {
+void COLLISION_OBJET(TITUS_level *level) {
     //Player versus objects
     //Collision, spring state, speed up carpet/scooter/skateboard, bounce bouncy objects
     TITUS_player *player = &(level->player);
@@ -1609,9 +1595,7 @@ COLLISION_OBJET(TITUS_level *level) {
 
         //If the ball lies on the ground
         if (off_object->sprite.speedY == 0) {
-#ifdef AUDIO_ENABLED
             FX_START(12); //Sound effect
-#endif        
             off_object->sprite.speedY = 0 - player->sprite.speedY;
             off_object->sprite.y -= off_object->sprite.speedY >> 4;
             GRAVITY_FLAG = 4;

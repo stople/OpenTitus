@@ -26,8 +26,7 @@
  * Contains the OpenTitus level format structure, and level functions
  */
 
-#ifndef LEVEL_H
-#define LEVEL_H
+#pragma once
 
 #include "SDL/SDL.h"
 #include "definitions.h"
@@ -236,5 +235,3 @@ int freelevel(TITUS_level *level);
 uint8 get_horizflag(TITUS_level *level, int16 tileY, int16 tileX);
 uint8 get_floorflag(TITUS_level *level, int16 tileY, int16 tileX);
 uint8 get_ceilflag(TITUS_level *level, int16 tileY, int16 tileX);
-
-#endif

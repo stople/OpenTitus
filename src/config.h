@@ -37,51 +37,5 @@
 //#undef AUDIO_ENABLED
 #define AUDIO_ENABLED 1
 
-/*
-// Define to 1 if you want to use libmikmod (amiga .mod playback) directly, in the same thread as the game (laggy)
-#undef AUDIO_MIKMOD_SINGLETHREAD
-//#define AUDIO_MIKMOD_SINGLETHREAD 1
-
-// Define to 1 if you want to use libmikmod directly, in a separate thread
-#undef AUDIO_MIKMOD_MULTITHREAD
-//#define AUDIO_MIKMOD_MULTITHREAD 1
-
-// Define to 1 if you want to use sdl-mixer (which includes libmikmod)
-#undef AUDIO_SDL_MIXER
-//#define AUDIO_SDL_MIXER 1
-
-// Mikmod md_mode, read mikmod documentation for info
-#define AUDIO_MIKMOD_MODE DMODE_STEREO | DMODE_SURROUND | DMODE_16BITS | DMODE_SOFT_MUSIC | DMODE_SOFT_SNDFX
-
-// Check for config errors, DO NOT EDIT BELOW!
-
-#ifndef AUDIO_ENABLED
-#undef AUDIO_SDL_MIXER
-#undef AUDIO_MIKMOD_MULTITHREAD
-#undef AUDIO_MIKMOD_SINGLETHREAD
-#endif //AUDIO_ENABLED
-
-#ifdef AUDIO_ENABLED
-
-#ifdef AUDIO_SDL_MIXER
-#undef AUDIO_MIKMOD_MULTITHREAD
-#undef AUDIO_MIKMOD_SINGLETHREAD
-#endif //AUDIO_SDL_MIXER
-
-#ifdef AUDIO_MIKMOD_MULTITHREAD
-#undef AUDIO_MIKMOD_SINGLETHREAD
-#undef AUDIO_SDL_MIXER
-#endif //AUDIO_MIKMOD_MULTITHREAD
-
-#ifndef AUDIO_SDL_MIXER
-#ifndef AUDIO_MIKMOD_MULTITHREAD
-#ifndef AUDIO_MIKMOD_SINGLETHREAD
-#define AUDIO_SDL_MIXER 1
-#endif //AUDIO_MIKMOD_SINGLETHREAD
-#endif //AUDIO_MIKMOD_MULTITHREAD
-#endif //AUDIO_SDL_MIXER
-
-#endif //AUDIO_ENABLED
-*/
 
 #endif //CONFIG_H

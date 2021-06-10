@@ -318,7 +318,7 @@ int move_objects(TITUS_level *level) {
     }
 }
 
-int shock(TITUS_level *level, TITUS_object *object) { //Falling object versus player
+void shock(TITUS_level *level, TITUS_object *object) { //Falling object versus player
 
     TITUS_player *player = &(level->player);
 
@@ -337,10 +337,9 @@ int shock(TITUS_level *level, TITUS_object *object) { //Falling object versus pl
         if (object->sprite.x > player->sprite.x + 24) return; //Object is too far right
     } else { //Object center is left for center
         if (object->sprite.x + object->sprite.spritedata->collwidth < player->sprite.x) return; //Return if object is too far left
-    }    
-    
+    }
+
     //Test Y
-    
     if (object->sprite.y < player->sprite.y) { //Object bottom is above player bottom
         if (object->sprite.y <= player->sprite.y - 32) return; //Return if object is completely above the player
     } else { //Object bottom is below player bottom
@@ -348,10 +347,7 @@ int shock(TITUS_level *level, TITUS_object *object) { //Falling object versus pl
     }
 
     //Hit!
-    
-#ifdef AUDIO_ENABLED
     FX_START(5); //Sound effect
-#endif
     CHOC_FLAG = 24;
     if (object->sprite.killing) {
         if (!GODMODE) {

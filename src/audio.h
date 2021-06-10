@@ -22,15 +22,7 @@
  * General Public License for more details.
  */
 
-/* audio.h
- * Handles audio.
- */
-
-#ifndef AUDIO_H
-#define AUDIO_H
-
-#ifdef AUDIO_ENABLED
-//#include "SDL/SDL_mixer.h"
+#pragma once
 
 int initaudio();
 int freeaudio();
@@ -40,41 +32,3 @@ int FX_START(int fx_number);
 int RETURN_MUSIC();
 int startmusic();
 int refreshaudio();
-
-
-/*
-#ifdef AUDIO_SDL_MIXER
-#endif //AUDIO_SDL_MIXER
-
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-#include <mikmod.h>
-MODULE *module;
-int checkmodule(void);
-#endif //AUDIO_MIKMOD_SINGLETHREAD
-
-
-#ifdef AUDIO_MIKMOD_MULTITHREAD
-#include <mikmod.h>
-#include <pthread.h>
-MODULE *module;
-
-pthread_mutex_t modulemutex;
-pthread_t module_thd_id;
-
-int startmodulethread(void);
-
-typedef struct {
-    char command;
-    char filename[256];
-    int loopinfo;
-    char pausestatus;
-} MODULE_CONTROL;
-
-MODULE_CONTROL mod_ctrl; 
-
-#endif //AUDIO_MIKMOD_MULTITHREAD
-*/
-#endif //AUDIO_ENABLED
-
-#endif //AUDIO_H

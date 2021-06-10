@@ -33,9 +33,7 @@
 
 #include "config.h"
 
-#ifdef AUDIO_ENABLED
 #include "audio.h"
-#endif
 
 #include "tituserror.h"
 #include "sqz.h"
@@ -50,65 +48,6 @@
 #include "original.h"
 #include "objects.h"
 
-int main(int argc, char *argv[]) {
-
-    int retval;
-    int state = 1; //View the menu when the main loop starts
-    retval = init();
-    if (retval < 0)
-        state = 0;
-
-    if (state) {
-        retval = viewintrotext();
-        if (retval < 0)
-            state = 0;
-    }
-
-    if (state) {
-        retval = viewimage(tituslogofile, tituslogoformat, 0, 4000);
-        if (retval < 0)
-            state = 0;
-    }
-
-#ifdef AUDIO_ENABLED
-    SELECT_MUSIC(15);
-#endif
-
-    if (state) {
-        retval = viewimage(titusintrofile, titusintroformat, 0, 6500);
-        if (retval < 0)
-            state = 0;
-    }
-
-    while (state) {
-        retval = viewmenu(titusmenufile, titusmenuformat);
-
-        if (retval <= 0)
-            state = 0;
-
-        if (state && (retval <= levelcount)) {
-            retval = playtitus(retval - 1);
-            if (retval < 0)
-                state = 0;
-        }
-    }
-    
-    freefonts();
-
-#ifdef AUDIO_ENABLED
-    freeaudio();
-#endif
-
-    SDL_Quit();
-
-    checkerror();
-
-    if (retval == -1)
-        retval = 0;
-
-    return retval;
-}
-
 int init() {
 
     int retval;
@@ -117,17 +56,10 @@ int init() {
     if (retval < 0)
         return retval;
 
-#ifdef AUDIO_ENABLED
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) != 0) {
         printf("Unable to initialize SDL: %s\n", SDL_GetError());
         return TITUS_ERROR_SDL_ERROR;
     }
-#else
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
-        printf("Unable to initialize SDL: %s\n", SDL_GetError());
-        return TITUS_ERROR_SDL_ERROR;
-    }
-#endif
 
 #ifdef _DINGUX
     //fullscreen
@@ -153,7 +85,7 @@ int init() {
 
     SDL_EnableUNICODE (1);
 
-	initaudio();
+    initaudio();
 
     initoriginal();
 
@@ -165,6 +97,61 @@ int init() {
 
     return 0;
 
+}
+
+int main(int argc, char *argv[]) {
+
+    int retval;
+    int state = 1; //View the menu when the main loop starts
+    retval = init();
+    if (retval < 0)
+        state = 0;
+
+    if (state) {
+        retval = viewintrotext();
+        if (retval < 0)
+            state = 0;
+    }
+
+    if (state) {
+        retval = viewimage(tituslogofile, tituslogoformat, 0, 4000);
+        if (retval < 0)
+            state = 0;
+    }
+
+    SELECT_MUSIC(15);
+
+    if (state) {
+        retval = viewimage(titusintrofile, titusintroformat, 0, 6500);
+        if (retval < 0)
+            state = 0;
+    }
+
+    while (state) {
+        retval = viewmenu(titusmenufile, titusmenuformat);
+
+        if (retval <= 0)
+            state = 0;
+
+        if (state && (retval <= levelcount)) {
+            retval = playtitus(retval - 1);
+            if (retval < 0)
+                state = 0;
+        }
+    }
+    
+    freefonts();
+
+    freeaudio();
+
+    SDL_Quit();
+
+    checkerror();
+
+    if (retval == -1)
+        retval = 0;
+
+    return retval;
 }
 
 void checkerror(void) {

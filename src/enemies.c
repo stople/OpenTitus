@@ -1158,9 +1158,7 @@ int SET_NMI(TITUS_level *level) {
                 }
             }
             //If final enemy, remove energy
-#ifdef AUDIO_ENABLED
             FX_START(1);
-#endif
             DROP_FLAG = 0;
             if (level->enemy[i].boss) {
                 if (INVULNERABLE_FLAG != 0) {
@@ -1182,7 +1180,7 @@ int SET_NMI(TITUS_level *level) {
 }
 
 
-GAL_FORM(TITUS_level *level, TITUS_enemy *enemy) { //Enemy animation
+void GAL_FORM(TITUS_level *level, TITUS_enemy *enemy) { //Enemy animation
     int16 *image;
     enemy->sprite.invisible = false;
     if ((enemy->dying & 0x03) != 0) {
@@ -1211,7 +1209,7 @@ GAL_FORM(TITUS_level *level, TITUS_enemy *enemy) { //Enemy animation
 }
 
 
-ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy) {
+void ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy) {
     switch (enemy->type) {
     case 0:
     case 1:
@@ -1249,9 +1247,7 @@ ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy) {
 
 
 int KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power) {
-#ifdef AUDIO_ENABLED
     FX_START(4);
-#endif
     TITUS_sprite *p_sprite = &(level->player.sprite);
     DEC_ENERGY(level);
     DEC_ENERGY(level);
@@ -1299,7 +1295,7 @@ bool NMI_VS_DROP(TITUS_sprite *enemysprite, TITUS_sprite *sprite) {
 }
 
 
-SEE_CHOC(TITUS_level *level) {
+void SEE_CHOC(TITUS_level *level) {
     updatesprite(level, &(level->player.sprite2), FIRST_OBJET + 15, true); //Hit (a throw hits an enemy)
     level->player.sprite2.speedX = 0;
     level->player.sprite2.speedY = 0;
@@ -1346,7 +1342,7 @@ bool FIND_TRASH(TITUS_level *level, TITUS_sprite **trash) {
     return false;
 }
 
-PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet) {
+void PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet) {
     bullet->x = enemy->sprite.x;
     bullet->y = enemy->sprite.y - (int8)(*(enemy->sprite.animation - 1) & 0x00FF);
     updatesprite(level, bullet, (*(enemy->sprite.animation - 2) & 0x1FFF) + FIRST_OBJET, true);
@@ -1361,14 +1357,14 @@ PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet) {
     bullet->x += bullet->speedX >> 4;
 }
 
-UP_ANIMATION(TITUS_sprite *sprite) {
+void UP_ANIMATION(TITUS_sprite *sprite) {
     do {
         sprite->animation++;
     } while (*sprite->animation >= 0);
     sprite->animation++;
 }
 
-DOWN_ANIMATION(TITUS_sprite *sprite) {
+void DOWN_ANIMATION(TITUS_sprite *sprite) {
     do {
         sprite->animation--;
     } while (*sprite->animation >= 0);

@@ -42,7 +42,7 @@ int CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, and
 }
 
 
-check_finish(TITUS_level *level) {
+void check_finish(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     if (boss_alive) { //There is still a boss that needs to be killed!
         return;
@@ -61,15 +61,13 @@ check_finish(TITUS_level *level) {
       ((player->sprite.y & 0xFFF0) - 16 != level->finishY)) {
         return;
     }
-#ifdef AUDIO_ENABLED
     SELECT_MUSIC(4);
     WAIT_SONG();
-#endif
     CLOSE_SCREEN();
     NEWLEVEL_FLAG = true;
 }
 
-check_gates(TITUS_level *level) {
+void check_gates(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     uint8 i;
     if ((CROSS_FLAG == 0) || //not kneestanding

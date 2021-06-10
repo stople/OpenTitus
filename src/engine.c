@@ -53,9 +53,7 @@
 
 #include "config.h"
 
-#ifdef AUDIO_ENABLED
 #include "audio.h"
-#endif
 
 static int playlevel(TITUS_level *level);
 static int displaylevel(TITUS_level *level);
@@ -149,9 +147,7 @@ int playtitus(int firstlevel){
         }
         first = true;
         while (1) {
-#ifdef AUDIO_ENABLED
             SELECT_MUSIC(0);
-#endif
             CLEAR_DATA(&level);
 
             GODMODE = false;
@@ -171,10 +167,8 @@ int playtitus(int firstlevel){
 
             //retval = initlevel (&level);
 
-#ifdef AUDIO_ENABLED
             //changemusic(modulelevelfile[modulelevel[level.levelnumber] - 1], modulelevelfileloop[modulelevel[level.levelnumber] - 1]);
             SELECT_MUSIC(LEVEL_MUSIC[level.levelid]);
-#endif
 
             INIT_SCREENM(&level); //Todo: comment, DOCUMENTED! (reset_level_simplified)
             TFR_SCREENM(); //Draws tiles
@@ -270,9 +264,7 @@ static int playlevel(TITUS_level *level) {
             gettick(&tick, 12);
             DISPLAY_COUNT(level); //Draw energy to the backbuffer
             gettick(&tick, 13);
-#ifdef AUDIO_ENABLED
             RETURN_MUSIC(level); //Restart music if the song is finished
-#endif
             flip_screen(true);
         }
         firstrun = false;
@@ -323,9 +315,7 @@ static int playlevel(TITUS_level *level) {
     do {
         if (!firstrun) {
             DISPLAY_COUNT(level); //Draw energy to the backbuffer
-#ifdef AUDIO_ENABLED
             RETURN_MUSIC(level); //Restart music if the song is finished
-#endif
             flip_screen(true);
         }
         firstrun = false;
@@ -373,9 +363,8 @@ static int getpolarity(int number){
 int death(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     int i;
-#ifdef AUDIO_ENABLED
+
     SELECT_MUSIC(1);
-#endif
     FORCE_POSE(level);
     updatesprite(level, &(player->sprite), 13, true); //Death
     player->sprite.speedY = 15;
@@ -391,11 +380,9 @@ int death(TITUS_level *level) {
         player->sprite.y -= player->sprite.speedY;
     }
 
-#ifdef AUDIO_ENABLED
     WAIT_SONG();
     SELECT_MUSIC(0);
-#endif
-        
+
     /* TODO: remove because REPLACED
     SCREEN_1();
     //TODO: SELECT_MUSIC(LEVEL_MUSIC[FNAMEB]);
@@ -405,12 +392,10 @@ int death(TITUS_level *level) {
     CLOSE_SCREEN();
 }
 
-int gameover(TITUS_level *level) {
+void gameover(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     int i, retval;
-#ifdef AUDIO_ENABLED
     SELECT_MUSIC(2);
-#endif
     updatesprite(level, &(player->sprite), 13, true); //Death
     updatesprite(level, &(player->sprite2), 333, true); //Game
     player->sprite2.x = (BITMAP_X << 4) - (120-2);
@@ -429,12 +414,12 @@ int gameover(TITUS_level *level) {
     SCREEN_5C(); //Secret: display picture if LCtrl+LAlt+E is pressed
     retval = waitforbutton();
     if (retval < 0)
-        return retval;
+        return;
 
     fadeout();
 }
 
-int SCREEN_5C() {
+void SCREEN_5C() {
     uint16 key;
     int retval;
     if (keystate[SDLK_LCTRL] && //LCtrl
@@ -449,10 +434,8 @@ int SCREEN_5C() {
         if (game == 0) { //Titus
             retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
             if (retval < 0)
-                return retval;
+                return;
         }
-#ifdef AUDIO_ENABLED
         SELECT_MUSIC(9);
-#endif
     }
 }

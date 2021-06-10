@@ -36,7 +36,7 @@
 #include "level.h"
 
 
-int MOVE_TRP(TITUS_level *level);
+void MOVE_TRP(TITUS_level *level);
 
 
 #endif

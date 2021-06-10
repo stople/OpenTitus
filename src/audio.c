@@ -15,9 +15,6 @@
 //Probably not the best way, but it works...
 #include "config.h"
 
-#ifdef AUDIO_ENABLED
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -754,6 +751,3 @@ int RETURN_MUSIC(){
         }
     }
 }
-
-#endif //AUDIO_ENABLED
-

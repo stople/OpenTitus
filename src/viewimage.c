@@ -38,9 +38,7 @@
 
 #include "config.h"
 
-#ifdef AUDIO_ENABLED
 #include "audio.h"
-#endif
 
 int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
     SDL_Surface *surface;
@@ -157,17 +155,15 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         fadeoutskip = 255 - image_alpha;
                     }
 
-#ifdef AUDIO_ENABLED
                     if (event.key.keysym.sym == KEY_MUSIC) {
-						AUDIOMODE++;
-						if (AUDIOMODE > 1) {
-							AUDIOMODE = 0;
-						}
-						if (AUDIOMODE == 1) {
-							startmusic();
-						}
-					}
-#endif
+                        AUDIOMODE++;
+                        if (AUDIOMODE > 1) {
+                            AUDIOMODE = 0;
+                        }
+                        if (AUDIOMODE == 1) {
+                            startmusic();
+                        }
+                    }
 
                 }
             }
@@ -181,15 +177,6 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
             titus_sleep();
         }
 
@@ -212,28 +199,17 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                     if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE)
                         activedelay = 0;
 
-#ifdef AUDIO_ENABLED
                     if (event.key.keysym.sym == KEY_MUSIC) {
-						AUDIOMODE++;
-						if (AUDIOMODE > 1) {
-							AUDIOMODE = 0;
-						}
-						if (AUDIOMODE == 1) {
-							startmusic();
-						}
+                        AUDIOMODE++;
+                        if (AUDIOMODE > 1) {
+                            AUDIOMODE = 0;
+                        }
+                        if (AUDIOMODE == 1) {
+                            startmusic();
+                        }
                     }
-#endif
                 }
             }
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
             titus_sleep();
             if ((SDL_GetTicks() - tick_start + fade_time) >= delay)
                 activedelay = 0;
@@ -256,17 +232,15 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         SDL_FreeSurface(surface);
                         return (-1);
                     }
-#ifdef AUDIO_ENABLED
                     if (event.key.keysym.sym == KEY_MUSIC) {
-						AUDIOMODE++;
-						if (AUDIOMODE > 1) {
-							AUDIOMODE = 0;
-						}
-						if (AUDIOMODE == 1) {
-							startmusic();
-						}
+                        AUDIOMODE++;
+                        if (AUDIOMODE > 1) {
+                            AUDIOMODE = 0;
+                        }
+                        if (AUDIOMODE == 1) {
+                            startmusic();
+                        }
                     }
-#endif
                 }
             }
 
@@ -279,15 +253,6 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
             titus_sleep();
         }
         break;
@@ -320,17 +285,15 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         SDL_FreeSurface(surface);
                         return (-1);
                     }
-#ifdef AUDIO_ENABLED
                     if (event.key.keysym.sym == KEY_MUSIC) {
-						AUDIOMODE++;
-						if (AUDIOMODE > 1) {
-							AUDIOMODE = 0;
-						}
-						if (AUDIOMODE == 1) {
-							startmusic();
-						}
-					}
-#endif
+                        AUDIOMODE++;
+                        if (AUDIOMODE > 1) {
+                            AUDIOMODE = 0;
+                        }
+                        if (AUDIOMODE == 1) {
+                            startmusic();
+                        }
+                    }
                 }
             }
 
@@ -343,15 +306,6 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
             titus_sleep();
         }
 

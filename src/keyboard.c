@@ -33,9 +33,7 @@
 
 #include "config.h"
 
-#ifdef AUDIO_ENABLED
 #include "audio.h"
-#endif
 
 int waitforbutton() {
     SDL_Event event;
@@ -53,27 +51,18 @@ int waitforbutton() {
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     waiting = -1;
 
-#ifdef AUDIO_ENABLED
                 if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
-#endif
             }
         }
-		titus_sleep();
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
+        titus_sleep();
 
     }
     return (waiting);

@@ -257,7 +257,7 @@ int CLEAR_DATA(TITUS_level *level) {
 }
 
 
-SET_DATA_NMI(TITUS_level *level) {
+void SET_DATA_NMI(TITUS_level *level) {
     boss_alive = false;
     int i, anim;
     for (i = 0; i < level->enemycount; i++) {
@@ -274,7 +274,7 @@ SET_DATA_NMI(TITUS_level *level) {
     BIGNMI_POWER = NMI_POWER[level->levelid];
 }
 
-clearsprite(TITUS_sprite *spr){
+int clearsprite(TITUS_sprite *spr){
     //SDL_FreeSurface(spr->buffer);
     //spr->buffer = NULL;
     spr->enabled = false;
@@ -299,7 +299,7 @@ clearsprite(TITUS_sprite *spr){
 }
 
 
-SET_ALL_SPRITES(TITUS_level *level) {
+void SET_ALL_SPRITES(TITUS_level *level) {
     int16 i;
     TITUS_player *player = &(level->player);
     

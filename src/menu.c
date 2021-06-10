@@ -41,9 +41,7 @@
 
 #include "config.h"
 
-#ifdef AUDIO_ENABLED
 #include "audio.h"
-#endif
 
 int viewmenu(char * menufile, int menuformat) {
     SDL_Surface *surface;
@@ -158,17 +156,15 @@ int viewmenu(char * menufile, int menuformat) {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-#ifdef AUDIO_ENABLED
                 if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
-#endif
             }
         }
 
@@ -184,14 +180,6 @@ int viewmenu(char * menufile, int menuformat) {
         SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
         SDL_Flip(screen);
         titus_sleep();
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
 
     }
 
@@ -216,17 +204,15 @@ int viewmenu(char * menufile, int menuformat) {
                     selection = 1;
                 if (event.key.keysym.sym == KEY_RETURN || event.key.keysym.sym == KEY_ENTER || event.key.keysym.sym == KEY_SPACE)
                     menuloop = 0;
-#ifdef AUDIO_ENABLED
                 if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
-#endif
             }
         }
 
@@ -236,15 +222,6 @@ int viewmenu(char * menufile, int menuformat) {
         SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
         SDL_Flip(screen);
         titus_sleep();
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
     }
 
     switch (selection) {
@@ -287,17 +264,15 @@ int viewmenu(char * menufile, int menuformat) {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-#ifdef AUDIO_ENABLED
                 if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
-#endif
             }
         }
 
@@ -313,10 +288,6 @@ int viewmenu(char * menufile, int menuformat) {
         SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
         SDL_Flip(screen);
         titus_sleep();
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
 
 #ifdef AUDIO_SDL_MIXER
         checkaudio();
@@ -392,17 +363,15 @@ int enterpassword(){
                 }
 #endif
 
-#ifdef AUDIO_ENABLED
                 if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
-#endif
             }
         }
 #ifdef _DINGUX
@@ -424,15 +393,6 @@ int enterpassword(){
         SDL_Print_Text(code, 159, 80);
         SDL_Flip(screen);
         titus_sleep();
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
     }
 
     for (i = 0; i < levelcount; i++) {

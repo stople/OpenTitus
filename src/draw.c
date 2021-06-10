@@ -494,7 +494,7 @@ int DISPLAY_COUNT(TITUS_level *level) {
 }
 
 
-DISPLAY_ENERGY(TITUS_level *level) {
+void DISPLAY_ENERGY(TITUS_level *level) {
     uint8 offset = 96;
     uint8 i;
     SDL_Rect dest;
@@ -552,17 +552,15 @@ int fadeout() {
                     SDL_FreeSurface(image);
                     return (-1);
                 }
-#ifdef AUDIO_ENABLED
                 if (event.key.keysym.sym == KEY_MUSIC) {
-					AUDIOMODE++;
-					if (AUDIOMODE > 1) {
-						AUDIOMODE = 0;
-					}
-					if (AUDIOMODE == 1) {
-						startmusic();
-					}
+                    AUDIOMODE++;
+                    if (AUDIOMODE > 1) {
+                        AUDIOMODE = 0;
+                    }
+                    if (AUDIOMODE == 1) {
+                        startmusic();
+                    }
                 }
-#endif
             }
         }
 
@@ -575,14 +573,6 @@ int fadeout() {
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_Flip(screen);
-
-#ifdef AUDIO_MIKMOD_SINGLETHREAD
-        checkmodule();
-#endif
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
 
         titus_sleep();
     }

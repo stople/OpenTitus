@@ -37,7 +37,16 @@
 #include "definitions.h"
 #include "elevators.h"
 
-int MOVE_TRP(TITUS_level *level) {
+void MTSBR(TITUS_elevator *elevator) {
+    elevator->counter++;
+    if (elevator->counter >= elevator->range) {
+        elevator->counter = 0;
+        elevator->sprite.speedX = 0 - elevator->sprite.speedX;
+        elevator->sprite.speedY = 0 - elevator->sprite.speedY;
+    }
+}
+
+void MOVE_TRP(TITUS_level *level) {
     TITUS_elevator *elevator = level->elevator;
     uint8 i;
     for (i = 0; i < level->elevatorcount; i++) {
@@ -59,11 +68,3 @@ int MOVE_TRP(TITUS_level *level) {
     }
 }
 
-MTSBR(TITUS_elevator *elevator) {
-    elevator->counter++;
-    if (elevator->counter >= elevator->range) {
-        elevator->counter = 0;
-        elevator->sprite.speedX = 0 - elevator->sprite.speedX;
-        elevator->sprite.speedY = 0 - elevator->sprite.speedY;
-    }
-}
