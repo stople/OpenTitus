@@ -1,10 +1,14 @@
-# Readme for OpenTitus
-Git version
-http://opentitus.sourceforge.net/
+# OpenTitus
+
+![Game title screen](/docs/title.jpg)
+
+A port of the game engine behind the DOS versions of Titus the Fox and Moktar.
 
 OpenTitus is released under the Gnu GPL version 3 or (at your option) any later version of the license, and it is released "as is"; without any warranty.
 
-## The OpenTitus team:
+This is a fork that aims to modernize the codebase, clean everything up, fix bugs, and make the game playable on modern systems with large 4K screens.
+
+## The original OpenTitus team:
 * Eirik Stople - Main developer - eirik@pcfood.net
 * Eitan Tal - Valuable assistant, technical advisor
 
