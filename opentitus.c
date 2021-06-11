@@ -69,8 +69,8 @@ int init() {
     switch (videomode) {
         default:
         case 0: //window mode
-            w = 320;
-            h = 200;
+            w = 960;
+            h = 600;
             windowflags = SDL_WINDOW_RESIZABLE;
             break;
         case 1: // fullscreen
