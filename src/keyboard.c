@@ -32,6 +32,7 @@
 #include "common.h"
 
 #include "audio.h"
+#include "backbuffer.h"
 
 int waitforbutton() {
     SDL_Event event;
@@ -57,6 +58,17 @@ int waitforbutton() {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                }
+            }
+            if (event.type == SDL_WINDOWEVENT) {
+                switch (event.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                    case SDL_WINDOWEVENT_MAXIMIZED:
+                    case SDL_WINDOWEVENT_RESTORED:
+                        SDL_Flip(screen);
+                    default:
+                        break;
                 }
             }
         }

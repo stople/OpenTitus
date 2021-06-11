@@ -205,6 +205,18 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         }
                     }
                 }
+
+                if (event.type == SDL_WINDOWEVENT) {
+                    switch (event.window.event) {
+                        case SDL_WINDOWEVENT_RESIZED:
+                        case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        case SDL_WINDOWEVENT_MAXIMIZED:
+                        case SDL_WINDOWEVENT_RESTORED:
+                            SDL_Flip(screen);
+                        default:
+                            break;
+                    }
+                }
             }
             titus_sleep();
             if ((SDL_GetTicks() - tick_start + fade_time) >= delay)
