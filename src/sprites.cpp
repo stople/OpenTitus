@@ -98,7 +98,7 @@ SDL_Surface * SDL_LoadSprite(unsigned char * first, char width, char height, uns
     return(surface);
 }
 
-int loadsprites(TITUS_spritedata ***sprites, char * spritedata, int spritedatasize, SDL_PixelFormat * pixelformat, uint16 *count) {
+int loadsprites(TITUS_spritedata ***sprites, unsigned char * spritedata, int spritedatasize, SDL_PixelFormat * pixelformat, uint16 *count) {
     int i;
     unsigned int offset = 0;
     *count = SPRITECOUNT;
@@ -244,37 +244,7 @@ int copypixelformat(SDL_PixelFormat * destformat, SDL_PixelFormat * srcformat) {
     return 0;
 }
 
-SPRITES_ANIMATION(TITUS_level *level) {
-    int16 i;
-    //Animate player
-    if ((LAST_ORDER == 0) &&
-      (POCKET_FLAG) &&
-      (ACTION_TIMER >= 35*4)) {
-        updatesprite(level, &(level->player.sprite), 29, false); //"Pause"-sprite
-        if (ACTION_TIMER >= 35*5) {
-            updatesprite(level, &(level->player.sprite), 0, false); //Normal player sprite
-            ACTION_TIMER = 0;
-        }
-    }
-    //Animate other objects
-
-    animate_sprite(level, &(level->player.sprite2));
-    animate_sprite(level, &(level->player.sprite3));
-
-    for (i = 0; i < level->objectcount; i++) {
-        animate_sprite(level, &(level->object[i].sprite));
-    }
-
-    for (i = 0; i < level->enemycount; i++) {
-        animate_sprite(level, &(level->enemy[i].sprite));
-    }
-
-    for (i = 0; i < level->elevatorcount; i++) {
-        animate_sprite(level, &(level->elevator[i].sprite));
-    }
-}
-
-animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
+static void animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
     if (!spr->visible) return; //Not on screen?
     if (!spr->enabled) return;
     if (spr->number == (FIRST_OBJET+26)) { //Cage
@@ -319,6 +289,35 @@ animate_sprite(TITUS_level *level, TITUS_sprite *spr) {
     }
 }
 
+void SPRITES_ANIMATION(TITUS_level *level) {
+    int16 i;
+    //Animate player
+    if ((LAST_ORDER == 0) &&
+      (POCKET_FLAG) &&
+      (ACTION_TIMER >= 35*4)) {
+        updatesprite(level, &(level->player.sprite), 29, false); //"Pause"-sprite
+        if (ACTION_TIMER >= 35*5) {
+            updatesprite(level, &(level->player.sprite), 0, false); //Normal player sprite
+            ACTION_TIMER = 0;
+        }
+    }
+    //Animate other objects
+
+    animate_sprite(level, &(level->player.sprite2));
+    animate_sprite(level, &(level->player.sprite3));
+
+    for (i = 0; i < level->objectcount; i++) {
+        animate_sprite(level, &(level->object[i].sprite));
+    }
+
+    for (i = 0; i < level->enemycount; i++) {
+        animate_sprite(level, &(level->enemy[i].sprite));
+    }
+
+    for (i = 0; i < level->elevatorcount; i++) {
+        animate_sprite(level, &(level->elevator[i].sprite));
+    }
+}
 
 int updatesprite(TITUS_level *level, TITUS_sprite *spr, int16 number, bool clearflags){
     spr->number = number;

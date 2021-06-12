@@ -62,7 +62,7 @@ int  modulegameoverfileloop;
 char modulelevel[16]; //Link to modulelevelfiles
 
 
-int readconfig(char *configfile) {
+int readconfig(const char *configfile) {
     char line[300], tmp[256];
     int retval, i, j, tmpcount = 0;
     levelcount = 0;

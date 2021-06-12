@@ -33,6 +33,7 @@
 #include "globals.h"
 #include "definitions.h"
 #include "scroll.h"
+#include "tile_animation.h"
 
 void BLOC_ANIMATION(TITUS_level *level) {
     //Draw animated sprites on OFS_SCREENM

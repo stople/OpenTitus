@@ -38,8 +38,9 @@
 #include "audio.h"
 #include "globals.h"
 #include "common.h"
+#include "keyboard.h"
 
-#include "audio.h"
+int enterpassword();
 
 int viewmenu(char * menufile, int menuformat) {
     SDL_Surface *surface;

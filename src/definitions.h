@@ -26,9 +26,7 @@
  * Definitions
  */
 
-#ifndef DEFINITIONS_H
-#define DEFINITIONS_H
-
+#pragma once
 #include <unistd.h> //bool
 
 typedef unsigned char uint8;
@@ -37,9 +35,3 @@ typedef unsigned long int uint32;
 typedef signed char int8;
 typedef signed short int int16;
 typedef signed long int int32;
-
-typedef enum _bool bool;
-
-enum _bool{false, true};
-
-#endif

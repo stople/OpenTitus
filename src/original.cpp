@@ -33,6 +33,7 @@
 #include "original.h"
 #include "settings.h"
 #include "definitions.h"
+#include <cassert>
 
 SDL_Color orig_palette_colour[16];
 SDL_Color orig_palette_level_colour[16];
@@ -657,4 +658,6 @@ int16 getlevelid(int16 levelnumber) {
             }
         }
     }
+    assert(false);
+    return -1;
 }

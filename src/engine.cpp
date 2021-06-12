@@ -50,6 +50,8 @@
 #include "elevators.h"
 #include "objects.h"
 #include "enemies.h"
+#include "viewimage.h"
+#include "tile_animation.h"
 
 #include "audio.h"
 
@@ -59,8 +61,10 @@ static int movescreen(TITUS_level *level);
 static int animate(TITUS_level *level);
 static int movetitus(TITUS_level *level);
 static int collision_detection_player(TITUS_level *level);
-static int getpolarity(int number);
-int gettick(int *tick, uint8 index);
+
+static void gettick(int *tick, uint8 index);
+static void death(TITUS_level *level);
+static void gameover(TITUS_level *level);
 
 int playtitus(int firstlevel){
     int startx, starty;
@@ -313,7 +317,7 @@ static int playlevel(TITUS_level *level) {
     do {
         if (!firstrun) {
             DISPLAY_COUNT(level); //Draw energy to the backbuffer
-            RETURN_MUSIC(level); //Restart music if the song is finished
+            RETURN_MUSIC(); //Restart music if the song is finished
             flip_screen(true);
         }
         firstrun = false;
@@ -344,21 +348,13 @@ static int playlevel(TITUS_level *level) {
 #endif
 
 
-int gettick(int *tick, uint8 index) {
+void gettick(int *tick, uint8 index) {
     int oldtick = *tick;
     *tick = SDL_GetTicks();
     //SUBTIME[index] = *tick - oldtick;
 }
 
-static int getpolarity(int number){
-    if (number < 0)
-        return (-1);
-    if (number > 0)
-        return (1);
-    return (0);
-}
-
-int death(TITUS_level *level) {
+void death(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     int i;
 

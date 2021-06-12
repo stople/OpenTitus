@@ -41,6 +41,12 @@
 #include "player.h"
 #include "objects.h"
 #include "enemies.h"
+#include "tile_animation.h"
+#include "audio.h"
+#include "keyboard.h"
+
+static void MOVE_HIM(TITUS_level *level, TITUS_sprite *spr);
+static void SET_ALL_SPRITES(TITUS_level *level);
 
 //Possible return states:
 
@@ -180,7 +186,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
 }
 
 
-MOVE_HIM(TITUS_level *level, TITUS_sprite *spr) {
+void MOVE_HIM(TITUS_level *level, TITUS_sprite *spr) {
     int16 *pointer = spr->animation + 1;
     while (*pointer < 0) {
         pointer += (*pointer / 2); //End of animation, jump back
@@ -189,8 +195,24 @@ MOVE_HIM(TITUS_level *level, TITUS_sprite *spr) {
     spr->animation = pointer;
 }
 
+void SET_DATA_NMI(TITUS_level *level) {
+    boss_alive = false;
+    int i, anim;
+    for (i = 0; i < level->enemycount; i++) {
+        anim = -1;
+        if (!level->enemy[i].init_enabled) continue;
+        do {
+            anim++;
+        } while (anim_enemy[anim] + FIRST_NMI != level->enemy[i].sprite.number);
+        level->enemy[i].sprite.animation = &(anim_enemy[anim]);
+        if (level->enemy[i].boss) {
+            boss_alive = true;
+        }
+    }
+    BIGNMI_POWER = NMI_POWER[level->levelid];
+}
 
-int CLEAR_DATA(TITUS_level *level) {
+void CLEAR_DATA(TITUS_level *level) {
     loop_cycle = 0;
     tile_anim = 0;
     BIGNMI_NBR = 0;
@@ -254,24 +276,6 @@ int CLEAR_DATA(TITUS_level *level) {
 
     SET_DATA_NMI(level);
 
-}
-
-
-void SET_DATA_NMI(TITUS_level *level) {
-    boss_alive = false;
-    int i, anim;
-    for (i = 0; i < level->enemycount; i++) {
-        anim = -1;
-        if (!level->enemy[i].init_enabled) continue;
-        do {
-            anim++;
-        } while (anim_enemy[anim] + FIRST_NMI != level->enemy[i].sprite.number);
-        level->enemy[i].sprite.animation = &(anim_enemy[anim]);
-        if (level->enemy[i].boss) {
-            boss_alive = true;
-        }
-    }
-    BIGNMI_POWER = NMI_POWER[level->levelid];
 }
 
 int clearsprite(TITUS_sprite *spr){

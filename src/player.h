@@ -34,7 +34,7 @@
 
 int move_player(TITUS_level *level);
 TITUS_object *FORCE_POSE(TITUS_level *level);
-
+void DEC_ENERGY(TITUS_level *level);
 
 #endif
 

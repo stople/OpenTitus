@@ -26,12 +26,12 @@
  * Draw functions
  *
  * Global functions:
- * int TFR_SCREENM(): Draw tiles on the backbuffer (copy from the tile screen)
+ * void TFR_SCREENM(): Draw tiles on the backbuffer (copy from the tile screen)
  * int viewstatus(TITUS_level *level, bool countbonus): View status screen (F4)
- * int flip_screen(bool slow): Flips the screen and a short delay
- * int INIT_SCREENM(TITUS_level *level): Initialize backbuffer
- * int DISPLAY_COUNT(TITUS_level *level): Draw energy
- * int fadeout(): Fade the screen to black
+ * void flip_screen(bool slow): Flips the screen and a short delay
+ * void INIT_SCREENM(TITUS_level *level): Initialize backbuffer
+ * void DISPLAY_COUNT(TITUS_level *level): Draw energy
+ * void fadeout(): Fade the screen to black
  * int view_password(TITUS_level *level, uint8 level_index): Display the password
  */
 
@@ -46,10 +46,16 @@
 #include "common.h"
 #include "tituserror.h"
 #include "original.h"
+#include "fonts.h"
+#include "keyboard.h"
+#include "gates.h"
+#include "scroll.h"
+#include "audio.h"
 
 SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr);
+void display_sprite(TITUS_level *level, TITUS_sprite *spr);
 
-int TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
+void TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
     SDL_Rect src, dest;
 
     //First of all: make the screen black, at least the lower part of the screen
@@ -119,7 +125,7 @@ int TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
 //If the flash bit is set, the first 3 planes will be 0, the last plane will be normal (colour & 0x01, odd colors gets white, even colours gets black)
 
 
-DISPLAY_SPRITES(TITUS_level *level) {
+void DISPLAY_SPRITES(TITUS_level *level) {
     int16 i;
     char buffer[7]; //xxx ms
 
@@ -178,7 +184,7 @@ DISPLAY_SPRITES(TITUS_level *level) {
 
 }
 
-display_sprite(TITUS_level *level, TITUS_sprite *spr) {
+void display_sprite(TITUS_level *level, TITUS_sprite *spr) {
     SDL_Surface *image;
     SDL_Rect src, dest;
     if (!spr->enabled) {
@@ -205,18 +211,7 @@ display_sprite(TITUS_level *level, TITUS_sprite *spr) {
     }
 
     image = sprite_from_cache(level, spr);
-/*
-    if ((spr->flipped != spr->flipped_last) ||
-      (spr->flash != spr->flash_last)) {
-        SDL_FreeSurface(spr->buffer);
-        spr->buffer = copysurface(spr->spritedata->data, spr->flipped, spr->flash);
-    }
 
-    spr->flipped_last = spr->flipped;
-    spr->flash_last = spr->flash;
-
-    SDL_Surface *image = spr->buffer;
-*/
     src.x = 0;
     src.y = 0;
     src.w = image->w;
@@ -240,8 +235,6 @@ display_sprite(TITUS_level *level, TITUS_sprite *spr) {
     }
 
     SDL_BlitSurface(image, &src, screen, &dest);
-
-
 
     spr->visible = true;
     spr->flash = false;
@@ -298,53 +291,7 @@ SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr) {
     }
 }
 
-
-int flip_screen(bool slow) {
-    int tick = SDL_GetTicks();
-    SDL_Flip(screen);
-    int oldtick = tick;
-    tick = SDL_GetTicks();
-    SUBTIME[14] = tick - oldtick;
-
-    //if (slow) {
-        NO_FAST_CPU(slow); //TODO: 
-    //}
-}
-
-/*
-NO_FAST_CPU(bool slow) {
-    int tick, duration, delay, tick2;
-    tick = SDL_GetTicks();
-    if (slow) {
-        delay = 29; //28.53612, fps: 70.09Hz/2
-    } else {
-        delay = 10;
-    }
-    LOOPTIME = (tick - LAST_CLOCK);
-    delay = delay - (tick - LAST_CLOCK);
-    if ((delay < 0) || (delay > 40)) {
-        delay = 1;
-    }
-    SDL_Delay(delay);
-    //do {
-        //SDL_Delay(1);
-    //    tick = SDL_GetTicks();
-    //    duration = abs(LAST_CLOCK - tick);
-    //} while (duration < delay);
-    tick2 = SDL_GetTicks();
-    if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
-        FPS_LAST = FPS;
-        FPS = 0;
-    }
-    FPS++;
-    LAST_CLOCK_CORR = tick2 - tick - delay;
-
-    LAST_CLOCK = tick2;
-    SUBTIME[15] = LAST_CLOCK - tick;
-}
-*/
-
-NO_FAST_CPU(bool slow) {
+void NO_FAST_CPU(bool slow) {
     int tick, duration, delay, tick2;
     tick = SDL_GetTicks();
     if (slow) {
@@ -362,8 +309,6 @@ NO_FAST_CPU(bool slow) {
         delay = 0;
     }
 
-
-
     tick2 = SDL_GetTicks();
     duration = abs(tick - tick2);
     while (duration < delay) {
@@ -373,18 +318,6 @@ NO_FAST_CPU(bool slow) {
         duration = abs(tick - tick2);
     }
 
-
-
-    //SDL_Delay(delay);
-
-
-
-
-    //do {
-        //SDL_Delay(1);
-    //    tick = SDL_GetTicks();
-    //    duration = abs(LAST_CLOCK - tick);
-    //} while (duration < delay);
     tick2 = SDL_GetTicks();
     if ((tick2 / 1000) != (LAST_CLOCK / 1000)) {
         FPS_LAST = FPS;
@@ -403,6 +336,17 @@ NO_FAST_CPU(bool slow) {
     SUBTIME[15] = LAST_CLOCK - tick;
 }
 
+void flip_screen(bool slow) {
+    int tick = SDL_GetTicks();
+    SDL_Flip(screen);
+    int oldtick = tick;
+    tick = SDL_GetTicks();
+    SUBTIME[14] = tick - oldtick;
+
+    //if (slow) {
+        NO_FAST_CPU(slow); //TODO: 
+    //}
+}
 
 int viewstatus(TITUS_level *level, bool countbonus){
     int retval, i, j;
@@ -467,7 +411,7 @@ int viewstatus(TITUS_level *level, bool countbonus){
     return (0);
 }
 
-int INIT_SCREENM(TITUS_level *level) {
+void INIT_SCREENM(TITUS_level *level) {
     CLOSE_SCREEN();
     BITMAP_X = 0;
     BITMAP_Y = 0;
@@ -483,14 +427,6 @@ int INIT_SCREENM(TITUS_level *level) {
         scroll(level);
     } while (YSCROLL_CENTER || XSCROLL_CENTER);
     OPEN_SCREEN();
-}
-
-
-int DISPLAY_COUNT(TITUS_level *level) {
-    subto0(&(BAR_FLAG));
-    if (BAR_FLAG != 0) {
-        DISPLAY_ENERGY(level);
-    }
 }
 
 
@@ -516,7 +452,14 @@ void DISPLAY_ENERGY(TITUS_level *level) {
     }
 }
 
-int fadeout() {
+void DISPLAY_COUNT(TITUS_level *level) {
+    subto0(&(BAR_FLAG));
+    if (BAR_FLAG != 0) {
+        DISPLAY_ENERGY(level);
+    }
+}
+
+void fadeout() {
     SDL_Surface *image;
     int activedelay = 1;
     SDL_Event event;
@@ -544,13 +487,15 @@ int fadeout() {
         if (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 SDL_FreeSurface(image);
-                return (-1);
+                // FIXME: handle this better
+                return;
             }
 
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     SDL_FreeSurface(image);
-                    return (-1);
+                    // FIXME: handle this better
+                    return;
                 }
                 if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;

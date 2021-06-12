@@ -30,7 +30,7 @@
 #define OPENTITUS_CONFIG_FILE "titus.conf"
 #define OPENTITUS_WINDOW_TEXT "OpenTitus"
 
-int readconfig(char *configfile);
+int readconfig(const char *configfile);
 
 int initcodes();
 

@@ -34,8 +34,12 @@
 #include "objects.h"
 #include "tituserror.h"
 #include "settings.h"
+#include "sprites.h"
+#include "audio.h"
 
-int move_objects(TITUS_level *level) {
+void shock(TITUS_level *level, TITUS_object *object);
+
+void move_objects(TITUS_level *level) {
 
     if (GRAVITY_FLAG == 0) return; //Skip execution if there are no active objects
 
@@ -211,7 +215,7 @@ int move_objects(TITUS_level *level) {
             //Test for sprite collision
             tile_count = ((level->object[i].sprite.y + (level->object[i].sprite.speedY >> 4)) >> 4) - (level->object[i].sprite.y >> 4);
             if (tile_count != 0) { //Bug: this should be inside the tile collision test
-                obj_vs_sprite = SPRITES_VS_SPRITES(level, &(level->object[i].sprite), &(level->object[i].sprite), &off_object);
+                obj_vs_sprite = SPRITES_VS_SPRITES(level, &(level->object[i].sprite), level->object[i].sprite.spritedata, &off_object);
             }
             //Test all tiles the object will travel through
             for (j = 0; j < tile_count; j++) {
@@ -259,7 +263,7 @@ int move_objects(TITUS_level *level) {
                 continue;
             }
             if (!(obj_vs_sprite)) {
-                obj_vs_sprite = SPRITES_VS_SPRITES(level, &(level->object[i].sprite), &(level->object[i].sprite), &off_object);
+                obj_vs_sprite = SPRITES_VS_SPRITES(level, &(level->object[i].sprite), level->object[i].sprite.spritedata, &off_object);
             }
             if (obj_vs_sprite) {
                 level->object[i].mass = 0;
@@ -359,11 +363,11 @@ void shock(TITUS_level *level, TITUS_object *object) { //Falling object versus p
 
 
 
-bool SPRITES_VS_SPRITES (TITUS_level *level, TITUS_sprite *sprite1, TITUS_sprite *sprite1ref, TITUS_object **object2) { //check if there is an object below that can support the input object
+bool SPRITES_VS_SPRITES (TITUS_level *level, TITUS_sprite *sprite1, TITUS_spritedata *sprite1data, TITUS_object **object2) { //check if there is an object below that can support the input object
     uint8 i;
     int16 obj1left, obj2left;
     //sprite1ref is equal to sprite1, except when sprite1 is the player, then sprite1ref is level->spritedata[0] (first player sprite)
-    obj1left = sprite1->x - (sprite1ref->spritedata->data->w >> 1);
+    obj1left = sprite1->x - (sprite1data->data->w >> 1);
     for (i = 0; i < level->objectcount; i++) { //loop all objects
         if ((&(level->object[i].sprite) == sprite1) || !(level->object[i].sprite.enabled) || !(level->object[i].objectdata->support)) continue; //skip disabled objects and itself, and it must support
         if (abs(level->object[i].sprite.x - obj1left) > 64) continue; // Bug, center vs left edge
@@ -373,7 +377,7 @@ bool SPRITES_VS_SPRITES (TITUS_level *level, TITUS_sprite *sprite1, TITUS_sprite
         obj2left = level->object[i].sprite.x - (level->object[i].sprite.spritedata->collwidth >> 1); //Object 2's left X for collision
         if (obj2left > obj1left) {
             //Object 2's left collision edge is right for object 1's left sprite edge
-            if (obj1left + sprite1ref->spritedata->collwidth <= obj2left) continue; //Sprite 1 is too far left (SZOBJ2 = object 1 collision width)
+            if (obj1left + sprite1data->collwidth <= obj2left) continue; //Sprite 1 is too far left (SZOBJ2 = object 1 collision width)
         } else {
             //Object 2's left collision edge is left for or equal to object 1's left sprite edge
             if (obj2left + level->object[i].sprite.spritedata->collwidth <= obj1left) continue; //Sprite 1 is too far right

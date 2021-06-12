@@ -35,6 +35,7 @@
 #include "backbuffer.h"
 #include "globals.h"
 #include "common.h"
+#include "keyboard.h"
 
 #include "audio.h"
 

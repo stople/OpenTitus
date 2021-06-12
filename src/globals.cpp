@@ -26,7 +26,7 @@ uint8 TAPISFLY_FLAG; //When non-zero, the flying carpet is flying
 uint8 CROSS_FLAG; //When non-zero, fall through certain floors (after key down)
 uint8 GRAVITY_FLAG; //When zero, skip object gravity function
 uint8 FUME_FLAG; //Smoke when object hits the floor
-Uint8 *keystate; //Keyboard state
+const Uint8 *keystate; //Keyboard state
 uint8 LIFE; //Lives
 uint8 YFALL;
 bool POCKET_FLAG;

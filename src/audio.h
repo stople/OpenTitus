@@ -25,10 +25,9 @@
 #pragma once
 
 int initaudio();
-int freeaudio();
-int SELECT_MUSIC(int song_number);
-int WAIT_SONG();
+void freeaudio();
+void SELECT_MUSIC(int song_number);
+void WAIT_SONG();
 int FX_START(int fx_number);
-int RETURN_MUSIC();
+void RETURN_MUSIC();
 int startmusic();
-int refreshaudio();

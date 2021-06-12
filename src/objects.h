@@ -32,8 +32,8 @@
 #include "SDL2/SDL.h"
 #include "level.h"
 
-int move_objects(TITUS_level *level);
-bool SPRITES_VS_SPRITES (TITUS_level *level, TITUS_sprite *sprite1, TITUS_sprite *sprite1ref, TITUS_object **object2); //check if there is an object below that can support the input object
+void move_objects(TITUS_level *level);
+bool SPRITES_VS_SPRITES(TITUS_level* level, TITUS_sprite* sprite1, TITUS_spritedata* sprite1data, TITUS_object** object2); //check if there is an object below that can support the input object
 int updateobjectsprite(TITUS_level *level, TITUS_object *obj, int16 number, bool clearflags);
 int loadobjects(TITUS_objectdata ***objects, uint16 *count);
 int freeobjects(TITUS_objectdata ***objects, uint8 count);

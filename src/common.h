@@ -26,7 +26,7 @@
  * Common functions
  *
  * Global functions:
- * int subto0(uint8 *number): Decreases a number until it reaches 0
+ * void subto0(uint8 *number): Decreases a number until it reaches 0
  */
 
 #ifndef COMMON_H
@@ -35,7 +35,7 @@
 #include "SDL2/SDL.h"
 #include "definitions.h"
 
-int subto0(uint8 *number);
-int titus_sleep();
+void subto0(uint8 *number);
+void titus_sleep();
 
 #endif

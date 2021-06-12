@@ -35,7 +35,7 @@
 
 SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash);
 SDL_Surface * SDL_LoadSprite(unsigned char * first, char width, char height, unsigned int offset, SDL_PixelFormat * pixelformat);
-int loadsprites(TITUS_spritedata ***sprites, char * spritedata, int spritedatasize, SDL_PixelFormat * pixelformat, uint16 *count);
+int loadsprites(TITUS_spritedata ***sprites, unsigned char * spritedata, int spritedatasize, SDL_PixelFormat * pixelformat, uint16 *count);
 SDL_Surface * SDL_LoadTile(unsigned char * first, int i, SDL_PixelFormat * pixelformat);
 int copypixelformat(SDL_PixelFormat * destformat, SDL_PixelFormat * srcformat);
 int freesprites(TITUS_spritedata ***sprites, uint16 count);
@@ -43,6 +43,7 @@ int updatesprite(TITUS_level *level, TITUS_sprite *spr, int16 number, bool clear
 int copysprite(TITUS_level *level, TITUS_sprite *dest, TITUS_sprite *src);
 int initspritecache(TITUS_spritecache *spritecache, uint16 count, uint16 tmpcount);
 int freespritecache(TITUS_spritecache *spritecache);
+void SPRITES_ANIMATION(TITUS_level *level);
 
 #endif
 

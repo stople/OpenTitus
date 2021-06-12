@@ -26,12 +26,12 @@
  * Draw functions
  *
  * Global functions:
- * int TFR_SCREENM(): Draw tiles on the backbuffer (copy from the tile screen)
+ * void TFR_SCREENM(): Draw tiles on the backbuffer (copy from the tile screen)
  * int viewstatus(TITUS_level *level, bool countbonus): View status screen (F4)
- * int flip_screen(bool slow): Flips the screen and a short delay
- * int INIT_SCREENM(TITUS_level *level): Initialize backbuffer
- * int DISPLAY_COUNT(TITUS_level *level): Draw energy
- * int fadeout(): Fade the screen to black
+ * void flip_screen(bool slow): Flips the screen and a short delay
+ * void INIT_SCREENM(TITUS_level *level): Initialize backbuffer
+ * void DISPLAY_COUNT(TITUS_level *level): Draw energy
+ * void fadeout(): Fade the screen to black
  * int view_password(TITUS_level *level, uint8 level_index): Display the password
  */
 
@@ -42,12 +42,13 @@
 #include "level.h"
 #include "definitions.h"
 
-int TFR_SCREENM(); //Draw tiles on the backbuffer (copy from the tile screen)
+void TFR_SCREENM(); //Draw tiles on the backbuffer (copy from the tile screen)
 int viewstatus(TITUS_level *level, bool countbonus);
-int flip_screen(bool slow);
-int INIT_SCREENM(TITUS_level *level);
-int DISPLAY_COUNT(TITUS_level *level);
-int fadeout();
+void flip_screen(bool slow);
+void INIT_SCREENM(TITUS_level *level);
+void DISPLAY_COUNT(TITUS_level *level);
+void DISPLAY_SPRITES(TITUS_level *level);
+void fadeout();
 int view_password(TITUS_level *level, uint8 level_index);
 int loadpixelformat(SDL_PixelFormat **pixelformat);
 int loadpixelformat_font(SDL_PixelFormat **pixelformat);

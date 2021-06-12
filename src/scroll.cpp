@@ -36,33 +36,14 @@
 #include "scroll.h"
 
 static uint8 BARRYCENTRE(TITUS_level *level);
-static int REFRESH_COLUMNS(TITUS_level *level, int8 column);
-static int REFRESH_LINE(TITUS_level *level, int8 line);
+static void REFRESH_COLUMNS(TITUS_level *level, int8 column);
+static void REFRESH_LINE(TITUS_level *level, int8 line);
 bool L_SCROLL(TITUS_level *level);
 bool R_SCROLL(TITUS_level *level);
 bool U_SCROLL(TITUS_level *level);
 bool D_SCROLL(TITUS_level *level);
 
-int scroll(TITUS_level *level) {
-    //Scroll screen and update tile animation
-    loop_cycle++; //Cycle from 0 to 3
-    if (loop_cycle > 3) {
-        loop_cycle = 0;
-    }
-    if (loop_cycle == 0) { //Every 4th call
-        tile_anim++; //Cycle tile animation (0-1-2)
-        if (tile_anim > 2) {
-            tile_anim = 0;
-        }
-    }
-    //Scroll
-    if (!NOSCROLL_FLAG) {
-        X_ADJUST(level);
-        Y_ADJUST(level);
-    }
-}
-
-X_ADJUST(TITUS_level *level) {
+void X_ADJUST(TITUS_level *level) {
     bool block;
     TITUS_player *player = &(level->player);
     int16 pstileX = (player->sprite.x >> 4) - BITMAP_X; //Player screen tile X (0 to 19)
@@ -133,7 +114,7 @@ X_ADJUST(TITUS_level *level) {
     }
 }
 
-Y_ADJUST(TITUS_level *level) {
+void Y_ADJUST(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     if (player->sprite.speedY == 0) {
         YSCROLL_CENTER = false;
@@ -189,6 +170,24 @@ Y_ADJUST(TITUS_level *level) {
     }
 }
 
+void scroll(TITUS_level *level) {
+    //Scroll screen and update tile animation
+    loop_cycle++; //Cycle from 0 to 3
+    if (loop_cycle > 3) {
+        loop_cycle = 0;
+    }
+    if (loop_cycle == 0) { //Every 4th call
+        tile_anim++; //Cycle tile animation (0-1-2)
+        if (tile_anim > 2) {
+            tile_anim = 0;
+        }
+    }
+    //Scroll
+    if (!NOSCROLL_FLAG) {
+        X_ADJUST(level);
+        Y_ADJUST(level);
+    }
+}
 
 static uint8 BARRYCENTRE(TITUS_level *level) {
     //If an enemy is behind the player, max. 12.5 tiles away horizontally, scroll until player is in the middle
@@ -278,7 +277,7 @@ bool D_SCROLL(TITUS_level *level) {
 }
 
 
-static int REFRESH_COLUMNS(TITUS_level *level, int8 column) {
+static void REFRESH_COLUMNS(TITUS_level *level, int8 column) {
     //The screen is scrolled left or right, redraw one column on the hidden tile screen (located in OFS_SCREENM)
     //screen_offset: 0 if scroll left; 19 (screen_width - 1) if scroll right
     uint8 tmpX = BITMAP_X + column; //left column (+0) or right column (+19)
@@ -301,7 +300,7 @@ static int REFRESH_COLUMNS(TITUS_level *level, int8 column) {
     }
 }
 
-static int REFRESH_LINE(TITUS_level *level, int8 line) {
+static void REFRESH_LINE(TITUS_level *level, int8 line) {
     //The screen is scrolled up or down, redraw one line on the hidden tile screen
     //screen_offset: 0 if scroll up; 11 (screen_height - 1) if scroll down
     uint8 tmpX = BITMAP_X;
@@ -324,7 +323,7 @@ static int REFRESH_LINE(TITUS_level *level, int8 line) {
     }
 }
 
-int DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x) {
+void DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x) {
     //Update the tile surface
     SDL_Rect src, dest;
     src.x = 0;

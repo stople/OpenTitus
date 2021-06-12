@@ -33,14 +33,12 @@
 #include "backbuffer.h"
 #include "sprites.h"
 #include "settings.h"
+#include "audio.h"
+#include "gates.h"
+#include "scroll.h"
+#include "draw.h"
 
-int copytiles(int16 destX, int16 destY, int16 width, int16 height);
-
-int CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, and if the player does a kneestand on a secret entrance
-    check_finish(level);
-    check_gates(level);
-}
-
+void copytiles(int16 destX, int16 destY, int16 width, int16 height);
 
 void check_finish(TITUS_level *level) {
     TITUS_player *player = &(level->player);
@@ -108,8 +106,12 @@ void check_gates(TITUS_level *level) {
     OPEN_SCREEN();
 }
 
+void CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, and if the player does a kneestand on a secret entrance
+    check_finish(level);
+    check_gates(level);
+}
 
-int CLOSE_SCREEN() {
+void CLOSE_SCREEN() {
     SDL_Rect dest;
     uint8 step_count = 10;
     uint16 rwidth = 320; //TODO: make this global
@@ -151,7 +153,7 @@ int CLOSE_SCREEN() {
 }
 
 
-int OPEN_SCREEN() {
+void OPEN_SCREEN() {
     SDL_Rect dest;
     int16 rwidth = 320; //TODO: make this global
     int16 rheight = 192;
@@ -179,7 +181,7 @@ int OPEN_SCREEN() {
     }
 }
 
-int copytiles(int16 destX, int16 destY, int16 width, int16 height) {
+void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
     SDL_Rect src, dest;
     int16 sepX = BITMAP_XM * 16;
     int16 sepY = BITMAP_YM * 16;

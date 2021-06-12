@@ -38,20 +38,37 @@
 #include "original.h"
 #include "common.h"
 #include "settings.h"
+#include "audio.h"
+#include "objects.h"
+#include "sprites.h"
+#include "scroll.h"
 
-static int TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX);
+static void TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX);
 static void BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX);
-static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX);
-static int XACCELERATION(TITUS_player *player, int16 maxspeed);
-static int YACCELERATION(TITUS_player *player, int16 maxspeed);
+static void BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX);
+static void XACCELERATION(TITUS_player *player, int16 maxspeed);
+static void YACCELERATION(TITUS_player *player, int16 maxspeed);
+static void DECELERATION(TITUS_player *player);
 static void BLOCK_YYPRG(TITUS_level *level, uint8 floor, uint8 floor_above, uint8 tileY, uint8 tileX);
 static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX);
-static int CASE_PASS(TITUS_level *level, uint8 viewlevel, uint8 tileY, uint8 tileX);
-static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX);
-static int NEW_FORM(TITUS_player *player, uint8 action);
-static int GET_IMAGE(TITUS_level *level);
-static int YACCELERATION_NEG(TITUS_player *player, int16 maxspeed);
-static int ACTION_PRG(TITUS_level *level, uint8 action);
+static void CASE_PASS(TITUS_level *level, uint8 viewlevel, uint8 tileY, uint8 tileX);
+static void CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX);
+static void NEW_FORM(TITUS_player *player, uint8 action);
+static void GET_IMAGE(TITUS_level *level);
+static void YACCELERATION_NEG(TITUS_player *player, int16 maxspeed);
+static void ACTION_PRG(TITUS_level *level, uint8 action);
+static void CASE_DEAD_IM (TITUS_level *level);
+static void BRK_COLLISION(TITUS_level *level);
+static void COLLISION_TRP(TITUS_level *level);
+static void COLLISION_OBJET(TITUS_level *level);
+static void ARAB_TOMBE(TITUS_level *level);
+static void ARAB_TOMBE_F();
+static void ARAB_BLOCKX(TITUS_level *level);
+static void ARAB_BLOCK_YU(TITUS_player *player);
+static void INC_ENERGY(TITUS_level *level);
+
+// FIXME: int is really an error enum, see tituserror.h
+static int t_pause (TITUS_level *level);
 int16 add_carry();
 
 int move_player(TITUS_level *level) {
@@ -115,11 +132,11 @@ int move_player(TITUS_level *level) {
     if (keystate[KEY_F1] && (RESETLEVEL_FLAG == 0)) { //F1 = suicide
         CASE_DEAD_IM(level);
         RESETLEVEL_FLAG--;
-        return;
+        return 0;
     }
     if (keystate[KEY_F2]) { //F2 = game over
         GAMEOVER_FLAG = true;
-        return;
+        return 0;
     }
     if (keystate[KEY_E]) { //E = display energy
         BAR_FLAG = 50;
@@ -160,7 +177,7 @@ int move_player(TITUS_level *level) {
         }
         player->sprite.x += (player->sprite.speedX >> 4);
         player->sprite.y += (player->sprite.speedY >> 4);
-        return;
+        return 0;
     }
 
     if (CHOC_FLAG != 0) {
@@ -334,17 +351,10 @@ int move_player(TITUS_level *level) {
             FUME_FLAG = 0;
         }
     }
+    return 0;
 }
 
-CASE_DEAD_IM (TITUS_level *level) {
-    //Kill the player immediately (spikes/water/flames etc.
-    //Sets RESET_FLAG to 2, in opposite to being killed as a result of 0 HP (then RESET_FLAG is 10)
-    DEC_LIFE(level);
-    RESETLEVEL_FLAG = 2;
-}
-
-
-DEC_LIFE (TITUS_level *level) {
+void DEC_LIFE (TITUS_level *level) {
     //Kill the player, check for gameover, hide the energy bar
     RESETLEVEL_FLAG = 10;
     BAR_FLAG = 0;
@@ -353,7 +363,14 @@ DEC_LIFE (TITUS_level *level) {
     }
 }
 
-t_pause (TITUS_level *level) {
+void CASE_DEAD_IM (TITUS_level *level) {
+    //Kill the player immediately (spikes/water/flames etc.
+    //Sets RESET_FLAG to 2, in opposite to being killed as a result of 0 HP (then RESET_FLAG is 10)
+    DEC_LIFE(level);
+    RESETLEVEL_FLAG = 2;
+}
+
+int t_pause (TITUS_level *level) {
     bool pass;
     TITUS_player *player = &(level->player);
     SDL_Event event;
@@ -392,7 +409,7 @@ t_pause (TITUS_level *level) {
     } while (1);
 }
 
-BRK_COLLISION(TITUS_level *level) { //Collision detection between player and tiles/objects/elevators
+void BRK_COLLISION(TITUS_level *level) { //Collision detection between player and tiles/objects/elevators
     //Point the foot on the block!
     TITUS_player *player = &(level->player);
     int16 changeX;
@@ -489,7 +506,7 @@ BRK_COLLISION(TITUS_level *level) { //Collision detection between player and til
     }
 }
 
-static int TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX) {
+static void TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX) {
     //Test the current tile for vertical blocking
 
     TITUS_player *player = &(level->player);
@@ -606,7 +623,7 @@ static void BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tile
     }
 }
 
-static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX) {
+static void BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX) {
     //Action on different horizontal flags
     switch (horiz) {
     case 0: //No wall
@@ -642,7 +659,7 @@ static int BLOCK_XXPRG(TITUS_level *level, uint8 horiz, uint8 tileY, uint8 tileX
     }
 }
 
-ARAB_BLOCKX(TITUS_level *level) {
+void ARAB_BLOCKX(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     //Horizontal hit (wall), stop the player
     player->sprite.x -= player->sprite.speedX >> 4;
@@ -693,11 +710,10 @@ TITUS_object *FORCE_POSE(TITUS_level *level) {
         CARRY_FLAG = false;
         return object;
     }
+    return NULL;
 }
 
-
-
-ARAB_TOMBE(TITUS_level *level) {
+void ARAB_TOMBE(TITUS_level *level) {
     //No wall under the player; fall down!
     TITUS_player *player = &(level->player);
     SAUT_FLAG = 6;
@@ -716,7 +732,7 @@ ARAB_TOMBE(TITUS_level *level) {
     player->sprite.flipped = (SENSX < 0);
 }
 
-static int XACCELERATION(TITUS_player *player, int16 maxspeed) {
+static void XACCELERATION(TITUS_player *player, int16 maxspeed) {
     //Sideway acceleration
     int16 changeX;
     if (X_FLAG) {
@@ -734,7 +750,7 @@ static int XACCELERATION(TITUS_player *player, int16 maxspeed) {
     }
 }
 
-static int YACCELERATION(TITUS_player *player, int16 maxspeed) {
+static void YACCELERATION(TITUS_player *player, int16 maxspeed) {
     //Accelerate downwards
     if ((player->sprite.speedY + 32/2) < maxspeed) {
         player->sprite.speedY = player->sprite.speedY + (32/2);
@@ -893,7 +909,7 @@ static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX) {
     return true; //No problems, bonus handling done correctly!
 }
 
-static int CASE_PASS(TITUS_level *level, uint8 level_index, uint8 tileY, uint8 tileX) {
+static void CASE_PASS(TITUS_level *level, uint8 level_index, uint8 tileY, uint8 tileX) {
     //Codelamp
     SELECT_MUSIC(7);
     if (CASE_BONUS(level, tileY, tileX)) { //if the bonus is found in the bonus list
@@ -901,7 +917,7 @@ static int CASE_PASS(TITUS_level *level, uint8 level_index, uint8 tileY, uint8 t
     }
 }
 
-static int CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX) {
+static void CASE_SECU(TITUS_level *level, uint8 tileY, uint8 tileX) {
     TITUS_player *player = &(level->player);
     //Padlock, store X/Y coordinates
     SELECT_MUSIC(5);
@@ -938,7 +954,7 @@ void DEC_ENERGY(TITUS_level *level) {
     }
 }
 
-static int ACTION_PRG(TITUS_level *level, uint8 action) {
+static void ACTION_PRG(TITUS_level *level, uint8 action) {
     //Action dependent code
     TITUS_player *player = &(level->player);
     uint8 tileX, tileY, fflag;
@@ -1396,7 +1412,7 @@ void DECELERATION(TITUS_player *player) {
     player->sprite.speedX = speed;
 }
 
-static int NEW_FORM(TITUS_player *player, uint8 action) {
+static void NEW_FORM(TITUS_player *player, uint8 action) {
     //if the order is changed, change player animation
     if ((LAST_ORDER != action) || (player->sprite.animation == NULL)) {
         LAST_ORDER = action;
@@ -1404,7 +1420,7 @@ static int NEW_FORM(TITUS_player *player, uint8 action) {
     }
 }
 
-static int GET_IMAGE(TITUS_level *level) {
+static void GET_IMAGE(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     //animate the player sprite
     int16 frame = *(player->sprite.animation);
@@ -1418,7 +1434,7 @@ static int GET_IMAGE(TITUS_level *level) {
     player->sprite.animation++; //Advance in the animation
 }
 
-static int YACCELERATION_NEG(TITUS_player *player, int16 maxspeed) {
+static void YACCELERATION_NEG(TITUS_player *player, int16 maxspeed) {
     //Accelerate upwards
     maxspeed = 0 - maxspeed; //maxspeed is negative
     int16 speed = player->sprite.speedY - 32;
@@ -1505,7 +1521,7 @@ void COLLISION_OBJET(TITUS_level *level) {
         return;
     }
     //Collision with a sprite
-    if (!(SPRITES_VS_SPRITES(level, &(player->sprite), &(level->spritedata[0]), &off_object))) { //check if player stands on an object, use sprite[0] (rest) as collision size (first player tile)
+    if (!(SPRITES_VS_SPRITES(level, &(player->sprite), level->spritedata[0], &off_object))) { //check if player stands on an object, use sprite[0] (rest) as collision size (first player tile)
         return;
     }
     player->sprite.y = off_object->sprite.y - off_object->sprite.spritedata->collheight;

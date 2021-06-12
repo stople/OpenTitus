@@ -26,9 +26,9 @@
  * Handles enemies.
  *
  * Global functions:
- * int MOVE_NMI(TITUS_level *level): Move enemies, is called by main game loop
- * int SET_NMI(TITUS_level *level): Collision detection, animation, is called by main game loop
- * int MOVE_TRASH(TITUS_level *level): Move objects thrown by enemies
+ * void MOVE_NMI(TITUS_level *level): Move enemies, is called by main game loop
+ * void SET_NMI(TITUS_level *level): Collision detection, animation, is called by main game loop
+ * void MOVE_TRASH(TITUS_level *level): Move objects thrown by enemies
  */
 
 #include <stdio.h>
@@ -41,13 +41,34 @@
 #include "common.h"
 #include "player.h"
 #include "settings.h"
+#include "objects.h"
+#include "sprites.h"
+#include "audio.h"
 
-int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool clearflags);
-bool NMI_VS_DROP(TITUS_sprite *enemysprite, TITUS_sprite *sprite);
-int KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power);
-bool FIND_TRASH(TITUS_level *level, TITUS_sprite **trash);
+static bool NMI_VS_DROP(TITUS_sprite *enemysprite, TITUS_sprite *sprite);
+static void KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power);
+static bool FIND_TRASH(TITUS_level *level, TITUS_sprite **trash);
+static void DEAD1(TITUS_level *level, TITUS_enemy *enemy);
+static void PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet);
+static void GAL_FORM(TITUS_level *level, TITUS_enemy *enemy);
+static void SEE_CHOC(TITUS_level *level);
+static void ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy);
 
-int MOVE_NMI(TITUS_level *level) {
+static void UP_ANIMATION(TITUS_sprite *sprite) {
+    do {
+        sprite->animation++;
+    } while (*sprite->animation >= 0);
+    sprite->animation++;
+}
+
+static void DOWN_ANIMATION(TITUS_sprite *sprite) {
+    do {
+        sprite->animation--;
+    } while (*sprite->animation >= 0);
+    sprite->animation--;
+}
+
+void MOVE_NMI(TITUS_level *level) {
     TITUS_sprite *bullet;
     int i, j;
     uint8 hflag;
@@ -270,7 +291,7 @@ int MOVE_NMI(TITUS_level *level) {
             case 1:
                 //Attack
                 level->enemy[i].sprite.y += level->enemy[i].sprite.speedY;
-                if (abs(level->enemy[i].sprite.y - level->enemy[i].delay) < level->enemy[i].rangeY) { //Delay: Last Y position, reuse of the delay variable
+                if (abs(long(level->enemy[i].sprite.y) - long(level->enemy[i].delay)) < level->enemy[i].rangeY) { //Delay: Last Y position, reuse of the delay variable
                     continue;
                 }
                 level->enemy[i].sprite.speedY = 0 - level->enemy[i].sprite.speedY;
@@ -1006,7 +1027,7 @@ int MOVE_NMI(TITUS_level *level) {
     } //for (i = 0; i < NMI_BY_LEVEL; i++)
 }
 
-DEAD1(TITUS_level *level, TITUS_enemy *enemy) {
+void DEAD1(TITUS_level *level, TITUS_enemy *enemy) {
     if (((enemy->dying & 0x01) != 0) || //00000001 or 00000011
       (enemy->dead_sprite == -1)) {
         if ((enemy->dying & 0x01) == 0) {
@@ -1085,7 +1106,7 @@ int updateenemysprite(TITUS_level *level, TITUS_enemy *enemy, int16 number, bool
 }
 
 
-int SET_NMI(TITUS_level *level) {
+void SET_NMI(TITUS_level *level) {
     //Clear enemy sprites
     //If an enemy is on the screen
     // - Set bit 13
@@ -1246,7 +1267,7 @@ void ACTIONC_NMI(TITUS_level *level, TITUS_enemy *enemy) {
 }
 
 
-int KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power) {
+void KICK_ASH(TITUS_level *level, TITUS_sprite *enemysprite, int16 power) {
     FX_START(4);
     TITUS_sprite *p_sprite = &(level->player.sprite);
     DEC_ENERGY(level);
@@ -1302,7 +1323,7 @@ void SEE_CHOC(TITUS_level *level) {
     SEECHOC_FLAG = 5;
 }
 
-int MOVE_TRASH(TITUS_level *level) {
+void MOVE_TRASH(TITUS_level *level) {
     int16 i, tmp;
     for (i = 0; i < level->trashcount; i++) {
         if (!level->trash[i].enabled) continue;
@@ -1355,18 +1376,4 @@ void PUT_BULLET(TITUS_level *level, TITUS_enemy *enemy, TITUS_sprite *bullet) {
     }
     bullet->speedY = 0;
     bullet->x += bullet->speedX >> 4;
-}
-
-void UP_ANIMATION(TITUS_sprite *sprite) {
-    do {
-        sprite->animation++;
-    } while (*sprite->animation >= 0);
-    sprite->animation++;
-}
-
-void DOWN_ANIMATION(TITUS_sprite *sprite) {
-    do {
-        sprite->animation--;
-    } while (*sprite->animation >= 0);
-    sprite->animation--;
 }

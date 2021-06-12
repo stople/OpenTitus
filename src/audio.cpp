@@ -118,12 +118,11 @@ void updatechip(int reg, int val);
 int fillchip(ADLIB_DATA *aad);
 void insmaker(unsigned char *insdata, int channel);
 int load_file(char *filename, unsigned char **raw_data);
-int SELECT_MUSIC(int song_number);
 void all_vox_zero();
 void TimerCallback(void *data);
 
-int FX_DRIVER();
-int FX_STOP();
+void FX_DRIVER();
+static void FX_STOP();
 
 void updatechip(int reg, int val)
 {
@@ -344,7 +343,7 @@ void insmaker(unsigned char *insdata, int channel)
 }
 
 
-int load_file(char *filename, unsigned char **raw_data)
+int load_file(const char *filename, unsigned char **raw_data)
 {
     int size = 0, i;
 
@@ -361,7 +360,7 @@ int load_file(char *filename, unsigned char **raw_data)
     size = ftell(ifp);
     fseek(ifp, 0, SEEK_SET);
     *raw_data = (unsigned char *)malloc(size + 1);
-    if (&raw_data == NULL) {
+    if (*raw_data == NULL) {
         fprintf(stderr, "Not enough memory to load file: %s!\n", filename);
         fclose(ifp);
         return -4;
@@ -377,7 +376,7 @@ int load_file(char *filename, unsigned char **raw_data)
     return size;
 }
 
-int SELECT_MUSIC(int song_number)
+void SELECT_MUSIC(int song_number)
 {
     int i; //Index
     int j; //Offset to the current offset
@@ -542,24 +541,26 @@ int startmusic() {
     return 0;
 }
 
-int refreshaudio() {
-    if (AUDIOMODE != 1)
-    {
-        return;
+int initsfx() {
+    ADLIB_DATA *aad = &(sdl_player_data.aad);
+    unsigned char *raw_data = aad->data;
+    FX_ON = false;
+    FX_TIME = 0;
+    uint16 tmp1;
+    int i, k;
+
+    tmp1 = SFX_OFFSET;
+
+    for (i = 0; i < ADLIB_SFX_COUNT; i++) {
+        for (k = 0; k < 5; k++)
+            aad->sfx[i].op[0][k] = raw_data[tmp1++];
+
+        for (k = 0; k < 5; k++)
+            aad->sfx[i].op[1][k] = raw_data[tmp1++];
+
+        aad->sfx[i].fb_alg = raw_data[tmp1++];
     }
-    int tick = SDL_GetTicks();
-    if (tick - lastaudiotick < audiodelay) {
-        return 0;
-    }
-    //Update the chip!
-    lastaudiotick += audiodelay;
-    audiodelay = 14;
-    AUDIOTIMING++;
-    if (AUDIOTIMING > 3) {
-        AUDIOTIMING = 0;
-        audiodelay--;
-    }
-    sdl_player_data.playing = fillchip(&(sdl_player_data.aad));
+
     return 0;
 }
 
@@ -634,56 +635,37 @@ int initaudio(){
     return 0;
 }
 
-int freeaudio(){
+void freeaudio(){
     free (sdl_player_data.aad.data);
 
     OPL_Shutdown();
 
-    if(!SDL_WasInit(SDL_INIT_AUDIO)) return;
-
-    SDL_CloseAudio();
-
-    return 0;
-}
-
-int initsfx() {
-    ADLIB_DATA *aad = &(sdl_player_data.aad);
-    unsigned char *raw_data = aad->data;
-    FX_ON = false;
-    FX_TIME = 0;
-    uint16 tmp1;
-    int i, k;
-
-    tmp1 = SFX_OFFSET;
-
-    for (i = 0; i < ADLIB_SFX_COUNT; i++) {
-        for (k = 0; k < 5; k++)
-            aad->sfx[i].op[0][k] = raw_data[tmp1++];
-
-        for (k = 0; k < 5; k++)
-            aad->sfx[i].op[1][k] = raw_data[tmp1++];
-
-        aad->sfx[i].fb_alg = raw_data[tmp1++];
+    if(!SDL_WasInit(SDL_INIT_AUDIO)) {
+        return;
     }
 
-    return 0;
+    SDL_CloseAudio();
 }
 
-int WAIT_SONG(){
+void WAIT_SONG() {
     SDL_Event event;
     bool waiting = true;
     if (AUDIOMODE == 0) {
-        return 0;
+        return;
     }
     do {
         titus_sleep();
         keystate = SDL_GetKeyboardState(NULL);
         while(SDL_PollEvent(&event)) { //Check all events
             if (event.type == SDL_QUIT) {
-                return TITUS_ERROR_QUIT;
+                // FIXME: handle this better
+                //return TITUS_ERROR_QUIT;
+                return;
             } else if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.scancode == KEY_ESC) {
-                    return TITUS_ERROR_QUIT;
+                    // FIXME: handle this better
+                    // return TITUS_ERROR_QUIT;
+                    return;
                 } else if (event.key.keysym.scancode == KEY_MUSIC) {
                     AUDIOMODE++;
                     if (AUDIOMODE > 1) {
@@ -714,9 +696,11 @@ int FX_START(int fx_number){
     return 0;
 }
 
-int FX_DRIVER() {
+void FX_DRIVER() {
+    if (!FX_ON) {
+        return;
+    }
     ADLIB_DATA *aad = &(sdl_player_data.aad);
-    if (!FX_ON) return;
     updatechip(0xBD, 0xEF & aad->perc_stat);
     updatechip(0xA6, 0x57);
     updatechip(0xB6, 1);
@@ -726,10 +710,9 @@ int FX_DRIVER() {
     if (FX_TIME == 0) {
         FX_STOP();
     }
-    return 0;
 }
 
-int FX_STOP() {
+void FX_STOP() {
     unsigned char tmpins1[] = {0xF5, 0x7F, 0x00, 0x11, 0x00};
     unsigned char tmpins2[] = {0xF8, 0xFF, 0x04, 0x30, 0x00};
     SDL_LockAudio();
@@ -741,7 +724,7 @@ int FX_STOP() {
     FX_ON = false;
 }
 
-int RETURN_MUSIC(){
+void RETURN_MUSIC(){
     if (AUDIOMODE == 1) {
         if (sdl_player_data.aad.cutsong == 0) {
             SELECT_MUSIC(last_song);

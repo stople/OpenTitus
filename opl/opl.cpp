@@ -129,7 +129,7 @@ opl_init_result_t OPL_Init(unsigned int port_base)
 {
     char *driver_name;
     int i;
-    int result;
+    opl_init_result_t result;
 
     driver_name = getenv("OPL_DRIVER");
 
@@ -459,7 +459,7 @@ typedef struct
 
 static void DelayCallback(void *_delay_data)
 {
-    delay_data_t *delay_data = _delay_data;
+    delay_data_t *delay_data = (delay_data_t *) _delay_data;
 
     SDL_LockMutex(delay_data->mutex);
     delay_data->finished = 1;

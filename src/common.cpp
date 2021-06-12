@@ -26,7 +26,7 @@
  * Common functions
  *
  * Global functions:
- * int subto0(uint8 *number): Decreases a number until it reaches 0
+ * void subto0(uint8 *number): Decreases a number until it reaches 0
  */
 
 #include <stdio.h>
@@ -36,14 +36,13 @@
 #include "common.h"
 #include "audio.h"
 
-int subto0(uint8 *number) {
+void subto0(uint8 *number) {
     //Decreases a value with 1 until it's zero
     if (*number > 0) {
         *number = *number - 1;
     }
 }
 
-int titus_sleep() {
-    //refreshaudio();
+void titus_sleep() {
     SDL_Delay(1);
 }

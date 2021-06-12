@@ -47,7 +47,7 @@ typedef struct _TITUS_level TITUS_level;
 
 struct _TITUS_tile {
     SDL_Surface *tiledata; //Malloced
-    uint8 animation[2]; //Index to animation tiles
+    uint8 animation[3]; //Index to animation tiles
     bool animated;
     uint8 horizflag;
     uint8 floorflag;

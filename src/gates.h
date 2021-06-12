@@ -32,8 +32,8 @@
 #include "SDL2/SDL.h"
 #include "level.h"
 
-int CROSSING_GATE(TITUS_level *level); //Check and handle level completion, and if the player does a kneestand on a secret entrance
-int CLOSE_SCREEN();
-int OPEN_SCREEN();
+void CROSSING_GATE(TITUS_level *level); //Check and handle level completion, and if the player does a kneestand on a secret entrance
+void CLOSE_SCREEN();
+void OPEN_SCREEN();
 
 #endif

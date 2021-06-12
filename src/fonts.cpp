@@ -32,6 +32,7 @@
 #include "SDL2/SDL.h"
 #include "sqz.h"
 #include "settings.h"
+#include "sprites.h"
 #include "fonts.h"
 #include "backbuffer.h"
 #include "tituserror.h"
@@ -79,50 +80,6 @@ int loadfonts(void) {
         font->type[i] = 0;
         font->sub[i] = NULL;
     }
-
-/*
-    //Second byte
-    font->sub[0] = (TITUS_font *)SDL_malloc(sizeof(TITUS_font) * 256);
-    if (font->sub[0] == NULL) {
-        sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
-        freepixelformat(&(pixelformat));
-        return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
-    }
-    font->type[0] = 1; //Malloced sub
-    f_sub = (TITUS_font *)font->sub[0];
-    for (i = 0; i < 256; i++) {
-        f_sub->type[i] = 0;
-        f_sub->sub[i] = NULL;
-    }
-
-    //Third byte
-    f_sub->sub[0] = (TITUS_font *)SDL_malloc(sizeof(TITUS_font) * 256);
-    if (f_sub->sub[0] == NULL) {
-        sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
-        freepixelformat(&(pixelformat));
-        return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
-    }
-    f_sub->type[0] = 1; //Malloced sub
-    f_sub = (TITUS_font *)f_sub->sub[0];
-    for (i = 0; i < 256; i++) {
-        f_sub->type[i] = 0;
-        f_sub->sub[i] = NULL;
-    }
-
-    //Fourth byte
-    f_sub->sub[0] = (TITUS_font *)SDL_malloc(sizeof(TITUS_font) * 256);
-    if (f_sub->sub[0] == NULL) {
-        sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
-        freepixelformat(&(pixelformat));
-        return (TITUS_ERROR_NOT_ENOUGH_MEMORY);
-    }
-    f_sub->type[0] = 1; //Malloced sub
-    f_sub = (TITUS_font *)f_sub->sub[0];
-    for (i = 0; i < 256; i++) {
-        f_sub->type[i] = 0;
-        f_sub->sub[i] = NULL;
-    }
-*/
 
     //Font data
     for (i = 0; i < 10; i++) { //0-9
@@ -251,7 +208,7 @@ int freesubfont(TITUS_font *f_sub) {
     int i;
     for (i = 0; i < 256; i++) {
         if (f_sub->type[i] == 1) { //Malloced sub
-            freesubfont(f_sub->sub[i]);
+            freesubfont((TITUS_font *) f_sub->sub[i]);
         } else if (f_sub->type[i] == 2) { //Malloced surface
             SDL_FreeSurface((SDL_Surface *)f_sub->sub[i]);
         }
@@ -260,7 +217,7 @@ int freesubfont(TITUS_font *f_sub) {
     return 0;
 }
 
-int SDL_Print_Text(uint8 *text, int x, int y){
+int SDL_Print_Text(const char *text, int x, int y){
     TITUS_font *f_sub;
     uint8 i, j;
     SDL_Rect src, dest;

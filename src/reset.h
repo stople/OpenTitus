@@ -26,14 +26,10 @@
  * Reset level functions
  */
 
-#ifndef RESET_H
-#define RESET_H
+#pragma once
 
 #include "SDL2/SDL.h"
 #include "level.h"
 
-int INIT_SCREENM(TITUS_level *level);
-int CLEAR_DATA(TITUS_level *level);
-
-#endif
-
+void CLEAR_DATA(TITUS_level *level);
+uint8 RESET_LEVEL(TITUS_level *level);
