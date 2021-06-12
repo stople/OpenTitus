@@ -46,7 +46,7 @@ int levelcount;
 int devmode;
 int resheight;
 int videomode;
-int game;
+GameType game;
 
 char levelcode[16][5];
 char leveltitle[16][41];
@@ -271,7 +271,7 @@ int initcodes() {
 }
 
 int initleveltitles() {
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         strcpy (leveltitle[0], "           ON THE FOXY TRAIL");
         strcpy (leveltitle[1], "           LOOKING FOR CLUES");
         strcpy (leveltitle[2], "           ROAD WORKS AHEAD");
@@ -287,7 +287,7 @@ int initleveltitles() {
         strcpy (leveltitle[12], "             A PIPE DREAM");
         strcpy (leveltitle[13], "              GOING HOME");
         strcpy (leveltitle[14], "             JUST MARRIED");
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
         strcpy (leveltitle[0], "     A LA RECHERCHE DE LA ZOUBIDA");
         strcpy (leveltitle[1], "          LES QUARTIERS CHICS");
         strcpy (leveltitle[2], "           ATTENTION TRAVAUX");

@@ -49,11 +49,22 @@
 SDL_Window *window;
 SDL_Renderer *renderer;
 
+const char* getGameTitle() {
+    switch(game) {
+        case GameType::Titus:
+            return "OpenTitus";
+        case GameType::Moktar:
+            return "OpenMoktar";
+        default:
+            return "Something else...";
+    }
+}
+
 int init() {
 
     int retval;
 
-    retval = readconfig(OPENTITUS_CONFIG_FILE);
+    retval = readconfig("game.conf");
     if (retval < 0)
         return retval;
 
@@ -81,7 +92,7 @@ int init() {
     }
 
     window = SDL_CreateWindow(
-        OPENTITUS_WINDOW_TEXT,
+        getGameTitle(),
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         w,

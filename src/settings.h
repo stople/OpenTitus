@@ -27,14 +27,16 @@
  */
 #pragma once
 
-#define OPENTITUS_CONFIG_FILE "titus.conf"
-#define OPENTITUS_WINDOW_TEXT "OpenTitus"
-
 int readconfig(const char *configfile);
 
 int initcodes();
 
 int initleveltitles();
+
+enum class GameType {
+    Titus,
+    Moktar
+};
 
 extern char spritefile[256];
 extern char levelfiles[16][256]; //16 levels in moktar, 15 levels in titus
@@ -50,7 +52,7 @@ extern char fontfile[256];
 extern int levelcount;
 extern int devmode;
 extern int videomode;
-extern int game;
+extern GameType game;
 
 extern char levelcode[16][5];
 extern char leveltitle[16][41];

@@ -113,7 +113,7 @@ int viewmenu(char * menufile, int menuformat) {
     dest.w = image->w;
     dest.h = image->h;
 
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
 
         sel[0].x = 120;
         sel[0].y = 160;
@@ -125,7 +125,7 @@ int viewmenu(char * menufile, int menuformat) {
         sel[1].w = 8;
         sel[1].h = 8;
 
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
 
         sel[0].x = 130;
         sel[0].y = 167;
@@ -172,6 +172,7 @@ int viewmenu(char * menufile, int menuformat) {
             image_alpha = 255;
 
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_SetSurfaceAlphaMod(image, image_alpha);
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_BlitSurface(image, &sel[1], screen, &sel[0]);
@@ -280,6 +281,7 @@ int viewmenu(char * menufile, int menuformat) {
             image_alpha = 255;
 
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_FillRect(screen, &sel[0], 0); //SDL_MapRGB(surface->format, 0, 0, 0));

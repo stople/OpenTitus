@@ -1110,11 +1110,11 @@ static void ACTION_PRG(TITUS_level *level, uint8 action) {
                         if (!player->sprite.flipped) {
                             diffX = 0 - diffX;
                         }
-                        if (game == 1) { //Moktar
+                        if (game == GameType::Moktar) {
                             if (diffX >= 25) {
                                 continue;
                             }
-                        } else if (game == 0) { //TTF
+                        } else if (game == GameType::Titus) {
                             if (diffX >= 20) {
                                 continue;
                             }
@@ -1188,11 +1188,11 @@ static void ACTION_PRG(TITUS_level *level, uint8 action) {
                             if (!player->sprite.flipped) {
                                 diffX = 0 - diffX;
                             }
-                            if (game == 1) { //Moktar
+                            if (game == GameType::Moktar) {
                                 if (diffX >= 25) {
                                     continue;
                                 }
-                            } else if (game == 0) { //TTF
+                            } else if (game == GameType::Titus) {
                                 if (diffX >= 20) {
                                     continue;
                                 }

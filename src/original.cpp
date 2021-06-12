@@ -415,7 +415,7 @@ int initoriginal() {
         }
     }
 
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         for (i = 0; i < SPRITECOUNT; i++) {
             spritewidth[i] = spritewidth_titus[i];
             spriteheight[i] = spriteheight_titus[i];
@@ -427,7 +427,7 @@ int initoriginal() {
         for (i = 0; i < ANIM_PLAYER_MAX; i++) {
             anim_player[1][i] = anim_player_titus[i];
         }
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
         for (i = 0; i < SPRITECOUNT; i++) {
             spritewidth[i] = spritewidth_moktar[i];
             spriteheight[i] = spriteheight_moktar[i];
@@ -562,11 +562,11 @@ int initoriginal() {
     orig_palette_level_colour[13].g = 28 * 4;
     orig_palette_level_colour[13].b = 12 * 4;
 
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         orig_palette_level_colour[14].r = 48 * 4;
         orig_palette_level_colour[14].g = 8 * 4;
         orig_palette_level_colour[14].b = 0 * 4;
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
         orig_palette_level_colour[14].r = 40 * 4;
         orig_palette_level_colour[14].g = 28 * 4;
         orig_palette_level_colour[14].b = 12 * 4;
@@ -647,7 +647,7 @@ int16 getlevelid(int16 levelnumber) {
     int16 levelid_titus[] = {1,3,4,5,6,7,8,9,10,11,-1,12,13,-1,14,-1,15,-1,-1,2};
     int16 levelid_moktar[] = {1,3,4,5,6,7,8,9,10,11,-1,12,13,-1,14,15,16,-1,-1,2};
     int16 i;
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         for (i = 0; i < 20; i++) {
             if (levelid_titus[i] == levelnumber + 1) {
                 return i;

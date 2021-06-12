@@ -570,7 +570,7 @@ int initaudio(){
     int in_len;
     FILE *ifp;
 
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         seg_reduction = 1301;
         ifp = fopen("music.bin", "rb");
         if (ifp == NULL) {
@@ -586,17 +586,17 @@ int initaudio(){
             }
             fclose (ifp);
         }
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
         seg_reduction = 1345;
-        ifp = fopen("music_mok.bin", "rb");
+        ifp = fopen("music.bin", "rb");
         if (ifp == NULL) {
-            sprintf(lasterror, "Error: music_mok.bin not found!\n");
+            sprintf(lasterror, "Error: music.bin not found!\n");
             return (TITUS_ERROR_FILE_NOT_FOUND);
         } else {
             fseek(ifp, 0L, SEEK_END);
             in_len = ftell(ifp);
             if (in_len != 18184) {
-                sprintf(lasterror, "Error: music_mok.bin is invalid!\n");
+                sprintf(lasterror, "Error: music.bin is invalid!\n");
                 fclose (ifp);
                 return (TITUS_ERROR_INVALID_FILE);
             }
@@ -612,11 +612,7 @@ int initaudio(){
         exit(-1);
     }
 
-    if (game == 0) { //Titus
-        sdl_player_data.aad.data_size = load_file("music.bin", &(sdl_player_data.aad.data));
-    } else if (game == 1) { //Moktar
-        sdl_player_data.aad.data_size = load_file("music_mok.bin", &(sdl_player_data.aad.data));
-    }
+    sdl_player_data.aad.data_size = load_file("music.bin", &(sdl_player_data.aad.data));
     if (sdl_player_data.aad.data_size < 0) {
         freeaudio();
         return 0;

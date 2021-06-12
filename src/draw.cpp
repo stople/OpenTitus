@@ -353,11 +353,11 @@ int viewstatus(TITUS_level *level, bool countbonus){
     char tmpchars[10];
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         SDL_Print_Text("LEVEL", 13 * 8, 12 * 5);
         SDL_Print_Text("EXTRA BONUS", 10 * 8, 10 * 12);
         SDL_Print_Text("LIVES", 10 * 8, 11 * 12);
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
         SDL_Print_Text("ETAPE", 13 * 8, 12 * 5);
         SDL_Print_Text("EXTRA BONUS", 10 * 8, 10 * 12);
         SDL_Print_Text("VIE", 10 * 8, 11 * 12);
@@ -515,6 +515,7 @@ void fadeout() {
             image_alpha = 255;
 
         SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
+        SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
         SDL_BlitSurface(image, &src, screen, &dest);
         SDL_Flip(screen);
@@ -534,9 +535,9 @@ int view_password(TITUS_level *level, uint8 level_index) {
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
     SDL_Flip(screen);
 
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         SDL_Print_Text("LEVEL", 13 * 8, 13 * 8);
-    } else if (game == 1) { //Moktar
+    } else if (game == GameType::Moktar) {
         SDL_Print_Text("ETAPE", 13 * 8, 13 * 8);
     }
     sprintf(tmpchars, "%d", level_index + 1);

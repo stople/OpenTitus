@@ -36,8 +36,15 @@ set(TITUS_SOURCES
     src/viewimage.cpp
 )
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+
 add_executable(opentitus ${TITUS_SOURCES})
-set_property(TARGET opentitus PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 target_include_directories(opentitus PRIVATE "src")
 target_link_libraries(opentitus m opl SDL2::SDL2main SDL2::SDL2 SDL2::mixer)
-install(TARGETS opentitus DESTINATION ".")
+install(TARGETS opentitus DESTINATION "titus")
+
+add_executable(openmoktar ${TITUS_SOURCES})
+target_include_directories(openmoktar PRIVATE "src")
+target_link_libraries(openmoktar m opl SDL2::SDL2main SDL2::SDL2 SDL2::mixer)
+install(TARGETS openmoktar DESTINATION "moktar")

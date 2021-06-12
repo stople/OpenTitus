@@ -243,7 +243,7 @@ int playtitus(int firstlevel){
     freesprites(&sprites, sprite_count);
     freepixelformat(&(level.pixelformat));
     SDL_FreeSurface(tilescreen);
-    if (game == 0) { //Titus
+    if (game == GameType::Titus) {
         retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
         if (retval < 0)
             return retval;

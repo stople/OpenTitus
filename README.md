@@ -29,7 +29,7 @@ This is a fork that aims to modernize the codebase, clean everything up, fix bug
 * Various tutorials/information sources on the net!
 
 
-## Getting started:
+## Building:
 You need:
 * Some sort of compiler
 * Recent version of CMake
@@ -43,15 +43,14 @@ cmake .. -DCMAKE_INSTALL_PREFIX="../bin/"
 make install
 ```
 
-To test out your build, follow the instructions inside `bin/README.md`.
-
+## Running:
 You need the original game files to make use of OpenTitus. OpenTitus parses the original files. It works with both Titus the Fox and Moktar.
 
-Place the original game files in the "titus" or "moktar" folder. The files must be placed according to titus.conf.
+* Build and install into the `bin` folder according to the build instructions.
+* Place original game files in `bin/moktar` and/or `bin/titus` folders.
+* Run `opentitus` inside `bin/titus` folder or `openmoktar` in `bin/moktar` folder.
 
-To run the game, run opentitus (in Linux) or opentitus.exe (windows) in `bin`.
-
-The game engine are ported from the original game, and modified to fit OpenTitus' level structure. Movement are equal to the original game.
+Please do not upload the original game files to the git server, as they are proprietary!
 
 If you can find some bugs or differences between OpenTitus and the original games, feel free to contact us!
 

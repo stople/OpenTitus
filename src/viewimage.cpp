@@ -171,6 +171,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 image_alpha = 255;
 
             SDL_SetSurfaceAlphaMod(image, image_alpha);
+            SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
@@ -259,6 +260,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 image_alpha = 255;
 
             SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
+            SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
@@ -312,6 +314,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                 image_alpha = 255;
 
             SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
+            SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
             SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
             SDL_BlitSurface(image, &src, screen, &dest);
             SDL_Flip(screen);
