@@ -126,8 +126,19 @@ int readconfig(const char *configfile) {
             sscanf (line, "%*s %255d", &devmode);
         else if (strcmp (tmp, "videomode") == 0)
             sscanf (line, "%*s %255d", &videomode);
-        else if (strcmp (tmp, "game") == 0)
-            sscanf (line, "%*s %255d", &game);
+        else if (strcmp (tmp, "game") == 0) {
+            sscanf (line, "%*s %255d", (int *)&game);
+            switch(game) {
+                case GameType::Moktar:
+                case GameType::Titus:
+                    break;
+                default: {
+                    printf("Error: You have specified invalid game type: %d, check config file: %s!\n", int(game), configfile);
+                    fclose(ifp);
+                    return(-1);
+                }
+            }
+        }
         else if (strcmp (tmp, "logo") == 0)
             sscanf (line, "%*s %255s", tituslogofile);
         else if (strcmp (tmp, "logoformat") == 0)

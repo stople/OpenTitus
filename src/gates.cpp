@@ -155,8 +155,6 @@ void CLOSE_SCREEN() {
 
 void OPEN_SCREEN() {
     SDL_Rect dest;
-    int16 rwidth = 320; //TODO: make this global
-    int16 rheight = 192;
     int8 step_count = 10;
     int16 blockX = 320 / (step_count * 2);  //16 (320: resolution width)
     int16 blockY = 192 / (step_count * 2); //9 (192: resolution height)

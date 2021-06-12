@@ -56,18 +56,10 @@
 #include "audio.h"
 
 static int playlevel(TITUS_level *level);
-static int displaylevel(TITUS_level *level);
-static int movescreen(TITUS_level *level);
-static int animate(TITUS_level *level);
-static int movetitus(TITUS_level *level);
-static int collision_detection_player(TITUS_level *level);
-
-static void gettick(int *tick, uint8 index);
 static void death(TITUS_level *level);
 static void gameover(TITUS_level *level);
 
 int playtitus(int firstlevel){
-    int startx, starty;
     int retval;
 
     TITUS_level level;
@@ -255,6 +247,12 @@ int playtitus(int firstlevel){
 
 #ifdef DEBUG_VERSION
 
+void gettick(int *tick, uint8 index) {
+    int oldtick = *tick;
+    *tick = SDL_GetTicks();
+    //SUBTIME[index] = *tick - oldtick;
+}
+
 //Debug version - equal to the ordinary main loop, will additionally measure the time used in each sub function
 static int playlevel(TITUS_level *level) {
     int retval = 0;
@@ -312,7 +310,6 @@ static int playlevel(TITUS_level *level) {
 //Ordinary main loop
 static int playlevel(TITUS_level *level) {
     int retval = 0;
-    SDL_Event event;
     bool firstrun = true;
     do {
         if (!firstrun) {
@@ -346,13 +343,6 @@ static int playlevel(TITUS_level *level) {
 }
 
 #endif
-
-
-void gettick(int *tick, uint8 index) {
-    int oldtick = *tick;
-    *tick = SDL_GetTicks();
-    //SUBTIME[index] = *tick - oldtick;
-}
 
 void death(TITUS_level *level) {
     TITUS_player *player = &(level->player);

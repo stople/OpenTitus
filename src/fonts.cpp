@@ -48,7 +48,6 @@ int freesubfont(TITUS_font *f_sub);
 
 int loadfonts(void) {
     int i, retval;
-    unsigned int offset = 0;
     SDL_Surface *surface = NULL;
     char *tmpchar;
     SDL_PixelFormat *pixelformat;
@@ -235,7 +234,7 @@ int SDL_Print_Text(const char *text, int x, int y){
             sprintf(lasterror, "Error: Invalid UTF-8!\n");
             return (TITUS_ERROR_INVALID_UTF8);
         }
-        while (f_sub->type[text[i]] == 1) { //Sub
+        while (f_sub->type[(size_t)text[i]] == 1) { //Sub
             if (i == strlen(text) - 1) {
                 sprintf(lasterror, "Error: Invalid UTF-8!\n");
                 return (TITUS_ERROR_INVALID_UTF8);
@@ -245,17 +244,17 @@ int SDL_Print_Text(const char *text, int x, int y){
                 sprintf(lasterror, "Error: Invalid UTF-8!\n");
                 return (TITUS_ERROR_INVALID_UTF8);
             }
-            f_sub = (TITUS_font *)f_sub->sub[text[i]];
+            f_sub = (TITUS_font *)f_sub->sub[(size_t)text[i]];
         }
 
-        switch (f_sub->type[text[i]]) {
+        switch (f_sub->type[(size_t)text[i]]) {
         case 0: //Undefined character
             image = font_undefined;
             src.w = image->w;
             src.h = image->h;
             SDL_BlitSurface(image, &src, screen, &dest);
             dest.x += 8;
-            if (text[j] > 0xBF) { //If first letter is larger than 10111111: this is multibyte. Make sure "i" is in the last byte
+            if (text[j] > 0xBFu) { //If first letter is larger than 10111111: this is multibyte. Make sure "i" is in the last byte
                 do {
                     if (j == strlen(text) - 1) {
                         sprintf(lasterror, "Error: Invalid UTF-8!\n");
@@ -273,7 +272,7 @@ int SDL_Print_Text(const char *text, int x, int y){
             break;
         case 2: //Malloced surface
         case 3: //Surface pointer
-            image = (SDL_Surface *)f_sub->sub[text[i]];
+            image = (SDL_Surface *)f_sub->sub[(size_t)text[i]];
             src.w = image->w;
             src.h = image->h;
             SDL_BlitSurface(image, &src, screen, &dest);

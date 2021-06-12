@@ -371,7 +371,6 @@ void CASE_DEAD_IM (TITUS_level *level) {
 }
 
 int t_pause (TITUS_level *level) {
-    bool pass;
     TITUS_player *player = &(level->player);
     SDL_Event event;
     TITUS_sprite tmp;
@@ -959,7 +958,7 @@ static void ACTION_PRG(TITUS_level *level, uint8 action) {
     TITUS_player *player = &(level->player);
     uint8 tileX, tileY, fflag;
     TITUS_object *object;
-    int16 tmpY, tmpX, i, diffX, speedX, speedY;
+    int16 i, diffX, speedX, speedY;
 
     switch (action) {
     case 0:
@@ -1098,8 +1097,6 @@ static void ACTION_PRG(TITUS_level *level, uint8 action) {
                 }
             } else {
                 if (!CARRY_FLAG) {
-                    tmpY = player->sprite.y;
-                    tmpX = player->sprite.x;
                     for (i = 0; i < level->objectcount; i++) {
                         //First do a quick test
                         if (!(level->object[i].sprite.enabled) ||

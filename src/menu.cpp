@@ -49,8 +49,6 @@ int viewmenu(char * menufile, int menuformat) {
     SDL_Surface *image;
     unsigned char *menudata;
     int retval;
-    int i;
-    int j;
     int menuloop = 1;
     int selection = 0;
     SDL_Event event;
@@ -72,14 +70,14 @@ int viewmenu(char * menufile, int menuformat) {
 
     switch (menuformat) {
     case 1: //Planar 16-color
-
+        // FIXME: what is this supposed to do aside from crashing?
         break;
 
     case 2: //256 color
         surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 200, 8, 0, 0, 0, 0);
         palette = (surface->format)->palette;
         if (palette) {
-            for (i = 0; i < 256; i++) {
+            for (int i = 0; i < 256; i++) {
                 palette->colors[i].r = (menudata[i * 3] & 0xFF) * 4;
                 palette->colors[i].g = (menudata[i * 3 + 1] & 0xFF) * 4;
                 palette->colors[i].b = (menudata[i * 3 + 2] & 0xFF) * 4;
@@ -88,7 +86,7 @@ int viewmenu(char * menufile, int menuformat) {
         }
 
         tmpchar = (char *)surface->pixels;
-        for (i = 256 * 3; i < 256 * 3 + 320*200; i++) {
+        for (int i = 256 * 3; i < 256 * 3 + 320*200; i++) {
             *tmpchar = menudata[i];
             tmpchar++;
         }
@@ -288,11 +286,6 @@ int viewmenu(char * menufile, int menuformat) {
         SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
         SDL_Flip(screen);
         titus_sleep();
-
-#ifdef AUDIO_SDL_MIXER
-        checkaudio();
-#endif
-
     }
 
     return (curlevel);

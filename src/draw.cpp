@@ -127,7 +127,6 @@ void TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
 
 void DISPLAY_SPRITES(TITUS_level *level) {
     int16 i;
-    char buffer[7]; //xxx ms
 
     for (i = level->elevatorcount - 1; i >= 0; i--) {
         display_sprite(level, &(level->elevator[i].sprite));
@@ -157,6 +156,7 @@ void DISPLAY_SPRITES(TITUS_level *level) {
     }
 
 #ifdef DEBUG_VERSION
+    char buffer[7]; //xxx ms
     if (DISPLAYLOOPTIME) {
         sprintf(buffer, "%3u ms", LOOPTIME);
         SDL_Print_Text(buffer, 30 * 8, 2 * 12); //Loop time in ms
@@ -461,7 +461,6 @@ void DISPLAY_COUNT(TITUS_level *level) {
 
 void fadeout() {
     SDL_Surface *image;
-    int activedelay = 1;
     SDL_Event event;
     unsigned int fade_time = 1000;
     unsigned int tick_start = 0;
