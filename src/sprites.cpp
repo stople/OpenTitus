@@ -36,7 +36,7 @@
 #include "tituserror.h"
 #include "globals.h"
 #include "definitions.h"
-#include "backbuffer.h"
+#include "window.h"
 
 SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash){
     int i, j;

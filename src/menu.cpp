@@ -31,7 +31,7 @@
 #include <string.h>
 #include "SDL2/SDL.h"
 #include "sqz.h"
-#include "backbuffer.h"
+#include "window.h"
 #include "menu.h"
 #include "fonts.h"
 #include "settings.h"
@@ -160,6 +160,8 @@ int viewmenu(char * menufile, int menuformat) {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
         }
@@ -209,6 +211,8 @@ int viewmenu(char * menufile, int menuformat) {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
         }
@@ -269,6 +273,8 @@ int viewmenu(char * menufile, int menuformat) {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
         }
@@ -323,6 +329,8 @@ int enterpassword(){
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
         }

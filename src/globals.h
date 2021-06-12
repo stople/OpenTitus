@@ -50,6 +50,7 @@
 #define KEY_GODMODE SDL_SCANCODE_G //Toggle godmode
 #define KEY_DEBUG SDL_SCANCODE_D //Toggle debug mode
 #define KEY_MUSIC SDL_SCANCODE_F3 //Toggle music
+#define KEY_FULLSCREEN SDL_SCANCODE_F11 //Toggle fullscreen
 
 #define TEST_ZONE 4
 #define MAX_X 4

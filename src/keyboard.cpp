@@ -32,7 +32,7 @@
 #include "common.h"
 
 #include "audio.h"
-#include "backbuffer.h"
+#include "window.h"
 
 int waitforbutton() {
     SDL_Event event;
@@ -58,6 +58,8 @@ int waitforbutton() {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
             if (event.type == SDL_WINDOWEVENT) {

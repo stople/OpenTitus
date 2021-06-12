@@ -32,7 +32,7 @@
 #include "level.h"
 #include "globals.h"
 #include "definitions.h"
-#include "backbuffer.h"
+#include "window.h"
 #include "scroll.h"
 
 static uint8 BARRYCENTRE(TITUS_level *level);

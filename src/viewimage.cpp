@@ -32,7 +32,7 @@
 #include "viewimage.h"
 #include "sqz.h"
 #include "settings.h"
-#include "backbuffer.h"
+#include "window.h"
 #include "globals.h"
 #include "common.h"
 #include "keyboard.h"
@@ -160,6 +160,8 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         if (AUDIOMODE == 1) {
                             startmusic();
                         }
+                    } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                        togglefullscreen();
                     }
 
                 }
@@ -205,6 +207,8 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         if (AUDIOMODE == 1) {
                             startmusic();
                         }
+                    } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                        togglefullscreen();
                     }
                 }
 
@@ -250,6 +254,8 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         if (AUDIOMODE == 1) {
                             startmusic();
                         }
+                    } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                        togglefullscreen();
                     }
                 }
             }
@@ -304,6 +310,8 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         if (AUDIOMODE == 1) {
                             startmusic();
                         }
+                    } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                        togglefullscreen();
                     }
                 }
             }

@@ -42,6 +42,7 @@
 #include "objects.h"
 #include "sprites.h"
 #include "scroll.h"
+#include "window.h"
 
 static void TAKE_BLK_AND_YTEST(TITUS_level *level, int16 tileY, uint8 tileX);
 static void BLOCK_YYPRGD(TITUS_level *level, uint8 ceil, uint8 tileY, uint8 tileX);
@@ -123,6 +124,8 @@ int move_player(TITUS_level *level) {
                 }
             } else if (event.key.keysym.scancode == KEY_P) {
                 pause = true;
+            } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                togglefullscreen();
             }
         }
     }
@@ -402,6 +405,8 @@ int t_pause (TITUS_level *level) {
                     }
                 } else if (event.key.keysym.scancode == KEY_P) {
                     return 0;
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
         }

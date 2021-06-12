@@ -34,7 +34,7 @@
 #include "settings.h"
 #include "sprites.h"
 #include "fonts.h"
-#include "backbuffer.h"
+#include "window.h"
 #include "tituserror.h"
 #include "keyboard.h"
 #include "draw.h"

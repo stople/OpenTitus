@@ -33,7 +33,7 @@
 #include "sqz.h"
 #include "settings.h"
 #include "fonts.h"
-#include "backbuffer.h"
+#include "window.h"
 #include "engine.h"
 #include "tituserror.h"
 #include "original.h"

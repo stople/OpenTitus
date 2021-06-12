@@ -44,6 +44,7 @@
 #include "tile_animation.h"
 #include "audio.h"
 #include "keyboard.h"
+#include "window.h"
 
 static void MOVE_HIM(TITUS_level *level, TITUS_sprite *spr);
 static void SET_ALL_SPRITES(TITUS_level *level);
@@ -150,6 +151,8 @@ uint8 RESET_LEVEL(TITUS_level *level) {
                         if (AUDIOMODE == 1) {
                             startmusic();
                         }
+                    } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                        togglefullscreen();
                     }
                 } else if (event.type == SDL_KEYUP) {
                     if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE) {

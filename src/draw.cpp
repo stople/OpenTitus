@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include "SDL2/SDL.h"
 #include "globals.h"
-#include "backbuffer.h"
+#include "window.h"
 #include "sprites.h"
 #include "draw.h"
 #include "settings.h"
@@ -504,6 +504,8 @@ void fadeout() {
                     if (AUDIOMODE == 1) {
                         startmusic();
                     }
+                } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
+                    togglefullscreen();
                 }
             }
         }
