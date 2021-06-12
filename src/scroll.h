@@ -32,7 +32,7 @@
 
 void scroll(TITUS_level *level);
 void DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x);
-bool D_SCROLL(TITUS_level *level);
-bool U_SCROLL(TITUS_level *level);
 bool L_SCROLL(TITUS_level *level);
 bool R_SCROLL(TITUS_level *level);
+bool U_SCROLL(TITUS_level *level);
+bool D_SCROLL(TITUS_level *level);

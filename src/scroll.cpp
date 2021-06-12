@@ -38,10 +38,6 @@
 static uint8 BARRYCENTRE(TITUS_level *level);
 static void REFRESH_COLUMNS(TITUS_level *level, int8 column);
 static void REFRESH_LINE(TITUS_level *level, int8 line);
-bool L_SCROLL(TITUS_level *level);
-bool R_SCROLL(TITUS_level *level);
-bool U_SCROLL(TITUS_level *level);
-bool D_SCROLL(TITUS_level *level);
 
 void X_ADJUST(TITUS_level *level) {
     bool block;

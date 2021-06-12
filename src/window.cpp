@@ -72,6 +72,7 @@ int initwindow() {
 
     SDL_RenderSetLogicalSize(renderer, 320, 200);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    return 0;
 }
 
 void SDL_Flip(SDL_Surface * screen) {
