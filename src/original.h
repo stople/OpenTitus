@@ -33,12 +33,13 @@
 
 #define SPRITECOUNT 356
 #define ANIM_PLAYER_MAX 15
+#define ANIM_PLAYER_MAX_MOKTAR 12
 #define ANIM_PLAYER_COUNT 30
 #define ORIG_ANIM_MAX 20
 #define ORIG_OBJECT_COUNT 71
 #define ORIG_NMI_COUNT 230
 #define ORIG_LEVEL_COUNT 20
-#define NMI_ANIM_TABLE_COUNT 1758
+#define NMI_ANIM_TABLE_COUNT 879 //1758
 
 int initoriginal();
 int16 getlevelid(int16 levelnumber);

@@ -361,7 +361,9 @@ int initoriginal() {
     }
 
     for (i = 0; i < NMI_ANIM_TABLE_COUNT; i++) {
-        anim_enemy[i] = (int16)(((uint16)(tmpanimnmi[i * 2 + 1]) << 8) + (uint16)(tmpanimnmi[i * 2]));
+        uint8 first = tmpanimnmi[i * 2 + 1];
+        uint8 second = tmpanimnmi[i * 2];
+        anim_enemy[i] = (int16)(((uint16)(first) << 8) + (uint16)(second));
     }
 
     for (i = 0; i < ORIG_OBJECT_COUNT; i++) {
@@ -434,7 +436,7 @@ int initoriginal() {
             spriterefwidth[i] = tmpspriteref_moktar[i * 2];
             spriterefheight[i] = tmpspriteref_moktar[(i * 2) + 1];
         }
-        for (i = 0; i < ANIM_PLAYER_MAX; i++) {
+        for (i = 0; i < ANIM_PLAYER_MAX_MOKTAR; i++) {
             anim_player[1][i] = anim_player_moktar[i];
         }
     }

@@ -25,10 +25,10 @@
 #include "tituserror.h"
 #include "opl.h"
 #include "common.h"
-
+#include <cassert>
 
 #define ADLIB_DATA_COUNT 10
-#define ADLIB_INSTRUMENT_COUNT 19
+#define ADLIB_INSTRUMENT_COUNT 20
 #define ADLIB_SFX_COUNT 14
 
 #define FREQ_RATE 44100
@@ -95,14 +95,11 @@ typedef struct {
     int data_size;
 
     ADLIB_INSTR instrument_data[ADLIB_INSTRUMENT_COUNT];
-
-    SDL_AudioSpec spec;
 } ADLIB_DATA;
 
 typedef struct {
     unsigned char sampsize;
     int playing;
-    SDL_AudioSpec spec;
     ADLIB_DATA aad;
 } SDL_PLAYER;
 
@@ -405,10 +402,10 @@ void SELECT_MUSIC(int song_number)
 
     tmp2 = ((unsigned int)raw_data[j] & 0xFF) + (((unsigned int)raw_data[j + 1] << 8) & 0xFF00);
 
-    for (i = 0; i < ADLIB_INSTRUMENT_COUNT + 1; i++)
+    for (i = 0; i < ADLIB_INSTRUMENT_COUNT; i++)
         aad->instrument_data[i].vox = 0xFF; //Init; instrument not in use
 
-    for (i = 0; (i < ADLIB_INSTRUMENT_COUNT + 1) && ((j + 2) < aad->data_size); i++) {
+    for (i = 0; (i < ADLIB_INSTRUMENT_COUNT) && ((j + 2) < aad->data_size); i++) {
         tmp1 = tmp2;
         tmp2 = ((unsigned int)raw_data[j + 2] & 0xFF) + (((unsigned int)raw_data[j + 3] << 8) & 0xFF00);
         j += 2;
@@ -606,9 +603,6 @@ int initaudio(){
             fclose (ifp);
         }
     }
-
-
-    memset(&(sdl_player_data.spec), 0x00, sizeof(SDL_AudioSpec));
 
     OPL_SetSampleRate(FREQ_RATE);
 
