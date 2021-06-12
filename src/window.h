@@ -29,13 +29,18 @@
 #pragma once
 #include "SDL2/SDL.h"
 
-int initwindow();
-void togglefullscreen();
-void togglefullscreendone();
+namespace Window {
 
-void SDL_Flip(SDL_Surface * screen);
+int init();
+void toggle_fullscreen();
+void toggle_buffers();
+void paint();
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern SDL_Surface *screen; //Backbuffer
 extern SDL_Surface *tilescreen; //Tile screen
+
+}
+
+

@@ -2,13 +2,6 @@
 #include "settings.h"
 #include "tituserror.h"
 
-SDL_Surface *screen;
-SDL_Surface *tilescreen;
-SDL_Window *window;
-SDL_Renderer *renderer;
-
-bool fullscreen = false;
-
 namespace {
     const char* getGameTitle() {
         switch(game) {
@@ -22,7 +15,17 @@ namespace {
     }
 }
 
-void togglefullscreen() {
+namespace Window {
+
+bool fullscreen = false;
+bool display_tilescreen = false;
+
+SDL_Surface *screen;
+SDL_Surface *tilescreen;
+SDL_Window *window;
+SDL_Renderer *renderer;
+
+void toggle_fullscreen() {
     if(!fullscreen) {
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
         fullscreen = true;
@@ -33,7 +36,11 @@ void togglefullscreen() {
     }
 }
 
-int initwindow() {
+void toggle_buffers() {
+    display_tilescreen = !display_tilescreen;
+}
+
+int init() {
     Uint32 windowflags = 0;
     int w;
     int h;
@@ -75,10 +82,21 @@ int initwindow() {
     return 0;
 }
 
-void SDL_Flip(SDL_Surface * screen) {
-    SDL_Texture *frame = SDL_CreateTextureFromSurface(renderer, screen);
+void paint() {
+    SDL_Texture *frame;
+    if(display_tilescreen && tilescreen) {
+        frame = SDL_CreateTextureFromSurface(renderer, tilescreen);
+    }
+    else if (screen) {
+        frame = SDL_CreateTextureFromSurface(renderer, screen);
+    }
+    else {
+        return;
+    }
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, frame, NULL, NULL);
     SDL_RenderPresent(renderer);
     SDL_DestroyTexture(frame);
+}
+
 }

@@ -330,5 +330,5 @@ void DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x) {
     dest.y = y * 16;
     dest.w = src.w;
     dest.h = src.h;
-    SDL_BlitSurface(level->tile[level->tile[tile].animation[tile_anim]].tiledata, &src, tilescreen, &dest);
+    SDL_BlitSurface(level->tile[level->tile[tile].animation[tile_anim]].tiledata, &src, Window::tilescreen, &dest);
 }

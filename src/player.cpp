@@ -125,7 +125,9 @@ int move_player(TITUS_level *level) {
             } else if (event.key.keysym.scancode == KEY_P) {
                 pause = true;
             } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                togglefullscreen();
+                Window::toggle_fullscreen();
+            } else if (event.key.keysym.scancode == KEY_TOGGLE_BUFFERS) {
+                Window::toggle_buffers();
             }
         }
     }
@@ -406,7 +408,7 @@ int t_pause (TITUS_level *level) {
                 } else if (event.key.keysym.scancode == KEY_P) {
                     return 0;
                 } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                    togglefullscreen();
+                    Window::toggle_fullscreen();
                 }
             }
         }

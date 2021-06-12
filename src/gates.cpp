@@ -127,28 +127,28 @@ void CLOSE_SCREEN() {
         dest.y = 0;
         dest.w = screen_width * 16;
         dest.h = i * incY;
-        SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
 
         //Clear left
         dest.x = 0;
         dest.y = 0;
         dest.w = i * incX;
         dest.h = screen_height * 16;
-        SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
 
         //Clear bottom
         dest.x = 0;
         dest.y = rheight - (i * incY);
         dest.w = screen_width * 16;
         dest.h = i * incY;
-        SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
 
         //Clear right
         dest.x = rwidth - (i * incX);
         dest.y = 0;
         dest.w = i * incX;
         dest.h = screen_height * 16;
-        SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
     }
 }
 
@@ -166,7 +166,7 @@ void OPEN_SCREEN() {
     dest.y = 0;
     dest.w = 320;
     dest.h = 192;
-    SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, 0, 0, 0));
+    SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
 
     j = step_count;
     for (i = 2; i <= step_count * 2; i += 2) {
@@ -210,7 +210,7 @@ void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
         if (destY + height > sepYi) { //Both A and C
             src.h = sepYi - destY;
         }
-        SDL_BlitSurface(tilescreen, &src, screen, &dest);
+        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
     }
 
     //Upper right on screen (B)
@@ -230,7 +230,7 @@ void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
         if (destY + height > sepYi) { //Both B and D
             src.h = sepYi - destY;
         }
-        SDL_BlitSurface(tilescreen, &src, screen, &dest);
+        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
     }
 
     //Lower left on screen (C)
@@ -250,7 +250,7 @@ void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
             src.h = height - (sepYi - destY);
             dest.y = sepYi;
         }
-        SDL_BlitSurface(tilescreen, &src, screen, &dest);
+        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
     }
 
     //Lower right on screen (D)
@@ -272,6 +272,6 @@ void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
             src.h = height - (sepYi - destY);
             dest.y = sepYi;
         }
-        SDL_BlitSurface(tilescreen, &src, screen, &dest);
+        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
     }
 }

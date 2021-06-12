@@ -82,8 +82,8 @@ int playtitus(int firstlevel){
         return retval;
     }
 
-    tilescreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 20 * 16, 12 * 16, 8, 0, 0, 0, 0);
-    copypixelformat(tilescreen->format, level.pixelformat);
+    Window::tilescreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 20 * 16, 12 * 16, 8, 0, 0, 0, 0);
+    copypixelformat(Window::tilescreen->format, level.pixelformat);
 
     retval = unSQZ(spritefile, &spritedata);
     if (retval < 0) {
@@ -234,7 +234,7 @@ int playtitus(int firstlevel){
     freespritecache(&spritecache);
     freesprites(&sprites, sprite_count);
     freepixelformat(&(level.pixelformat));
-    SDL_FreeSurface(tilescreen);
+    SDL_FreeSurface(Window::tilescreen);
     if (game == GameType::Titus) {
         retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
         if (retval < 0)

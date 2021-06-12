@@ -146,7 +146,7 @@ int loadfonts(void) {
         tmpchar++;
     }
 
-    if ((font->sub[CHAR_SPACE] = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0)) == NULL) {
+    if ((font->sub[CHAR_SPACE] = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(Window::window), 0)) == NULL) {
         sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
         freepixelformat(&(pixelformat));
         return (0);
@@ -188,7 +188,7 @@ SDL_Surface * SDL_LoadChar(unsigned char * fontdata, int offset, SDL_PixelFormat
             tmpchar++;
         }
     }
-    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
+    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(Window::window), 0);
     if (surface2 == NULL) {
         sprintf(lasterror, "Error: Not enough memory to load fonts!\n");
         return (NULL);
@@ -252,7 +252,7 @@ int SDL_Print_Text(const char *text, int x, int y){
             image = font_undefined;
             src.w = image->w;
             src.h = image->h;
-            SDL_BlitSurface(image, &src, screen, &dest);
+            SDL_BlitSurface(image, &src, Window::screen, &dest);
             dest.x += 8;
             if (text[j] > 0xBFu) { //If first letter is larger than 10111111: this is multibyte. Make sure "i" is in the last byte
                 do {
@@ -275,7 +275,7 @@ int SDL_Print_Text(const char *text, int x, int y){
             image = (SDL_Surface *)f_sub->sub[(size_t)text[i]];
             src.w = image->w;
             src.h = image->h;
-            SDL_BlitSurface(image, &src, screen, &dest);
+            SDL_BlitSurface(image, &src, Window::screen, &dest);
             dest.x += 8;
             break;
         case 4: //Invalid UTF-8
@@ -301,7 +301,7 @@ int viewintrotext(){
     SDL_Print_Text(" PROGRAMMED IN 1991 ON AT .286 12MHZ.", 0, 12 * 12);
     SDL_Print_Text("   . . . ENJOY MOKTAR ADVENTURE !!", 0, 13 * 12);
 
-    SDL_Flip(screen);
+    Window::paint();
 
     retval = waitforbutton();
     if (retval < 0)
@@ -313,7 +313,7 @@ int viewintrotext(){
     SDL_Print_Text("REPROGRAMMED IN 2011 ON X86_64 2.40 GHZ.", 0, 12 * 12);
     SDL_Print_Text("   . . . ENJOY MOKTAR ADVENTURE !!", 0, 13 * 12);
 
-    SDL_Flip(screen);
+    Window::paint();
 
     retval = waitforbutton();
     if (retval < 0)

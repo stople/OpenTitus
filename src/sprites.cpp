@@ -67,7 +67,7 @@ SDL_Surface * copysurface(SDL_Surface * original, bool flip, bool flash){
             }
         }
     }
-    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
+    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(Window::window), 0);
     SDL_FreeSurface(surface);
     return(surface2);
 }
@@ -203,7 +203,7 @@ SDL_Surface * SDL_LoadTile(unsigned char * first, int i, SDL_PixelFormat * pixel
             tmpchar++;
         }
     }
-    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
+    surface2 = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(Window::window), 0);
     SDL_FreeSurface(surface);
     return(surface2);
 }

@@ -152,7 +152,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
                             startmusic();
                         }
                     } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                        togglefullscreen();
+                        Window::toggle_fullscreen();
                     }
                 } else if (event.type == SDL_KEYUP) {
                     if (event.key.keysym.scancode == KEY_RETURN || event.key.keysym.scancode == KEY_ENTER || event.key.keysym.scancode == KEY_SPACE) {

@@ -61,7 +61,7 @@ int init() {
     }
 
 
-    retval = initwindow();
+    retval = Window::init();
     if(retval != 0) {
         return retval;
     }

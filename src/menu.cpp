@@ -91,7 +91,7 @@ int viewmenu(char * menufile, int menuformat) {
             tmpchar++;
         }
 
-        image = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
+        image = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(Window::window), 0);
         palette = NULL;
 
         SDL_FreeSurface(surface);
@@ -161,7 +161,7 @@ int viewmenu(char * menufile, int menuformat) {
                         startmusic();
                     }
                 } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                    togglefullscreen();
+                    Window::toggle_fullscreen();
                 }
             }
         }
@@ -171,13 +171,13 @@ int viewmenu(char * menufile, int menuformat) {
         if (image_alpha > 255)
             image_alpha = 255;
 
-        SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
         SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_SetSurfaceAlphaMod(image, image_alpha);
-        SDL_BlitSurface(image, &src, screen, &dest);
-        SDL_BlitSurface(image, &sel[1], screen, &sel[0]);
-        SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
-        SDL_Flip(screen);
+        SDL_BlitSurface(image, &src, Window::screen, &dest);
+        SDL_BlitSurface(image, &sel[1], Window::screen, &sel[0]);
+        SDL_BlitSurface(image, &sel[0], Window::screen, &sel[selection]);
+        Window::paint();
         titus_sleep();
 
     }
@@ -212,16 +212,16 @@ int viewmenu(char * menufile, int menuformat) {
                         startmusic();
                     }
                 } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                    togglefullscreen();
+                    Window::toggle_fullscreen();
                 }
             }
         }
 
-        SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-        SDL_BlitSurface(image, &src, screen, &dest);
-        SDL_BlitSurface(image, &sel[1], screen, &sel[0]);
-        SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
-        SDL_Flip(screen);
+        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+        SDL_BlitSurface(image, &src, Window::screen, &dest);
+        SDL_BlitSurface(image, &sel[1], Window::screen, &sel[0]);
+        SDL_BlitSurface(image, &sel[0], Window::screen, &sel[selection]);
+        Window::paint();
         titus_sleep();
     }
 
@@ -274,7 +274,7 @@ int viewmenu(char * menufile, int menuformat) {
                         startmusic();
                     }
                 } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                    togglefullscreen();
+                    Window::toggle_fullscreen();
                 }
             }
         }
@@ -284,13 +284,13 @@ int viewmenu(char * menufile, int menuformat) {
         if (image_alpha > 255)
             image_alpha = 255;
 
-        SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
         SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
-        SDL_BlitSurface(image, &src, screen, &dest);
-        SDL_FillRect(screen, &sel[0], 0); //SDL_MapRGB(surface->format, 0, 0, 0));
-        SDL_BlitSurface(image, &sel[0], screen, &sel[selection]);
-        SDL_Flip(screen);
+        SDL_BlitSurface(image, &src, Window::screen, &dest);
+        SDL_FillRect(Window::screen, &sel[0], 0); //SDL_MapRGB(surface->format, 0, 0, 0));
+        SDL_BlitSurface(image, &sel[0], Window::screen, &sel[selection]);
+        Window::paint();
         titus_sleep();
     }
 
@@ -303,8 +303,8 @@ int enterpassword(){
     char code[] = "____";
     int i;
 
-    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-    SDL_RenderPresent(renderer);
+    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+    SDL_RenderPresent(Window::renderer);
 
     SDL_Print_Text("CODE", 111, 80);
 
@@ -330,12 +330,12 @@ int enterpassword(){
                         startmusic();
                     }
                 } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                    togglefullscreen();
+                    Window::toggle_fullscreen();
                 }
             }
         }
         SDL_Print_Text(code, 159, 80);
-        SDL_Flip(screen);
+        Window::paint();
         titus_sleep();
     }
 
@@ -344,24 +344,24 @@ int enterpassword(){
             SDL_Print_Text("LEVEL", 103, 104);
             sprintf(code, "%d", i + 1);
             SDL_Print_Text(code, 199 - 8 * strlen(code), 104);
-            SDL_Flip(screen);
+            Window::paint();
             retval = waitforbutton();
 
             if (retval < 0)
                 return retval;
 
-            SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-            SDL_Flip(screen);
+            SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+            Window::paint();
 
             return (i + 1);
         }
     }
 
     SDL_Print_Text("!  WRONG CODE  !", 87, 104);
-    SDL_Flip(screen);
+    Window::paint();
     retval = waitforbutton();
 
-    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-    SDL_Flip(screen);
+    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+    Window::paint();
     return (retval);
 }

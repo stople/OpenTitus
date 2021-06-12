@@ -59,7 +59,7 @@ int waitforbutton() {
                         startmusic();
                     }
                 } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                    togglefullscreen();
+                    Window::toggle_fullscreen();
                 }
             }
             if (event.type == SDL_WINDOWEVENT) {
@@ -68,7 +68,7 @@ int waitforbutton() {
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     case SDL_WINDOWEVENT_MAXIMIZED:
                     case SDL_WINDOWEVENT_RESTORED:
-                        SDL_Flip(screen);
+                        Window::paint();
                     default:
                         break;
                 }

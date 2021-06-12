@@ -116,7 +116,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
     }
 
     free (imagedata);
-    image = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(window), 0);
+    image = SDL_ConvertSurfaceFormat(surface, SDL_GetWindowPixelFormat(Window::window), 0);
 
     src.x = 0;
     src.y = 0;
@@ -161,7 +161,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                             startmusic();
                         }
                     } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                        togglefullscreen();
+                        Window::toggle_fullscreen();
                     }
 
                 }
@@ -174,9 +174,9 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
 
             SDL_SetSurfaceAlphaMod(image, image_alpha);
             SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
-            SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-            SDL_BlitSurface(image, &src, screen, &dest);
-            SDL_Flip(screen);
+            SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+            SDL_BlitSurface(image, &src, Window::screen, &dest);
+            Window::paint();
             titus_sleep();
         }
 
@@ -208,7 +208,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                             startmusic();
                         }
                     } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                        togglefullscreen();
+                        Window::toggle_fullscreen();
                     }
                 }
 
@@ -218,7 +218,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                         case SDL_WINDOWEVENT_SIZE_CHANGED:
                         case SDL_WINDOWEVENT_MAXIMIZED:
                         case SDL_WINDOWEVENT_RESTORED:
-                            SDL_Flip(screen);
+                            Window::paint();
                         default:
                             break;
                     }
@@ -255,7 +255,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                             startmusic();
                         }
                     } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                        togglefullscreen();
+                        Window::toggle_fullscreen();
                     }
                 }
             }
@@ -267,17 +267,17 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
 
             SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
             SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
-            SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-            SDL_BlitSurface(image, &src, screen, &dest);
-            SDL_Flip(screen);
+            SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+            SDL_BlitSurface(image, &src, Window::screen, &dest);
+            Window::paint();
             titus_sleep();
         }
         break;
 
     case 1: //visible until keypress, then fade out
-        SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-        SDL_BlitSurface(image, &src, screen, &dest);
-        SDL_Flip(screen);
+        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+        SDL_BlitSurface(image, &src, Window::screen, &dest);
+        Window::paint();
 
         retval = waitforbutton();
         if (retval < 0) {
@@ -311,7 +311,7 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
                             startmusic();
                         }
                     } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
-                        togglefullscreen();
+                        Window::toggle_fullscreen();
                     }
                 }
             }
@@ -323,9 +323,9 @@ int viewimage(char * imagefile, int imageformat, int displayformat, int delay) {
 
             SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
             SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
-            SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-            SDL_BlitSurface(image, &src, screen, &dest);
-            SDL_Flip(screen);
+            SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+            SDL_BlitSurface(image, &src, Window::screen, &dest);
+            Window::paint();
             titus_sleep();
         }
 
