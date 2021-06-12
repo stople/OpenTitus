@@ -3,8 +3,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 cmake_minimum_required(VERSION 3.20)
 project(opentitus)
 
-find_package(SDL2 2.0.7)
-find_package(SDL2_mixer 2.0.2)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 
 add_subdirectory(opl)
 
