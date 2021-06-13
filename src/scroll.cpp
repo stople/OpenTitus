@@ -35,7 +35,26 @@
 #include "window.h"
 #include "scroll.h"
 
-static uint8 BARRYCENTRE(TITUS_level *level);
+static uint8 BARRYCENTRE(TITUS_level *level) {
+    //If an enemy is behind the player, max. 12.5 tiles away horizontally, scroll until player is in the middle
+    //If not, scroll until player is in the 3rd screen tile
+    int16 enemy_left, i;
+    for (i = 0; i < level->enemycount; i++) {
+        if (!level->enemy[i].sprite.enabled || !level->enemy[i].visible) {
+            continue;
+        }
+        enemy_left = (level->enemy[i].sprite.x < level->player.sprite.x); //True if enemy is left for the player
+        if ((enemy_left != level->player.sprite.flipped) && //Enemy is behind the player
+          (abs(level->enemy[i].sprite.x - level->player.sprite.x) < 200)) { //Enemy is max. 12.5 tiles away
+            return (screen_width / 2);
+        }
+    }
+    if (!level->player.sprite.flipped) {
+        return 3;
+    } else {
+        return (screen_width - 3);
+    }
+}
 
 static void X_ADJUST(TITUS_level *level) {
     bool block;
@@ -183,28 +202,6 @@ void scroll(TITUS_level *level) {
     }
 }
 
-static uint8 BARRYCENTRE(TITUS_level *level) {
-    //If an enemy is behind the player, max. 12.5 tiles away horizontally, scroll until player is in the middle
-    //If not, scroll until player is in the 3rd screen tile
-    int16 enemy_left, i;
-    for (i = 0; i < level->enemycount; i++) {
-        if (!level->enemy[i].sprite.enabled || !level->enemy[i].visible) {
-            continue;
-        }
-        enemy_left = (level->enemy[i].sprite.x < level->player.sprite.x); //True if enemy is left for the player
-        if ((enemy_left != level->player.sprite.flipped) && //Enemy is behind the player
-          (abs(level->enemy[i].sprite.x - level->player.sprite.x) < 200)) { //Enemy is max. 12.5 tiles away
-            return (screen_width / 2);
-        }
-    }
-    if (!level->player.sprite.flipped) {
-        return 3;
-    } else {
-        return (screen_width - 3);
-    }
-}
-
-
 bool L_SCROLL(TITUS_level *level) {
     //Scroll left
     if (BITMAP_X == 0) {
@@ -248,19 +245,4 @@ bool D_SCROLL(TITUS_level *level) {
     }
     BITMAP_Y++; //Increase pointer
     return false;
-}
-
-
-void DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x) {
-    //Update the tile surface
-    SDL_Rect src, dest;
-    src.x = 0;
-    src.y = 0;
-    src.w = 16;
-    src.h = 16;
-    dest.x = x * 16;
-    dest.y = y * 16;
-    dest.w = src.w;
-    dest.h = src.h;
-    SDL_BlitSurface(level->tile[level->tile[tile].animation[tile_anim]].tiledata, &src, Window::screen, &dest);
 }

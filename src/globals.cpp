@@ -60,7 +60,6 @@ bool GODMODE; //If true, the player will not interfere with the enemies
 bool NOCLIP; //If true, the player will move noclip
 bool DISPLAYLOOPTIME; //If true, display loop time in milliseconds
 uint8 LOOPTIME; //Loop time
-uint8 SUBTIME[16]; //Sub time
 uint16 FPS; //Frames pr second
 uint16 FPS_LAST; //Frames pr second
 uint16 LAST_CLOCK_CORR; //Correction to LAST_CLOCK

@@ -161,8 +161,8 @@ int playtitus(int firstlevel){
             SELECT_MUSIC(LEVEL_MUSIC[level.levelid]);
 
             INIT_SCREENM(&level); //Todo: comment, DOCUMENTED! (reset_level_simplified)
-            TFR_SCREENM(&level); //Draws tiles
-            flip_screen(true); //Flip backbuffer
+            DISPLAY_TILES(&level);
+            flip_screen(true);
 
 
             retval = playlevel (&level);
@@ -240,74 +240,12 @@ int playtitus(int firstlevel){
 }
 
 
-#ifdef DEBUG_VERSION
-
-void gettick(int *tick, uint8 index) {
-    int oldtick = *tick;
-    *tick = SDL_GetTicks();
-    //SUBTIME[index] = *tick - oldtick;
-}
-
-//Debug version - equal to the ordinary main loop, will additionally measure the time used in each sub function
-static int playlevel(TITUS_level *level) {
-    int retval = 0;
-    SDL_Event event;
-    bool firstrun = true;
-    int tick;
-    do {
-        if (!firstrun) {
-            gettick(&tick, 12);
-            DISPLAY_COUNT(level); //Draw energy to the backbuffer
-            gettick(&tick, 13);
-            RETURN_MUSIC(level); //Restart music if the song is finished
-            flip_screen(true);
-        }
-        firstrun = false;
-        IMAGE_COUNTER = (IMAGE_COUNTER + 1) & 0x0FFF; //Cycle from 0 to 0x0FFF
-        tick = SDL_GetTicks();
-        MOVE_TRP(level); //Move elevators
-        gettick(&tick, 0);
-        move_objects(level); //Object gravity
-        gettick(&tick, 1);
-        retval = move_player(level); //Key input, update and move player, handle carried object and decrease timers
-        if (retval == TITUS_ERROR_QUIT) {
-            return retval;
-        }
-        gettick(&tick, 2);
-        MOVE_NMI(level); //Move enemies
-        gettick(&tick, 3);
-        MOVE_TRASH(level); //Move enemy throwed objects
-        gettick(&tick, 4);
-        SET_NMI(level); //Handle enemies on the screen
-        gettick(&tick, 5);
-        CROSSING_GATE(level); //Check and handle level completion, and if the player does a kneestand on a secret entrance
-        gettick(&tick, 6);
-        SPRITES_ANIMATION(level); //Animate player and objects
-        gettick(&tick, 7);
-        scroll(level); //X- and Y-scrolling
-        gettick(&tick, 8);
-        gettick(&tick, 9);
-        TFR_SCREENM(); //Draws tiles on the backbuffer
-        gettick(&tick, 10);
-        DISPLAY_SPRITES(level); //Draws sprites on the backbuffer
-        gettick(&tick, 11);
-        retval = RESET_LEVEL(level); //Check terminate flags (finishlevel, gameover, death or theend)
-        if (retval < 0) {
-            return retval;
-        }
-    } while (retval == 0); //Exits the game loop if the previous function wants to
-    return (0);
-}
-
-#else
-
-//Ordinary main loop
 static int playlevel(TITUS_level *level) {
     int retval = 0;
     bool firstrun = true;
     do {
         if (!firstrun) {
-            DISPLAY_COUNT(level); //Draw energy to the backbuffer
+            draw_health_bars(level);
             RETURN_MUSIC(); //Restart music if the song is finished
             flip_screen(true);
         }
@@ -325,7 +263,7 @@ static int playlevel(TITUS_level *level) {
         CROSSING_GATE(level); //Check and handle level completion, and if the player does a kneestand on a secret entrance
         SPRITES_ANIMATION(level); //Animate player and objects
         scroll(level); //X- and Y-scrolling
-        TFR_SCREENM(level); //Draws tiles on the backbuffer
+        DISPLAY_TILES(level); //Draws tiles on the backbuffer
         DISPLAY_SPRITES(level); //Draws sprites on the backbuffer
         retval = RESET_LEVEL(level); //Check terminate flags (finishlevel, gameover, death or theend)
         if (retval < 0) {
@@ -334,8 +272,6 @@ static int playlevel(TITUS_level *level) {
     } while (retval == 0); //Exits the game loop if the previous function wants to
     return (0);
 }
-
-#endif
 
 void death(TITUS_level *level) {
     TITUS_player *player = &(level->player);
@@ -346,7 +282,7 @@ void death(TITUS_level *level) {
     updatesprite(level, &(player->sprite), 13, true); //Death
     player->sprite.speedY = 15;
     for (i = 0; i < 60; i++) {
-        TFR_SCREENM(level);
+        DISPLAY_TILES(level);
         //TODO! GRAVITY();
         DISPLAY_SPRITES(level);
         flip_screen(true);
@@ -382,7 +318,7 @@ void gameover(TITUS_level *level) {
     player->sprite3.x = (BITMAP_X << 4) + (320+120-2);
     player->sprite3.y = (BITMAP_Y << 4) + 100;
     for (i = 0; i < 31; i++) {
-        TFR_SCREENM(level);
+        DISPLAY_TILES(level);
         DISPLAY_SPRITES(level);
         flip_screen(true);
         player->sprite2.x += 8;

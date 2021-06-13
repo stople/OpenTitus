@@ -175,7 +175,6 @@ extern bool GODMODE; //If true, the player will not interfere with the enemies
 extern bool NOCLIP; //If true, the player will move noclip
 extern bool DISPLAYLOOPTIME; //If true, display loop time in milliseconds
 extern uint8 LOOPTIME; //Loop time
-extern uint8 SUBTIME[16]; //Sub time
 extern uint16 FPS; //Frames pr second
 extern uint16 FPS_LAST; //Frames pr second
 extern uint16 LAST_CLOCK_CORR; //Correction to LAST_CLOCK

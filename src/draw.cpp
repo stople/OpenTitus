@@ -26,11 +26,11 @@
  * Draw functions
  *
  * Global functions:
- * void TFR_SCREENM(): Draw tiles on the backbuffer (copy from the tile screen)
+ * void DISPLAY_TILES(): Draw map tiles
  * int viewstatus(TITUS_level *level, bool countbonus): View status screen (F4)
  * void flip_screen(bool slow): Flips the screen and a short delay
- * void INIT_SCREENM(TITUS_level *level): Initialize backbuffer
- * void DISPLAY_COUNT(TITUS_level *level): Draw energy
+ * void INIT_SCREENM(TITUS_level *level): Initialize screen
+ * void draw_health_bars(TITUS_level *level): Draw energy
  * void fadeout(): Fade the screen to black
  * int view_password(TITUS_level *level, uint8 level_index): Display the password
  */
@@ -52,21 +52,32 @@
 #include "scroll.h"
 #include "audio.h"
 
-SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr);
-void display_sprite(TITUS_level *level, TITUS_sprite *spr);
+static SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr);
+static void display_sprite(TITUS_level *level, TITUS_sprite *spr);
 
-void TFR_SCREENM(TITUS_level *level) { //Draw tiles on the backbuffer (copy from the tile screen)
+void DISPLAY_TILES(TITUS_level *level) {
     //First of all: make the screen black, at least the lower part of the screen
-    SDL_Rect dest;
-    dest.x = 0;
-    dest.y = screen_height * 16;
-    dest.w = screen_width * 16;
-    dest.h = 200 - screen_height * 16;
-    Window::clear(&dest);
+    SDL_Rect bottom_bar;
+    bottom_bar.x = 0;
+    bottom_bar.y = screen_height * 16;
+    bottom_bar.w = screen_width * 16;
+    bottom_bar.h = 200 - screen_height * 16;
+    Window::clear(&bottom_bar);
 
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 12; j++) {
-            DISPLAY_CHAR(level, level->tilemap[BITMAP_Y + j][BITMAP_X + i], j, i);
+    SDL_Rect src, dest;
+    src.x = 0;
+    src.y = 0;
+    src.w = 16;
+    src.h = 16;
+    dest.w = src.w;
+    dest.h = src.h;
+
+    for (int x = 0; x < 20; x++) {
+        for (int y = 0; y < 12; y++) {
+            dest.x = x * 16;
+            dest.y = y * 16;
+            auto tile = level->tilemap[BITMAP_Y + y][BITMAP_X + x];
+            SDL_BlitSurface(level->tile[level->tile[tile].animation[tile_anim]].tiledata, &src, Window::screen, &dest);
         }
     }
 }
@@ -105,34 +116,6 @@ void DISPLAY_SPRITES(TITUS_level *level) {
     if (NOCLIP) {
         SDL_Print_Text("NOCLIP", 30 * 8, 1 * 12);
     }
-
-#ifdef DEBUG_VERSION
-    char buffer[7]; //xxx ms
-    if (DISPLAYLOOPTIME) {
-        sprintf(buffer, "%3u ms", LOOPTIME);
-        SDL_Print_Text(buffer, 30 * 8, 2 * 12); //Loop time in ms
-
-        sprintf(buffer, "FPS %u", FPS_LAST);
-        SDL_Print_Text(buffer, 30 * 8, 4 * 12); //Last second's FPS count
-
-        sprintf(buffer, "CL %d", LAST_CLOCK);
-        SDL_Print_Text(buffer, 30 * 8, 6 * 12); //Clock
-
-        sprintf(buffer, "CORR %d", LAST_CLOCK_CORR);
-        SDL_Print_Text(buffer, 30 * 8, 8 * 12); //Correction to the clock
-
-
-        for (i = 0; i <= 15; i++) {
-            sprintf(buffer, "%d %3u", i, SUBTIME[i]);
-            SDL_Print_Text(buffer, 0 * 8, i * 12); //Sub times from main loop in ms
-        }
-
-        sprintf(buffer, "%d %3u", i, SUBTIME[i]);
-        SDL_Print_Text(buffer, 0 * 8, i * 12);
-    }
-
-#endif
-
 }
 
 void display_sprite(TITUS_level *level, TITUS_sprite *spr) {
@@ -283,20 +266,11 @@ void NO_FAST_CPU(bool slow) {
         }
 
     LAST_CLOCK = tick2;
-
-    SUBTIME[15] = LAST_CLOCK - tick;
 }
 
 void flip_screen(bool slow) {
-    int tick = SDL_GetTicks();
     Window::render();
-    int oldtick = tick;
-    tick = SDL_GetTicks();
-    SUBTIME[14] = tick - oldtick;
-
-    //if (slow) {
-        NO_FAST_CPU(slow); //TODO: 
-    //}
+    NO_FAST_CPU(slow);
 }
 
 int viewstatus(TITUS_level *level, bool countbonus){
@@ -372,8 +346,11 @@ void INIT_SCREENM(TITUS_level *level) {
     OPEN_SCREEN(level);
 }
 
-
-void DISPLAY_ENERGY(TITUS_level *level) {
+void draw_health_bars(TITUS_level *level) {
+    subto0(&(BAR_FLAG));
+    if(BAR_FLAG <= 0) {
+        return;
+    }
     uint8 offset = 96;
     uint8 i;
     SDL_Rect dest;
@@ -392,13 +369,6 @@ void DISPLAY_ENERGY(TITUS_level *level) {
         dest.h = 4;
         SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 255, 255, 255));
         offset += 8;
-    }
-}
-
-void DISPLAY_COUNT(TITUS_level *level) {
-    subto0(&(BAR_FLAG));
-    if (BAR_FLAG != 0) {
-        DISPLAY_ENERGY(level);
     }
 }
 

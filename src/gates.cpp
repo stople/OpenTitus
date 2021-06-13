@@ -163,7 +163,7 @@ void OPEN_SCREEN(TITUS_level *level) {
         flip_screen(false); //quick flip TODO: move to other end of loop?
 
         // draw all tiles
-        TFR_SCREENM(level);
+        DISPLAY_TILES(level);
 
         //Clear top
         dest.x = 0;

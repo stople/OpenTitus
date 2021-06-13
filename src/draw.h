@@ -26,33 +26,29 @@
  * Draw functions
  *
  * Global functions:
- * void TFR_SCREENM(): Draw tiles on the backbuffer (copy from the tile screen)
+ * void DISPLAY_TILES(): Draw map tiles
  * int viewstatus(TITUS_level *level, bool countbonus): View status screen (F4)
  * void flip_screen(bool slow): Flips the screen and a short delay
- * void INIT_SCREENM(TITUS_level *level): Initialize backbuffer
- * void DISPLAY_COUNT(TITUS_level *level): Draw energy
+ * void INIT_SCREENM(TITUS_level *level): Initialize screen
+ * void draw_health_bars(TITUS_level *level): Draw energy
  * void fadeout(): Fade the screen to black
  * int view_password(TITUS_level *level, uint8 level_index): Display the password
  */
 
-#ifndef DRAW_H
-#define DRAW_H
+#pragma once
 
 #include "SDL2/SDL.h"
 #include "level.h"
 #include "definitions.h"
 
-void TFR_SCREENM(TITUS_level *level); //Draw tiles on the backbuffer (copy from the tile screen)
+void DISPLAY_TILES(TITUS_level *level);
 int viewstatus(TITUS_level *level, bool countbonus);
 void flip_screen(bool slow);
 void INIT_SCREENM(TITUS_level *level);
-void DISPLAY_COUNT(TITUS_level *level);
+void draw_health_bars(TITUS_level *level);
 void DISPLAY_SPRITES(TITUS_level *level);
 void fadeout();
 int view_password(TITUS_level *level, uint8 level_index);
 int loadpixelformat(SDL_PixelFormat **pixelformat);
 int loadpixelformat_font(SDL_PixelFormat **pixelformat);
 int freepixelformat(SDL_PixelFormat **pixelformat);
-
-#endif
-

@@ -93,7 +93,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
             player->sprite2.x -= 3;
             MOVE_HIM(level, &(player->sprite2));
             //View all
-            TFR_SCREENM(level);
+            DISPLAY_TILES(level);
             DISPLAY_SPRITES(level);
             flip_screen(true);
         } while (player->sprite2.x > player->sprite.x + 28);
@@ -108,7 +108,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
         for (i = 0; i < 16; i++) {
             MOVE_HIM(level, &(player->sprite));
             scroll(level);
-            TFR_SCREENM(level);
+            DISPLAY_TILES(level);
             DISPLAY_SPRITES(level);
             flip_screen(true);
             player->sprite.y++;
@@ -127,7 +127,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
             heart++;
 
             scroll(level);
-            TFR_SCREENM(level);
+            DISPLAY_TILES(level);
             DISPLAY_SPRITES(level);
             flip_screen(true);
 
@@ -169,7 +169,7 @@ uint8 RESET_LEVEL(TITUS_level *level) {
         player->sprite3.x = (BITMAP_X << 4) + (320+120-2);
         player->sprite3.y = (BITMAP_Y << 4) + 100;
         for (i = 0; i < 31; i++) {
-            TFR_SCREENM(level);
+            DISPLAY_TILES(level);
             DISPLAY_SPRITES(level);
             flip_screen(true);
             player->sprite.x += 8;
