@@ -68,7 +68,7 @@ int waitforbutton() {
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     case SDL_WINDOWEVENT_MAXIMIZED:
                     case SDL_WINDOWEVENT_RESTORED:
-                        Window::paint();
+                        Window::render();
                     default:
                         break;
                 }

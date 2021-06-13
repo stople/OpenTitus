@@ -301,7 +301,7 @@ int viewintrotext(){
     SDL_Print_Text(" PROGRAMMED IN 1991 ON AT .286 12MHZ.", 0, 12 * 12);
     SDL_Print_Text("   . . . ENJOY MOKTAR ADVENTURE !!", 0, 13 * 12);
 
-    Window::paint();
+    Window::render();
 
     retval = waitforbutton();
     if (retval < 0)
@@ -313,7 +313,7 @@ int viewintrotext(){
     SDL_Print_Text("REPROGRAMMED IN 2011 ON X86_64 2.40 GHZ.", 0, 12 * 12);
     SDL_Print_Text("   . . . ENJOY MOKTAR ADVENTURE !!", 0, 13 * 12);
 
-    Window::paint();
+    Window::render();
 
     retval = waitforbutton();
     if (retval < 0)

@@ -27,7 +27,6 @@ uint8 CROSS_FLAG; //When non-zero, fall through certain floors (after key down)
 uint8 GRAVITY_FLAG; //When zero, skip object gravity function
 uint8 FUME_FLAG; //Smoke when object hits the floor
 const Uint8 *keystate; //Keyboard state
-uint8 LIFE; //Lives
 uint8 YFALL;
 bool POCKET_FLAG;
 bool PERMUT_FLAG; //If false, there are no animated tiles on the screen?
@@ -53,7 +52,6 @@ uint8 BIGNMI_NBR; //Number of bosses that needs to be killed to finish
 uint8 TAUPE_FLAG; //Used for enemies walking and popping up
 uint8 TAPISWAIT_FLAG; //Flying carpet state
 uint8 SEECHOC_FLAG; //Counter when hit
-bool NFC_FLAG; //Skip NO_FAST_CPU
 uint8 BIGNMI_POWER; //Lives of the boss
 bool boss_alive; //True if the boss is alive
 uint8 AUDIOMODE;

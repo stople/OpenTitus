@@ -34,7 +34,8 @@ namespace Window {
 int init();
 void toggle_fullscreen();
 void toggle_buffers();
-void paint();
+void render();
+void clear(const SDL_Rect * rect = nullptr);
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;

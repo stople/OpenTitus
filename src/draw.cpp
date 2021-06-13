@@ -63,7 +63,7 @@ void TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
     dest.y = screen_height * 16;
     dest.w = screen_width * 16;
     dest.h = 200 - screen_height * 16;
-    SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+    Window::clear(&dest);
 
     // Tile screen:  | Output screen:
     //               |
@@ -338,7 +338,7 @@ void NO_FAST_CPU(bool slow) {
 
 void flip_screen(bool slow) {
     int tick = SDL_GetTicks();
-    Window::paint();
+    Window::render();
     int oldtick = tick;
     tick = SDL_GetTicks();
     SUBTIME[14] = tick - oldtick;
@@ -351,7 +351,7 @@ void flip_screen(bool slow) {
 int viewstatus(TITUS_level *level, bool countbonus){
     int retval, i, j;
     char tmpchars[10];
-    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+    Window::clear();
 
     if (game == GameType::Titus) {
         SDL_Print_Text("LEVEL", 13 * 8, 12 * 5);
@@ -374,7 +374,7 @@ int viewstatus(TITUS_level *level, bool countbonus){
     sprintf(tmpchars, "%d", level->lives);
     SDL_Print_Text(tmpchars, 28 * 8 - strlen(tmpchars) * 8, 11 * 12);
 
-    Window::paint();
+    Window::render();
 
     if (countbonus && (level->extrabonus >= 10)) {
         retval = waitforbutton();
@@ -386,7 +386,7 @@ int viewstatus(TITUS_level *level, bool countbonus){
                 level->extrabonus--;
                 sprintf(tmpchars, "%2d", level->extrabonus);
                 SDL_Print_Text(tmpchars, 28 * 8 - strlen(tmpchars) * 8, 10 * 12);
-                Window::paint();
+                Window::render();
                 for (j = 0; j < 15; j++) {
                     NO_FAST_CPU(false);
                 }
@@ -394,7 +394,7 @@ int viewstatus(TITUS_level *level, bool countbonus){
             level->lives++;
             sprintf(tmpchars, "%d", level->lives);
             SDL_Print_Text(tmpchars, 28 * 8 - strlen(tmpchars) * 8, 11 * 12);
-            Window::paint();
+            Window::render();
             for (j = 0; j < 10; j++) {
                 NO_FAST_CPU(false);
             }
@@ -405,8 +405,8 @@ int viewstatus(TITUS_level *level, bool countbonus){
     if (retval < 0)
         return retval;
 
-    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-    Window::paint();
+    Window::clear();
+    Window::render();
 
     return (0);
 }
@@ -517,9 +517,9 @@ void fadeout() {
 
         SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
         SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
-        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+        Window::clear();
         SDL_BlitSurface(image, &src, Window::screen, &dest);
-        Window::paint();
+        Window::render();
 
         titus_sleep();
     }
@@ -533,8 +533,8 @@ int view_password(TITUS_level *level, uint8 level_index) {
     int retval;
 
     CLOSE_SCREEN();
-    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-    Window::paint();
+    Window::clear();
+    Window::render();
 
     if (game == GameType::Titus) {
         SDL_Print_Text("LEVEL", 13 * 8, 13 * 8);
@@ -547,7 +547,7 @@ int view_password(TITUS_level *level, uint8 level_index) {
     SDL_Print_Text("CODE", 14 * 8, 10 * 8);
     SDL_Print_Text(levelcode[level_index], 20 * 8, 10 * 8);
 
-    Window::paint();
+    Window::render();
     retval = waitforbutton();
     if (retval < 0)
         return retval;

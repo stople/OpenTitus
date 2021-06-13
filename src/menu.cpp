@@ -171,13 +171,13 @@ int viewmenu(char * menufile, int menuformat) {
         if (image_alpha > 255)
             image_alpha = 255;
 
-        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+        Window::clear();
         SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_SetSurfaceAlphaMod(image, image_alpha);
         SDL_BlitSurface(image, &src, Window::screen, &dest);
         SDL_BlitSurface(image, &sel[1], Window::screen, &sel[0]);
         SDL_BlitSurface(image, &sel[0], Window::screen, &sel[selection]);
-        Window::paint();
+        Window::render();
         titus_sleep();
 
     }
@@ -217,11 +217,11 @@ int viewmenu(char * menufile, int menuformat) {
             }
         }
 
-        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+        Window::clear();
         SDL_BlitSurface(image, &src, Window::screen, &dest);
         SDL_BlitSurface(image, &sel[1], Window::screen, &sel[0]);
         SDL_BlitSurface(image, &sel[0], Window::screen, &sel[selection]);
-        Window::paint();
+        Window::render();
         titus_sleep();
     }
 
@@ -284,13 +284,13 @@ int viewmenu(char * menufile, int menuformat) {
         if (image_alpha > 255)
             image_alpha = 255;
 
-        SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
+        Window::clear();
         SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_BLEND);
         SDL_SetSurfaceAlphaMod(image, 255 - image_alpha);
         SDL_BlitSurface(image, &src, Window::screen, &dest);
         SDL_FillRect(Window::screen, &sel[0], 0); //SDL_MapRGB(surface->format, 0, 0, 0));
         SDL_BlitSurface(image, &sel[0], Window::screen, &sel[selection]);
-        Window::paint();
+        Window::render();
         titus_sleep();
     }
 
@@ -303,8 +303,7 @@ int enterpassword(){
     char code[] = "____";
     int i;
 
-    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-    SDL_RenderPresent(Window::renderer);
+    Window::clear();
 
     SDL_Print_Text("CODE", 111, 80);
 
@@ -335,7 +334,7 @@ int enterpassword(){
             }
         }
         SDL_Print_Text(code, 159, 80);
-        Window::paint();
+        Window::render();
         titus_sleep();
     }
 
@@ -344,24 +343,24 @@ int enterpassword(){
             SDL_Print_Text("LEVEL", 103, 104);
             sprintf(code, "%d", i + 1);
             SDL_Print_Text(code, 199 - 8 * strlen(code), 104);
-            Window::paint();
+            Window::render();
             retval = waitforbutton();
 
             if (retval < 0)
                 return retval;
 
-            SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-            Window::paint();
+            Window::clear();
+            Window::render();
 
             return (i + 1);
         }
     }
 
     SDL_Print_Text("!  WRONG CODE  !", 87, 104);
-    Window::paint();
+    Window::render();
     retval = waitforbutton();
 
-    SDL_FillRect(Window::screen, NULL, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-    Window::paint();
+    Window::clear();
+    Window::render();
     return (retval);
 }

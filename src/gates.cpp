@@ -38,9 +38,7 @@
 #include "scroll.h"
 #include "draw.h"
 
-void copytiles(int16 destX, int16 destY, int16 width, int16 height);
-
-void check_finish(TITUS_level *level) {
+static void check_finish(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     if (boss_alive) { //There is still a boss that needs to be killed!
         return;
@@ -65,7 +63,7 @@ void check_finish(TITUS_level *level) {
     NEWLEVEL_FLAG = true;
 }
 
-void check_gates(TITUS_level *level) {
+static void check_gates(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     uint8 i;
     if ((CROSS_FLAG == 0) || //not kneestanding
@@ -111,75 +109,7 @@ void CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, an
     check_gates(level);
 }
 
-void CLOSE_SCREEN() {
-    SDL_Rect dest;
-    uint8 step_count = 10;
-    uint16 rwidth = 320; //TODO: make this global
-    uint16 rheight = 192;
-    uint16 incX = rwidth / (step_count * 2);  //16
-    uint16 incY = rheight / (step_count * 2); //10
-    uint8 i;
-    for (i = 0; i < step_count; i++) {
-        flip_screen(false); //quick flip TODO: move to other end of loop?
-
-        //Clear top
-        dest.x = 0;
-        dest.y = 0;
-        dest.w = screen_width * 16;
-        dest.h = i * incY;
-        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-
-        //Clear left
-        dest.x = 0;
-        dest.y = 0;
-        dest.w = i * incX;
-        dest.h = screen_height * 16;
-        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-
-        //Clear bottom
-        dest.x = 0;
-        dest.y = rheight - (i * incY);
-        dest.w = screen_width * 16;
-        dest.h = i * incY;
-        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-
-        //Clear right
-        dest.x = rwidth - (i * incX);
-        dest.y = 0;
-        dest.w = i * incX;
-        dest.h = screen_height * 16;
-        SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-    }
-}
-
-
-void OPEN_SCREEN() {
-    SDL_Rect dest;
-    int8 step_count = 10;
-    int16 blockX = 320 / (step_count * 2);  //16 (320: resolution width)
-    int16 blockY = 192 / (step_count * 2); //9 (192: resolution height)
-    int8 i, j;
-    TFR_SCREENM(); //Draw tiles on the backbuffer
-
-    //BLACK_SCREEN
-    dest.x = 0;
-    dest.y = 0;
-    dest.w = 320;
-    dest.h = 192;
-    SDL_FillRect(Window::screen, &dest, SDL_MapRGB(Window::screen->format, 0, 0, 0));
-
-    j = step_count;
-    for (i = 2; i <= step_count * 2; i += 2) {
-        j--;
-        flip_screen(false); //quick flip TODO: move to other end of loop?
-        copytiles( j * blockX, j * blockY, (i * blockX) - blockX, blockY); //Upper tiles
-        copytiles((j * blockX) + (i * blockX) - blockX, j * blockY, blockX, i * blockY); //Right tiles
-        copytiles((j * blockX) + blockX, ((j + 1) * blockY) + (i * blockY) - blockY, (i * blockX) - blockX, blockY); //Bottom tiles
-        copytiles( j * blockX, (j * blockY) + blockY, blockX, i * blockY); //Left tiles
-    }
-}
-
-void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
+static void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
     SDL_Rect src, dest;
     int16 sepX = BITMAP_XM * 16;
     int16 sepY = BITMAP_YM * 16;
@@ -273,5 +203,73 @@ void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
             dest.y = sepYi;
         }
         SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
+    }
+}
+
+void CLOSE_SCREEN() {
+    SDL_Rect dest;
+    uint8 step_count = 10;
+    uint16 rwidth = 320; //TODO: make this global
+    uint16 rheight = 192;
+    uint16 incX = rwidth / (step_count * 2);  //16
+    uint16 incY = rheight / (step_count * 2); //10
+    uint8 i;
+    for (i = 0; i < step_count; i++) {
+        flip_screen(false); //quick flip TODO: move to other end of loop?
+
+        //Clear top
+        dest.x = 0;
+        dest.y = 0;
+        dest.w = screen_width * 16;
+        dest.h = i * incY;
+        Window::clear(&dest);
+
+        //Clear left
+        dest.x = 0;
+        dest.y = 0;
+        dest.w = i * incX;
+        dest.h = screen_height * 16;
+        Window::clear(&dest);
+
+        //Clear bottom
+        dest.x = 0;
+        dest.y = rheight - (i * incY);
+        dest.w = screen_width * 16;
+        dest.h = i * incY;
+        Window::clear(&dest);
+
+        //Clear right
+        dest.x = rwidth - (i * incX);
+        dest.y = 0;
+        dest.w = i * incX;
+        dest.h = screen_height * 16;
+        Window::clear(&dest);
+    }
+}
+
+
+void OPEN_SCREEN() {
+    SDL_Rect dest;
+    int8 step_count = 10;
+    int16 blockX = 320 / (step_count * 2);  //16 (320: resolution width)
+    int16 blockY = 192 / (step_count * 2); //9 (192: resolution height)
+    int8 i, j;
+    TFR_SCREENM(); //Draw tiles on the backbuffer
+
+    //BLACK_SCREEN
+    dest.x = 0;
+    dest.y = 0;
+    dest.w = 320;
+    dest.h = 192;
+    Window::clear(&dest);
+
+    j = step_count;
+    for (i = 2; i <= step_count * 2; i += 2) {
+        j--;
+        flip_screen(false); //quick flip TODO: move to other end of loop?
+        copytiles( j * blockX, j * blockY, (i * blockX) - blockX, blockY); //Upper tiles
+        copytiles((j * blockX) + (i * blockX) - blockX, j * blockY, blockX, i * blockY); //Right tiles
+        copytiles((j * blockX) + blockX, ((j + 1) * blockY) + (i * blockY) - blockY, (i * blockX) - blockX, blockY); //Bottom tiles
+        copytiles( j * blockX, (j * blockY) + blockY, blockX, i * blockY); //Left tiles
     }
 }

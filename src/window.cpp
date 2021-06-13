@@ -2,20 +2,22 @@
 #include "settings.h"
 #include "tituserror.h"
 
+namespace Window {
+
 namespace {
-    const char* getGameTitle() {
-        switch(game) {
-            case GameType::Titus:
-                return "OpenTitus";
-            case GameType::Moktar:
-                return "OpenMoktar";
-            default:
-                return "Something else...";
-        }
+const char* getGameTitle() {
+    switch(game) {
+        case GameType::Titus:
+            return "OpenTitus";
+        case GameType::Moktar:
+            return "OpenMoktar";
+        default:
+            return "Something else...";
     }
 }
 
-namespace Window {
+Uint32 black = 0;
+}
 
 bool fullscreen = false;
 bool display_tilescreen = false;
@@ -76,13 +78,18 @@ int init() {
 
     // screen = SDL_GetWindowSurface(window);
     screen = SDL_CreateRGBSurfaceWithFormat(0, 320, 200, 32, SDL_GetWindowPixelFormat(window));
+    black = SDL_MapRGB(screen->format, 0, 0, 0);
 
     SDL_RenderSetLogicalSize(renderer, 320, 200);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     return 0;
 }
 
-void paint() {
+void clear(const SDL_Rect * rect) {
+    SDL_FillRect(screen, rect, black);
+}
+
+void render() {
     SDL_Texture *frame;
     if(display_tilescreen && tilescreen) {
         frame = SDL_CreateTextureFromSurface(renderer, tilescreen);
