@@ -126,8 +126,6 @@ int move_player(TITUS_level *level) {
                 pause = true;
             } else if (event.key.keysym.scancode == KEY_FULLSCREEN) {
                 Window::toggle_fullscreen();
-            } else if (event.key.keysym.scancode == KEY_TOGGLE_BUFFERS) {
-                Window::toggle_buffers();
             }
         }
     }
@@ -381,7 +379,7 @@ int t_pause (TITUS_level *level) {
     TITUS_sprite tmp;
     //tmp.buffer = NULL;
 
-    TFR_SCREENM(); //Draw tiles
+    TFR_SCREENM(level); //Draw tiles
     copysprite(level, &(tmp), &(player->sprite));
     updatesprite(level, &(player->sprite), 29, true); //Pause tile
     DISPLAY_SPRITES(level); //Draw sprites
@@ -909,7 +907,7 @@ static int CASE_BONUS(TITUS_level *level, uint8 tileY, uint8 tileX) {
     //Return the original tile underneath the bonus
     level->tilemap[tileY][tileX] = level->bonus[i].replacetile;
 
-    DISPLAY_CHAR(level, level->bonus[i].replacetile, tileY % screen_height, tileX % screen_width);
+    // DISPLAY_CHAR(level, level->bonus[i].replacetile, tileY % screen_height, tileX % screen_width);
     GRAVITY_FLAG = 4;
     PERMUT_FLAG = true;
     return true; //No problems, bonus handling done correctly!

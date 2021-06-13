@@ -51,7 +51,6 @@
 #include "objects.h"
 #include "enemies.h"
 #include "viewimage.h"
-#include "tile_animation.h"
 
 #include "audio.h"
 
@@ -81,9 +80,6 @@ int playtitus(int firstlevel){
         freepixelformat(&(level.pixelformat));
         return retval;
     }
-
-    Window::tilescreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 20 * 16, 12 * 16, 8, 0, 0, 0, 0);
-    copypixelformat(Window::tilescreen->format, level.pixelformat);
 
     retval = unSQZ(spritefile, &spritedata);
     if (retval < 0) {
@@ -165,7 +161,7 @@ int playtitus(int firstlevel){
             SELECT_MUSIC(LEVEL_MUSIC[level.levelid]);
 
             INIT_SCREENM(&level); //Todo: comment, DOCUMENTED! (reset_level_simplified)
-            TFR_SCREENM(); //Draws tiles
+            TFR_SCREENM(&level); //Draws tiles
             flip_screen(true); //Flip backbuffer
 
 
@@ -234,7 +230,6 @@ int playtitus(int firstlevel){
     freespritecache(&spritecache);
     freesprites(&sprites, sprite_count);
     freepixelformat(&(level.pixelformat));
-    SDL_FreeSurface(Window::tilescreen);
     if (game == GameType::Titus) {
         retval = viewimage(titusfinishfile, titusfinishformat, 1, 0);
         if (retval < 0)
@@ -291,7 +286,6 @@ static int playlevel(TITUS_level *level) {
         gettick(&tick, 7);
         scroll(level); //X- and Y-scrolling
         gettick(&tick, 8);
-        BLOC_ANIMATION(level); //Animate tiles
         gettick(&tick, 9);
         TFR_SCREENM(); //Draws tiles on the backbuffer
         gettick(&tick, 10);
@@ -331,8 +325,7 @@ static int playlevel(TITUS_level *level) {
         CROSSING_GATE(level); //Check and handle level completion, and if the player does a kneestand on a secret entrance
         SPRITES_ANIMATION(level); //Animate player and objects
         scroll(level); //X- and Y-scrolling
-        BLOC_ANIMATION(level); //Animate tiles
-        TFR_SCREENM(); //Draws tiles on the backbuffer
+        TFR_SCREENM(level); //Draws tiles on the backbuffer
         DISPLAY_SPRITES(level); //Draws sprites on the backbuffer
         retval = RESET_LEVEL(level); //Check terminate flags (finishlevel, gameover, death or theend)
         if (retval < 0) {
@@ -353,7 +346,7 @@ void death(TITUS_level *level) {
     updatesprite(level, &(player->sprite), 13, true); //Death
     player->sprite.speedY = 15;
     for (i = 0; i < 60; i++) {
-        TFR_SCREENM();
+        TFR_SCREENM(level);
         //TODO! GRAVITY();
         DISPLAY_SPRITES(level);
         flip_screen(true);
@@ -389,7 +382,7 @@ void gameover(TITUS_level *level) {
     player->sprite3.x = (BITMAP_X << 4) + (320+120-2);
     player->sprite3.y = (BITMAP_Y << 4) + 100;
     for (i = 0; i < 31; i++) {
-        TFR_SCREENM();
+        TFR_SCREENM(level);
         DISPLAY_SPRITES(level);
         flip_screen(true);
         player->sprite2.x += 8;

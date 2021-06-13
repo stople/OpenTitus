@@ -36,8 +36,6 @@
 #include "scroll.h"
 
 static uint8 BARRYCENTRE(TITUS_level *level);
-static void REFRESH_COLUMNS(TITUS_level *level, int8 column);
-static void REFRESH_LINE(TITUS_level *level, int8 line);
 
 void X_ADJUST(TITUS_level *level) {
     bool block;
@@ -213,11 +211,6 @@ bool L_SCROLL(TITUS_level *level) {
         return true; //Stop scrolling
     }
     BITMAP_X--; //Scroll 1 tile left
-    if (BITMAP_XM <= 0) {
-        BITMAP_XM = screen_width;
-    }
-    BITMAP_XM--; //BITMAP_XM range: 0 to 19
-    REFRESH_COLUMNS(level, 0);
     return false; //Continue scrolling
 }
 
@@ -234,11 +227,6 @@ bool R_SCROLL(TITUS_level *level) {
         return true; //Stop scrolling
     }
     BITMAP_X++; //Increase pointer
-    BITMAP_XM++; //BITMAP_XM range: 0 to 19
-    if (BITMAP_XM >= screen_width) {
-        BITMAP_XM = 0;
-    }
-    REFRESH_COLUMNS(level, screen_width - 1);
     return false;
 }
 
@@ -249,11 +237,6 @@ bool U_SCROLL(TITUS_level *level) {
         return true;
     }
     BITMAP_Y--; //Scroll 1 tile up
-    if (BITMAP_YM <= 0) {
-        BITMAP_YM = screen_height;
-    }
-    BITMAP_YM--; //BITMAP_YM range: 0 to 11
-    REFRESH_LINE(level, 0);
     return false;
 }
 
@@ -264,60 +247,9 @@ bool D_SCROLL(TITUS_level *level) {
         return true; //Stop scrolling
     }
     BITMAP_Y++; //Increase pointer
-    BITMAP_YM++; //BITMAP_YM range: 0 to 11
-    if (BITMAP_YM >= screen_height) {
-        BITMAP_YM = 0;
-    }
-    REFRESH_LINE(level, screen_height - 1);
     return false;
 }
 
-
-static void REFRESH_COLUMNS(TITUS_level *level, int8 column) {
-    //The screen is scrolled left or right, redraw one column on the hidden tile screen (located in OFS_SCREENM)
-    //screen_offset: 0 if scroll left; 19 (screen_width - 1) if scroll right
-    uint8 tmpX = BITMAP_X + column; //left column (+0) or right column (+19)
-    uint8 tmpY = BITMAP_Y;
-    uint8 tmpYM = BITMAP_YM;
-    uint8 tmpXM = BITMAP_XM + column;
-    uint8 i, cur_tile;
-    if (tmpXM >= screen_width) {
-        tmpXM -= screen_width;
-    }
-    for (i = 0; i < screen_height; i++) {
-        cur_tile = level->tilemap[tmpY][tmpX];
-        PERMUT_FLAG = PERMUT_FLAG | level->tile[cur_tile].animated;
-        DISPLAY_CHAR (level, cur_tile, tmpYM, tmpXM);
-        tmpY++;
-        tmpYM++;
-        if (tmpYM >= screen_height) {
-            tmpYM -= screen_height;
-        }
-    }
-}
-
-static void REFRESH_LINE(TITUS_level *level, int8 line) {
-    //The screen is scrolled up or down, redraw one line on the hidden tile screen
-    //screen_offset: 0 if scroll up; 11 (screen_height - 1) if scroll down
-    uint8 tmpX = BITMAP_X;
-    uint8 tmpY = BITMAP_Y + line; //top column (+0) or bottom column (+11)
-    uint8 tmpYM = BITMAP_YM + line;
-    uint8 tmpXM = BITMAP_XM;
-    uint8 i, cur_tile;
-    if (tmpYM >= screen_height) {
-        tmpYM -= screen_height;
-    }
-    for (i = 0; i < screen_width; i++) {
-        cur_tile = level->tilemap[tmpY][tmpX];
-        PERMUT_FLAG = PERMUT_FLAG | level->tile[cur_tile].animated;
-        DISPLAY_CHAR (level, cur_tile, tmpYM, tmpXM);
-        tmpX++;
-        tmpXM++;
-        if (tmpXM >= screen_width) {
-            tmpXM -= screen_width;
-        }
-    }
-}
 
 void DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x) {
     //Update the tile surface
@@ -330,5 +262,5 @@ void DISPLAY_CHAR(TITUS_level *level, uint8 tile, uint8 y, uint8 x) {
     dest.y = y * 16;
     dest.w = src.w;
     dest.h = src.h;
-    SDL_BlitSurface(level->tile[level->tile[tile].animation[tile_anim]].tiledata, &src, Window::tilescreen, &dest);
+    SDL_BlitSurface(level->tile[level->tile[tile].animation[tile_anim]].tiledata, &src, Window::screen, &dest);
 }

@@ -20,10 +20,8 @@ Uint32 black = 0;
 }
 
 bool fullscreen = false;
-bool display_tilescreen = false;
 
 SDL_Surface *screen;
-SDL_Surface *tilescreen;
 SDL_Window *window;
 SDL_Renderer *renderer;
 
@@ -36,10 +34,6 @@ void toggle_fullscreen() {
         SDL_SetWindowFullscreen(window, 0);
         fullscreen = false;
     }
-}
-
-void toggle_buffers() {
-    display_tilescreen = !display_tilescreen;
 }
 
 int init() {
@@ -90,16 +84,10 @@ void clear(const SDL_Rect * rect) {
 }
 
 void render() {
-    SDL_Texture *frame;
-    if(display_tilescreen && tilescreen) {
-        frame = SDL_CreateTextureFromSurface(renderer, tilescreen);
-    }
-    else if (screen) {
-        frame = SDL_CreateTextureFromSurface(renderer, screen);
-    }
-    else {
+    if(!screen) {
         return;
     }
+    SDL_Texture *frame = SDL_CreateTextureFromSurface(renderer, screen);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, frame, NULL, NULL);
     SDL_RenderPresent(renderer);

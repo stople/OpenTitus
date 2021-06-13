@@ -42,7 +42,7 @@
 #include "level.h"
 #include "definitions.h"
 
-void TFR_SCREENM(); //Draw tiles on the backbuffer (copy from the tile screen)
+void TFR_SCREENM(TITUS_level *level); //Draw tiles on the backbuffer (copy from the tile screen)
 int viewstatus(TITUS_level *level, bool countbonus);
 void flip_screen(bool slow);
 void INIT_SCREENM(TITUS_level *level);

@@ -101,109 +101,12 @@ static void check_gates(TITUS_level *level) {
     }
     XLIMIT = orig_xlimit;
     NOSCROLL_FLAG = level->gate[i].noscroll;
-    OPEN_SCREEN();
+    OPEN_SCREEN(level);
 }
 
 void CROSSING_GATE(TITUS_level *level) { //Check and handle level completion, and if the player does a kneestand on a secret entrance
     check_finish(level);
     check_gates(level);
-}
-
-static void copytiles(int16 destX, int16 destY, int16 width, int16 height) {
-    SDL_Rect src, dest;
-    int16 sepX = BITMAP_XM * 16;
-    int16 sepY = BITMAP_YM * 16;
-    int16 sepXi = (S_COLUMNS - BITMAP_XM) * 16;
-    int16 sepYi = (S_LINES - BITMAP_YM) * 16;
-
-    // Tile screen:  | Output screen:
-    //               |
-    // D | C         | A | B
-    // -   -         | -   -
-    // B | A         | C | D
-    //
-    // The screens are splitted in 4 parts by BITMAP_XM and BITMAP_YM
-    // The code below will move the 4 rectangles with tiles to their right place on the output screen
-
-    //Upper left on screen (A)
-    if ((destX < sepXi) &&
-      (destY < sepYi)) {
-        src.x = sepX + destX;
-        src.y = sepY + destY;
-        dest.x = destX;
-        dest.y = destY;
-        src.w = width;
-        src.h = height;
-        if (destX + width > sepXi) { //Both A and B
-            src.w = sepXi - destX;
-        }
-        if (destY + height > sepYi) { //Both A and C
-            src.h = sepYi - destY;
-        }
-        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-    }
-
-    //Upper right on screen (B)
-    if ((destY < sepYi) &&
-      (destX + width > sepXi)) {
-        src.x = destX - sepXi;
-        src.y = sepY + destY;
-        src.w = width;
-        src.h = height;
-        dest.x = destX;
-        dest.y = destY;
-        if (destX < sepXi) { //Both B and A
-            src.x = 0;
-            src.w = width - (sepXi - destX);
-            dest.x = sepXi;
-        }
-        if (destY + height > sepYi) { //Both B and D
-            src.h = sepYi - destY;
-        }
-        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-    }
-
-    //Lower left on screen (C)
-    if ((destX < sepXi) &&
-      (destY + height > sepYi)) {
-        src.x = sepX + destX;
-        src.y = destY - sepYi;
-        src.w = width;
-        src.h = height;
-        dest.x = destX;
-        dest.y = destY;
-        if (destX + width > sepXi) { //Both C and D
-            src.w = sepXi - destX;
-        }
-        if (destY < sepYi) { //Both C and A
-            src.y = 0;
-            src.h = height - (sepYi - destY);
-            dest.y = sepYi;
-        }
-        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-    }
-
-    //Lower right on screen (D)
-    if (((destX + width) > sepXi) &&
-      ((destY + height) > sepYi)) {
-        src.x = destX - sepXi;
-        src.y = destY - sepYi;
-        src.w = width;
-        src.h = height;
-        dest.x = destX;
-        dest.y = destY;
-        if (destX < sepXi) { //Both D and C
-            src.x = 0;
-            src.w = width - (sepXi - destX);
-            dest.x = sepXi;
-        }
-        if (destY < sepYi) { //Both D and B
-            src.y = 0;
-            src.h = height - (sepYi - destY);
-            dest.y = sepYi;
-        }
-        SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-    }
 }
 
 void CLOSE_SCREEN() {
@@ -248,28 +151,46 @@ void CLOSE_SCREEN() {
 }
 
 
-void OPEN_SCREEN() {
+void OPEN_SCREEN(TITUS_level *level) {
     SDL_Rect dest;
     int8 step_count = 10;
-    int16 blockX = 320 / (step_count * 2);  //16 (320: resolution width)
-    int16 blockY = 192 / (step_count * 2); //9 (192: resolution height)
-    int8 i, j;
-    TFR_SCREENM(); //Draw tiles on the backbuffer
-
-    //BLACK_SCREEN
-    dest.x = 0;
-    dest.y = 0;
-    dest.w = 320;
-    dest.h = 192;
-    Window::clear(&dest);
-
-    j = step_count;
-    for (i = 2; i <= step_count * 2; i += 2) {
-        j--;
+    uint16 rwidth = 320; //TODO: make this global
+    uint16 rheight = 192;
+    uint16 incX = rwidth / (step_count * 2);  //16
+    uint16 incY = rheight / (step_count * 2); //10
+    uint8 i;
+    for (i = step_count - 1; i >= 2; i -= 2) {
         flip_screen(false); //quick flip TODO: move to other end of loop?
-        copytiles( j * blockX, j * blockY, (i * blockX) - blockX, blockY); //Upper tiles
-        copytiles((j * blockX) + (i * blockX) - blockX, j * blockY, blockX, i * blockY); //Right tiles
-        copytiles((j * blockX) + blockX, ((j + 1) * blockY) + (i * blockY) - blockY, (i * blockX) - blockX, blockY); //Bottom tiles
-        copytiles( j * blockX, (j * blockY) + blockY, blockX, i * blockY); //Left tiles
+
+        // draw all tiles
+        TFR_SCREENM(level);
+
+        //Clear top
+        dest.x = 0;
+        dest.y = 0;
+        dest.w = screen_width * 16;
+        dest.h = i * incY;
+        Window::clear(&dest);
+
+        //Clear left
+        dest.x = 0;
+        dest.y = 0;
+        dest.w = i * incX;
+        dest.h = screen_height * 16;
+        Window::clear(&dest);
+
+        //Clear bottom
+        dest.x = 0;
+        dest.y = rheight - (i * incY);
+        dest.w = screen_width * 16;
+        dest.h = i * incY;
+        Window::clear(&dest);
+
+        //Clear right
+        dest.x = rwidth - (i * incX);
+        dest.y = 0;
+        dest.w = i * incX;
+        dest.h = screen_height * 16;
+        Window::clear(&dest);
     }
 }

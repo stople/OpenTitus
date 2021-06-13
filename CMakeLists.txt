@@ -32,7 +32,6 @@ set(TITUS_SOURCES
     src/sprites.cpp
     src/sqz.cpp
     src/tituserror.cpp
-    src/tile_animation.cpp
     src/viewimage.cpp
 )
 

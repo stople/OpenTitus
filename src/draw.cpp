@@ -55,69 +55,20 @@
 SDL_Surface *sprite_from_cache(TITUS_level *level, TITUS_sprite *spr);
 void display_sprite(TITUS_level *level, TITUS_sprite *spr);
 
-void TFR_SCREENM() { //Draw tiles on the backbuffer (copy from the tile screen)
-    SDL_Rect src, dest;
-
+void TFR_SCREENM(TITUS_level *level) { //Draw tiles on the backbuffer (copy from the tile screen)
     //First of all: make the screen black, at least the lower part of the screen
+    SDL_Rect dest;
     dest.x = 0;
     dest.y = screen_height * 16;
     dest.w = screen_width * 16;
     dest.h = 200 - screen_height * 16;
     Window::clear(&dest);
 
-    // Tile screen:  | Output screen:
-    //               |
-    // D | C         | A | B
-    // -   -         | -   -
-    // B | A         | C | D
-    //
-    // The screens are splitted in 4 parts by BITMAP_XM and BITMAP_YM
-    // The code below will move the 4 rectangles with tiles to their right place on the output screen
-
-
-    //Upper left on screen (A)
-    src.x = BITMAP_XM * 16;
-    src.y = BITMAP_YM * 16;
-    src.w = (screen_width - BITMAP_XM) * 16;
-    src.h = (screen_height - BITMAP_YM) * 16;
-    dest.x = 0;
-    dest.y = 0;
-    dest.w = src.w;
-    dest.h = src.h;
-    SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-
-    //Upper right on screen (B)
-    src.x = 0;
-    src.y = BITMAP_YM * 16;
-    src.w = BITMAP_XM * 16;
-    src.h = (screen_height - BITMAP_YM) * 16;
-    dest.x = (screen_width - BITMAP_XM) * 16;
-    dest.y = 0;
-    dest.w = src.w;
-    dest.h = src.h;
-    SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-
-    //Lower left on screen (C)
-    src.x = BITMAP_XM * 16;
-    src.y = 0;
-    src.w = (screen_width - BITMAP_XM) * 16;
-    src.h = BITMAP_YM * 16;
-    dest.x = 0;
-    dest.y = (screen_height - BITMAP_YM) * 16;
-    dest.w = src.w;
-    dest.h = src.h;
-    SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
-
-    //Lower right on screen (D)
-    src.x = 0;
-    src.y = 0;
-    src.w = BITMAP_XM * 16;
-    src.h = BITMAP_YM * 16;
-    dest.x = (screen_width - BITMAP_XM) * 16;
-    dest.y = (screen_height - BITMAP_YM) * 16;
-    dest.w = src.w;
-    dest.h = src.h;
-    SDL_BlitSurface(Window::tilescreen, &src, Window::screen, &dest);
+    for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 12; j++) {
+            DISPLAY_CHAR(level, level->tilemap[BITMAP_Y + j][BITMAP_X + i], j, i);
+        }
+    }
 }
 
 
@@ -415,18 +366,10 @@ void INIT_SCREENM(TITUS_level *level) {
     CLOSE_SCREEN();
     BITMAP_X = 0;
     BITMAP_Y = 0;
-    BITMAP_XM = 0;
-    BITMAP_YM = 0;
-    uint8 i, j;
-    for (i = 0; i < 20; i++) {
-        for (j = 0; j < 12; j++) {
-            DISPLAY_CHAR(level, level->tilemap[BITMAP_Y + j][BITMAP_X + i], j, i);
-        }
-    }
     do {
         scroll(level);
     } while (YSCROLL_CENTER || XSCROLL_CENTER);
-    OPEN_SCREEN();
+    OPEN_SCREEN(level);
 }
 
 
@@ -553,7 +496,7 @@ int view_password(TITUS_level *level, uint8 level_index) {
         return retval;
 
     //Window::paint();
-    OPEN_SCREEN();
+    OPEN_SCREEN(level);
     return (0);
 }
 

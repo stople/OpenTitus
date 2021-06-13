@@ -33,14 +33,12 @@ namespace Window {
 
 int init();
 void toggle_fullscreen();
-void toggle_buffers();
 void render();
 void clear(const SDL_Rect * rect = nullptr);
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
-extern SDL_Surface *screen; //Backbuffer
-extern SDL_Surface *tilescreen; //Tile screen
+extern SDL_Surface *screen;
 
 }
 

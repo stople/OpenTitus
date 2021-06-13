@@ -33,9 +33,9 @@ bool PERMUT_FLAG; //If false, there are no animated tiles on the screen?
 uint8 loop_cycle; //Increased every loop in game loop
 uint8 tile_anim; //Current tile animation (0-1-2), changed every 4th game loop cycle
 uint8 BITMAP_X; //Screen offset (X) in tiles
-uint8 BITMAP_XM; //Point to the left tile in the tile screen (0 to 19)
+// uint8 BITMAP_XM; //Point to the left tile in the tile screen (0 to 19)
 uint8 BITMAP_Y; //Screen offset (Y) in tiles
-uint8 BITMAP_YM; //Point to the top tile in the tile screen (0 to 11)
+// uint8 BITMAP_YM; //Point to the top tile in the tile screen (0 to 11)
 bool XSCROLL_CENTER; //If true, the screen will scroll in X
 int16 XLIMIT_SCROLL; //If scrolling: scroll until player is in this tile (X)
 int16 XLIMIT; //The engine will not scroll past this tile before the player have crossed the line (X)
