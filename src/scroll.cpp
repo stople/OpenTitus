@@ -37,7 +37,7 @@
 
 static uint8 BARRYCENTRE(TITUS_level *level);
 
-void X_ADJUST(TITUS_level *level) {
+static void X_ADJUST(TITUS_level *level) {
     bool block;
     TITUS_player *player = &(level->player);
     int16 pstileX = (player->sprite.x >> 4) - BITMAP_X; //Player screen tile X (0 to 19)
@@ -108,7 +108,7 @@ void X_ADJUST(TITUS_level *level) {
     }
 }
 
-void Y_ADJUST(TITUS_level *level) {
+static void Y_ADJUST(TITUS_level *level) {
     TITUS_player *player = &(level->player);
     if (player->sprite.speedY == 0) {
         YSCROLL_CENTER = false;
